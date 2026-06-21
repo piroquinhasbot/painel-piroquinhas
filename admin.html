@@ -84,7 +84,9 @@
     .gold-rank-lista { display: flex; flex-direction: column; gap: 0.35rem; }
     .gold-rank-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.6rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.82rem; }
     .gold-rank-pos { width: 20px; text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--muted); flex-shrink: 0; }
-    .gold-rank-nome { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gold-rank-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+    .gold-rank-nome { color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gold-rank-sub { font-size: 0.68rem; color: var(--muted); font-family: 'Courier New', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .gold-rank-val { color: var(--amarelo); font-weight: 700; white-space: nowrap; }
     .gold-rank-pos.p1 { color: #FFD700; }
     .gold-rank-pos.p2 { color: #C0C0C0; }
@@ -458,7 +460,10 @@
               <div class="usr-avatar">👤</div>
               <div class="usr-info">
                 <div class="usr-nome-display" id="usr-nome"></div>
-                <div class="usr-jid-display"  id="usr-jid"></div>
+                <div class="usr-jid-display">
+                  <span id="usr-jid"></span>
+                  <button class="btn-copiar-jid" id="usr-jid-copiar" title="Copiar JID completo">copiar</button>
+                </div>
               </div>
             </div>
 
@@ -1058,14 +1063,31 @@
         }
 
         lista.innerHTML = ranking.map((m, i) => {
-          const posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : '';
-          return `
-          <div class="gold-rank-item">
-            <span class="gold-rank-pos ${posClass}">${i+1}</span>
-            <span class="gold-rank-nome">${escapeHtml(m.nome || m.idWhatsApp?.split('@')[0] || '—')}</span>
-            <span class="gold-rank-val">🪙 ${formatNum(m.gold)}</span>
-          </div>`;
-        }).join('');
+  const posClass    = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : '';
+  const jidEsc      = escapeHtml(m.idWhatsApp || '');
+  const telefoneEsc = escapeHtml(m.telefone || m.idWhatsApp?.split('@')[0] || '—');
+  return `
+  <div class="gold-rank-item">
+    <span class="gold-rank-pos ${posClass}">${i+1}</span>
+    <div class="gold-rank-info">
+      <span class="gold-rank-nome">${escapeHtml(m.nome || telefoneEsc)}</span>
+      <span class="gold-rank-sub">📱 +${telefoneEsc} &nbsp;·&nbsp; ${jidEsc}</span>
+    </div>
+    <span class="gold-rank-val">🪙 ${formatNum(m.gold)}</span>
+    <button class="btn-copiar-jid gold-rank-copiar" data-jid="${jidEsc}" title="Copiar JID completo">copiar</button>
+  </div>`;
+}).join('');
+
+        lista.querySelectorAll('.gold-rank-copiar').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(btn.dataset.jid);
+              toast('JID copiado.');
+            } catch {
+              toast('Não foi possível copiar.', 'erro');
+            }
+          });
+        });
       } catch {
         loading.style.display = 'none';
         lista.innerHTML = '<div class="estado-erro" style="font-size:.8rem;padding:.5rem .75rem;">Erro ao carregar ranking.</div>';
@@ -1554,6 +1576,7 @@
 
       $('usr-nome').textContent         = u.nome || '(sem nome)';
       $('usr-jid').textContent          = u.idWhatsApp || '—';
+      $('usr-jid-copiar').dataset.jid   = u.idWhatsApp || '';
       $('usr-xp-global').textContent    = formatNum(u.xp    || 0);
       $('usr-level-global').textContent = u.level || 1;
       $('usr-gold-global').textContent  = formatNum(u.gold  || 0);
@@ -1590,6 +1613,17 @@
 
       show('usuarios-resultado');
     }
+
+    $('usr-jid-copiar').addEventListener('click', async () => {
+      const jid = $('usr-jid-copiar').dataset.jid;
+      if (!jid) return;
+      try {
+        await navigator.clipboard.writeText(jid);
+        toast('JID copiado.');
+      } catch {
+        toast('Não foi possível copiar.', 'erro');
+      }
+    });
 
     $('btn-buscar-usuario').addEventListener('click', buscarUsuario);
     $('usuarios-busca-input').addEventListener('keydown', e => {
