@@ -1,1 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Perfil — Piroquinhas Bot</title>
+  <link rel="stylesheet" href="perfil.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
 
+  <!-- NAV -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">🔥 Piroquinhas</a>
+    <div class="nav-links">
+      <a href="index.html">Ranking</a>
+      <a href="comandos.html">Comandos</a>
+      <a href="perfil.html" class="active">Perfil</a>
+    </div>
+  </nav>
+
+  <!-- TELA DE INSTRUÇÃO (sem token) -->
+  <div id="tela-instrucao" class="instrucao-wrap hidden">
+    <div class="instrucao-card">
+      <div class="instrucao-icon">🔐</div>
+      <h2>Acesso restrito</h2>
+      <p>Para ver seu perfil, envie o comando abaixo no grupo:</p>
+      <div class="comando-destaque">!meupainel</div>
+      <p class="instrucao-sub">Você receberá um link no privado com acesso ao seu painel.</p>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="tela-loading" class="loading-wrap hidden">
+    <div class="spinner"></div>
+    <p>Carregando seu perfil...</p>
+  </div>
+
+  <!-- ERRO -->
+  <div id="tela-erro" class="erro-wrap hidden">
+    <div class="erro-card">
+      <div class="erro-icon">⚠️</div>
+      <h2 id="erro-msg">Algo deu errado</h2>
+      <p>Gere um novo link com <strong>!meupainel</strong> no grupo.</p>
+      <a href="index.html" class="btn-secondary">Voltar ao ranking</a>
+    </div>
+  </div>
+
+  <!-- PAINEL PRINCIPAL -->
+  <main id="painel" class="hidden">
+
+    <!-- SEÇÃO 1: HEADER DO PERFIL -->
+    <section class="perfil-header">
+      <div class="perfil-header-inner">
+        <div class="avatar" id="avatar-iniciais"></div>
+        <div class="perfil-info">
+          <h1 id="perfil-nome">—</h1>
+          <p class="perfil-numero" id="perfil-numero">—</p>
+        </div>
+        <div class="perfil-stats-topo">
+          <div class="stat-pill">
+            <span class="stat-label">Nível</span>
+            <span class="stat-val" id="stat-level">—</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">XP Total</span>
+            <span class="stat-val neon-roxo" id="stat-xp">—</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Gold</span>
+            <span class="stat-val neon-mint" id="stat-gold">—</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Ranking</span>
+            <span class="stat-val" id="stat-rank">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: XP E PROGRESSO -->
+    <section class="secao">
+      <h2 class="secao-titulo">⚡ XP &amp; Progresso</h2>
+      <div class="progresso-wrap">
+        <div class="progresso-info">
+          <span id="xp-atual-txt">0 XP</span>
+          <span id="xp-prox-txt">Próx. nível: 0 XP</span>
+        </div>
+        <div class="barra-outer">
+          <div class="barra-inner" id="barra-xp" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="chart-box">
+        <canvas id="chart-xp"></canvas>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 3: ATIVIDADE -->
+    <section class="secao">
+      <h2 class="secao-titulo">📊 Atividade Semanal</h2>
+      <div class="chart-box chart-box--sm">
+        <canvas id="chart-atividade"></canvas>
+      </div>
+      <div class="cards-atividade">
+        <div class="act-card">
+          <span class="act-label">💬 Mensagens</span>
+          <span class="act-val" id="act-mensagens">—</span>
+        </div>
+        <div class="act-card">
+          <span class="act-label">🧠 Quiz Points</span>
+          <span class="act-val neon-roxo" id="act-quiz">—</span>
+        </div>
+        <div class="act-card">
+          <span class="act-label">🐾 Pet</span>
+          <span class="act-val neon-mint" id="act-pet">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 4: INVENTÁRIO -->
+    <section class="secao">
+      <h2 class="secao-titulo">🎒 Inventário</h2>
+      <div id="inventario-grid" class="inventario-grid"></div>
+      <div id="inventario-vazio" class="inventario-vazio hidden">
+        <p>🪣 Nada por aqui ainda.<br/>Participe do grupo para ganhar itens!</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>Piroquinhas Bot © 2025 &mdash; feito com 🔥</p>
+  </footer>
+
+  <script>
+    const API = 'https://whatsappbot2-s3dx.onrender.com/api';
+
+    function xpParaProximoNivel(level) {
+      return Math.floor(100 * Math.pow(1.5, level));
+    }
+
+    function iniciais(nome) {
+      if (!nome) return '??';
+      return nome.trim().split(' ').slice(0, 2).map(p => p[0].toUpperCase()).join('');
+    }
+
+    function mostrar(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function esconder(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function renderChartXP(xpHistory) {
+      const hoje = new Date();
+      const labels = [];
+      const dados = [];
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(hoje);
+        d.setDate(d.getDate() - i);
+        const chave = d.toISOString().slice(0, 10);
+        labels.push(chave.slice(5));
+        dados.push(xpHistory[chave] || 0);
+      }
+      const ctx = document.getElementById('chart-xp').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'XP ganho',
+            data: dados,
+            borderColor: '#b855ff',
+            backgroundColor: 'rgba(184,85,255,0.12)',
+            pointBackgroundColor: '#b855ff',
+            pointRadius: 3,
+            tension: 0.4,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: '#1e1f2e' } },
+            y: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: '#1e1f2e' } }
+          }
+        }
+      });
+    }
+
+    function renderChartAtividade(atividadeSemanal) {
+      const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const dados = Array.isArray(atividadeSemanal) ? atividadeSemanal : Array(7).fill(0);
+      const ctx = document.getElementById('chart-atividade').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: dias,
+          datasets: [{
+            label: 'Msgs',
+            data: dados,
+            backgroundColor: 'rgba(0,255,176,0.25)',
+            borderColor: '#00ffb0',
+            borderWidth: 2,
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#888' }, grid: { color: '#1e1f2e' } },
+            y: { ticks: { color: '#888' }, grid: { color: '#1e1f2e' } }
+          }
+        }
+      });
+    }
+
+    function renderInventario(inventory) {
+      const grid = document.getElementById('inventario-grid');
+      const vazio = document.getElementById('inventario-vazio');
+      const entries = inventory ? Object.entries(inventory) : [];
+      if (entries.length === 0) {
+        mostrar('inventario-vazio');
+        return;
+      }
+      grid.innerHTML = entries.map(([nome, qtd]) => `
+        <div class="inv-item">
+          <span class="inv-nome">${nome}</span>
+          <span class="inv-qtd">x${qtd}</span>
+        </div>
+      `).join('');
+    }
+
+    function preencherPerfil(user, rankPos) {
+      document.getElementById('avatar-iniciais').textContent = iniciais(user.nome);
+      document.getElementById('perfil-nome').textContent = user.nome || 'Sem nome';
+      document.getElementById('perfil-numero').textContent = '+' + (user.telefone || user.idWhatsApp?.split('@')[0] || '—');
+
+      document.getElementById('stat-level').textContent = user.level ?? 0;
+      document.getElementById('stat-xp').textContent = (user.xp ?? 0).toLocaleString('pt-BR');
+      document.getElementById('stat-gold').textContent = (user.gold ?? 0).toLocaleString('pt-BR');
+      document.getElementById('stat-rank').textContent = rankPos ? `#${rankPos}` : '—';
+
+      const xpAtual = user.xp ?? 0;
+      const xpProx = xpParaProximoNivel(user.level ?? 0);
+      const pct = Math.min(100, Math.round((xpAtual / xpProx) * 100));
+      document.getElementById('xp-atual-txt').textContent = xpAtual.toLocaleString('pt-BR') + ' XP';
+      document.getElementById('xp-prox-txt').textContent = `Próx. nível: ${xpProx.toLocaleString('pt-BR')} XP`;
+      document.getElementById('barra-xp').style.width = pct + '%';
+
+      renderChartXP(user.xpHistory || {});
+      renderChartAtividade(user.atividadeSemanal);
+
+      document.getElementById('act-mensagens').textContent = (user.mensagens ?? 0).toLocaleString('pt-BR');
+      document.getElementById('act-quiz').textContent = (user.quizPoints ?? 0).toLocaleString('pt-BR');
+
+      const pet = user.pet;
+      document.getElementById('act-pet').textContent =
+        pet && pet.nome ? `${pet.nome} (nv ${pet.level ?? 1})` : 'Nenhum';
+
+      renderInventario(user.inventory);
+    }
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      const tokenParam = params.get('token');
+      let jwt = sessionStorage.getItem('piroquinhas_jwt');
+
+      if (!tokenParam && !jwt) {
+        mostrar('tela-instrucao');
+        return;
+      }
+
+      mostrar('tela-loading');
+
+      try {
+        if (tokenParam) {
+          const res = await fetch(`${API}/auth/token`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: tokenParam })
+          });
+          if (!res.ok) throw new Error('Token inválido ou expirado.');
+          const data = await res.json();
+          jwt = data.jwt;
+          sessionStorage.setItem('piroquinhas_jwt', jwt);
+          history.replaceState(null, '', 'perfil.html');
+        }
+
+        const meRes = await fetch(`${API}/user/me`, {
+          headers: { 'Authorization': `Bearer ${jwt}` }
+        });
+        if (!meRes.ok) throw new Error('Sessão expirada. Gere um novo link.');
+        const { user } = await meRes.json();
+
+        const rankRes = await fetch(`${API}/user/ranking`, {
+          headers: { 'Authorization': `Bearer ${jwt}` }
+        });
+        let rankPos = null;
+        if (rankRes.ok) {
+          const { ranking } = await rankRes.json();
+          const entrada = ranking?.find(r => r.idWhatsApp === user.idWhatsApp);
+          rankPos = entrada ? (ranking.indexOf(entrada) + 1) : null;
+        }
+
+        esconder('tela-loading');
+        mostrar('painel');
+        preencherPerfil(user, rankPos);
+
+      } catch (err) {
+        esconder('tela-loading');
+        document.getElementById('erro-msg').textContent = err.message || 'Erro desconhecido.';
+        mostrar('tela-erro');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
