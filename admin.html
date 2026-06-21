@@ -30,7 +30,7 @@
     .autosync-wrap { display: flex; align-items: center; gap: 0.45rem; font-size: 0.75rem; color: var(--muted2); padding: 0.15rem 0; cursor: pointer; user-select: none; }
     .autosync-wrap input { accent-color: var(--roxo); cursor: pointer; }
 
-    /* abas mobile com 4 itens */
+    /* abas mobile com muitos itens */
     .abas-mobile { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .abas-mobile::-webkit-scrollbar { display: none; }
     .abas-mobile .aba { white-space: nowrap; flex: 0 0 auto; padding-left: 0.95rem; padding-right: 0.95rem; }
@@ -74,6 +74,33 @@
     .btn-copiar-jid { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.7rem; padding: 0; margin-left: 0.45rem; text-decoration: underline; }
     .btn-copiar-jid:hover { color: var(--roxo); }
 
+    /* grupo expandido — ranking gold + ações */
+    .grupo-card { cursor: default; }
+    .grupo-card-body { width: 100%; }
+    .btn-ver-gold { background: var(--amar-dim); border: 1px solid rgba(255,208,96,.3); color: var(--amarelo); border-radius: var(--radius-sm); padding: 0.35rem 0.7rem; font-size: 0.76rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: opacity .2s; margin-top: 0.4rem; }
+    .btn-ver-gold:hover { opacity: .8; }
+    .gold-painel { margin-top: 0.85rem; border-top: 1px solid var(--border); padding-top: 0.85rem; display: flex; flex-direction: column; gap: 0.65rem; }
+    .gold-painel-titulo { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .gold-rank-lista { display: flex; flex-direction: column; gap: 0.35rem; }
+    .gold-rank-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.6rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.82rem; }
+    .gold-rank-pos { width: 20px; text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+    .gold-rank-nome { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gold-rank-val { color: var(--amarelo); font-weight: 700; white-space: nowrap; }
+    .gold-rank-pos.p1 { color: #FFD700; }
+    .gold-rank-pos.p2 { color: #C0C0C0; }
+    .gold-rank-pos.p3 { color: #CD7F32; }
+    .gold-acoes { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; }
+    .gold-acoes .field { flex: 1; min-width: 140px; gap: 0.3rem; }
+    .gold-acoes label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .gold-acoes input, .gold-acoes select { min-height: 36px; font-size: 0.82rem; padding: 0.45rem 0.7rem; }
+    .btn-gold-dar { background: var(--mint-dim); border: 1px solid rgba(0,255,176,.3); color: var(--mint); border-radius: var(--radius-sm); padding: 0.45rem 0.9rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; min-height: 36px; }
+    .btn-gold-dar:hover { opacity: .8; }
+    .btn-gold-rem { background: var(--verm-dim); border: 1px solid rgba(255,59,110,.3); color: var(--vermelho); border-radius: var(--radius-sm); padding: 0.45rem 0.9rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; min-height: 36px; }
+    .btn-gold-rem:hover { opacity: .8; }
+    .btn-gold-reset { background: var(--surface3); border: 1px solid var(--border2); color: var(--muted); border-radius: var(--radius-sm); padding: 0.45rem 0.9rem; font-size: 0.76rem; cursor: pointer; white-space: nowrap; min-height: 36px; }
+    .btn-gold-reset:hover { border-color: var(--vermelho); color: var(--vermelho); }
+    .gold-loading { color: var(--muted); font-size: 0.82rem; display: flex; align-items: center; gap: 0.5rem; }
+
     /* modal renomear */
     .modal-jid-ref { font-family: 'Courier New', monospace; font-size: 0.74rem; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; margin-bottom: 1rem; word-break: break-all; }
     .modal-actions-btn-auto { width: auto; }
@@ -98,10 +125,94 @@
     .btn-remover-1 { background: none; border: 1px solid var(--border2); color: var(--muted); border-radius: 5px; font-size: 0.68rem; padding: 0.14rem 0.45rem; cursor: pointer; }
     .btn-remover-1:hover { border-color: var(--vermelho); color: var(--vermelho); }
 
+    /* ===== ABA USUÁRIOS ===== */
+    .usr-busca-row { display: flex; gap: 0.6rem; margin-bottom: 1.25rem; }
+    .usr-busca-row input { flex: 1; margin-bottom: 0; }
+    .usr-busca-row .btn-primary { width: auto; min-width: 90px; padding: 0.65rem 1rem; }
+    .usr-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .usr-header { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+    .usr-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--roxo-dim); color: var(--roxo); font-size: 1.3rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid rgba(184,85,255,.3); }
+    .usr-info { flex: 1; }
+    .usr-nome-display { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .usr-jid-display { font-size: 0.73rem; color: var(--muted); font-family: monospace; margin-top: 0.1rem; }
+    .usr-stats-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .usr-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.4rem 0.7rem; display: flex; flex-direction: column; gap: 0.1rem; }
+    .usr-stat-val { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .usr-stat-val.gold { color: var(--amarelo); }
+    .usr-stat-val.xp   { color: var(--mint); }
+    .usr-stat-val.roxo { color: var(--roxo); }
+    .usr-stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .usr-grupos-titulo { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .usr-grupo-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 0.35rem; font-size: 0.82rem; flex-wrap: wrap; }
+    .usr-grupo-nome { flex: 1; font-weight: 500; color: var(--text); min-width: 120px; }
+    .usr-grupo-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .usr-tag { background: var(--surface3); border: 1px solid var(--border2); color: var(--muted2); border-radius: 999px; padding: 0.1rem 0.5rem; font-size: 0.71rem; white-space: nowrap; }
+    .usr-tag.gold { color: var(--amarelo); border-color: rgba(255,208,96,.3); background: var(--amar-dim); }
+    .usr-tag.xp   { color: var(--mint);   border-color: rgba(0,255,176,.25); background: var(--mint-dim); }
+    .usr-tag.lv   { color: var(--roxo);   border-color: rgba(184,85,255,.3); background: var(--roxo-dim); }
+    .usr-acoes-titulo { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem; }
+    .usr-acoes-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+    .usr-acao-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; padding: 0.75rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .usr-acao-row .field { min-width: 120px; flex: 1; gap: 0.25rem; }
+    .usr-acao-row label { font-size: 0.72rem; }
+    .usr-acao-row input, .usr-acao-row select { min-height: 36px; font-size: 0.82rem; padding: 0.4rem 0.65rem; }
+    .usr-acao-title { font-size: 0.78rem; font-weight: 600; color: var(--muted2); width: 100%; margin-bottom: 0.15rem; }
+    .usr-transferencia { display: flex; flex-direction: column; gap: 0.5rem; }
+    .transfer-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; }
+    .transfer-row .field { flex: 1; min-width: 120px; gap: 0.25rem; }
+    .transfer-row label { font-size: 0.72rem; }
+    .transfer-row input { min-height: 36px; font-size: 0.82rem; padding: 0.4rem 0.65rem; }
+
+    /* ===== ABA ECONOMIA ===== */
+    .eco-rank-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.55rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .eco-rank-pos { width: 24px; height: 24px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+    .eco-rank-pos.p1 { background: rgba(255,215,0,.15); color: #FFD700; border: 1px solid rgba(255,215,0,.3); }
+    .eco-rank-pos.p2 { background: rgba(192,192,192,.12); color: #C0C0C0; border: 1px solid rgba(192,192,192,.25); }
+    .eco-rank-pos.p3 { background: rgba(205,127,50,.12); color: #CD7F32; border: 1px solid rgba(205,127,50,.25); }
+    .eco-rank-nome { flex: 1; font-size: 0.88rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .eco-rank-grupo { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+    .eco-rank-val { font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
+    .eco-rank-val.gold { color: var(--amarelo); }
+    .eco-rank-val.xp   { color: var(--mint); }
+    .eco-rank-val.msg  { color: var(--roxo); }
+
+    /* ===== ABA LOGS ===== */
+    .logs-toolbar { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1rem; }
+    .logs-toolbar .busca-input { flex: 1; min-width: 180px; margin-bottom: 0; }
+    .log-filtro-select { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); padding: 0.55rem 0.75rem; font-size: 0.82rem; cursor: pointer; outline: none; }
+    .log-filtro-select:focus { border-color: var(--roxo); }
+    .logs-lista { display: flex; flex-direction: column; gap: 0.35rem; }
+    .log-item { display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.6rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.82rem; transition: border-color .15s; }
+    .log-item:hover { border-color: var(--border2); }
+    .log-item.tipo-erro { border-left: 3px solid var(--vermelho); }
+    .log-item.tipo-cmd  { border-left: 3px solid var(--roxo); }
+    .log-item.tipo-warn { border-left: 3px solid var(--amarelo); }
+    .log-item.tipo-info { border-left: 3px solid var(--mint); }
+    .log-hora { font-size: 0.7rem; color: var(--muted); font-family: monospace; white-space: nowrap; flex-shrink: 0; padding-top: 0.12rem; }
+    .log-corpo { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; }
+    .log-cmd { font-weight: 600; color: var(--text); }
+    .log-detalhe { color: var(--muted2); font-size: 0.78rem; line-height: 1.4; font-family: monospace; word-break: break-all; }
+    .log-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.15rem; }
+    .log-badge { background: var(--surface2); border: 1px solid var(--border2); color: var(--muted); border-radius: 999px; padding: 0.1rem 0.5rem; font-size: 0.68rem; white-space: nowrap; }
+    .log-badge.erro { color: var(--vermelho); border-color: rgba(255,59,110,.3); background: var(--verm-dim); }
+    .log-badge.cmd  { color: var(--roxo);    border-color: rgba(184,85,255,.3); background: var(--roxo-dim); }
+    .log-badge.warn { color: var(--amarelo); border-color: rgba(255,208,96,.3); background: var(--amar-dim); }
+    .log-badge.info { color: var(--mint);    border-color: rgba(0,255,176,.25);  background: var(--mint-dim); }
+    .logs-paginacao { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; }
+    .logs-paginacao button { background: var(--surface); border: 1px solid var(--border); color: var(--muted); border-radius: var(--radius-sm); padding: 0.45rem 0.8rem; font-size: 0.82rem; cursor: pointer; }
+    .logs-paginacao button:hover:not(:disabled) { border-color: var(--roxo); color: var(--roxo); }
+    .logs-paginacao button:disabled { opacity: .4; cursor: not-allowed; }
+    .logs-paginacao span { font-size: 0.8rem; color: var(--muted); }
+    .logs-auto { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--muted2); }
+    .logs-auto input { accent-color: var(--roxo); }
+
     @media (max-width: 768px) {
       .dash-grid { grid-template-columns: repeat(2, 1fr); }
-      .grupos-toolbar, .warns-toolbar { flex-direction: column; align-items: stretch; }
+      .grupos-toolbar, .warns-toolbar, .logs-toolbar { flex-direction: column; align-items: stretch; }
       .bulk-bar { gap: 0.4rem; }
+      .usr-busca-row { flex-direction: column; }
+      .usr-busca-row .btn-primary { width: 100%; }
+      .gold-acoes { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -140,6 +251,9 @@
         <a href="#grupos"    class="nav-item" data-aba="grupos">   <span class="nav-icon">👥</span> Grupos</a>
         <a href="#mensagens" class="nav-item" data-aba="mensagens"><span class="nav-icon">✉️</span> Mensagens</a>
         <a href="#warns"     class="nav-item" data-aba="warns">    <span class="nav-icon">⚠️</span> Warns / Bans</a>
+        <a href="#usuarios"  class="nav-item" data-aba="usuarios"> <span class="nav-icon">👤</span> Usuários</a>
+        <a href="#economia"  class="nav-item" data-aba="economia"> <span class="nav-icon">💰</span> Economia</a>
+        <a href="#logs"      class="nav-item" data-aba="logs">     <span class="nav-icon">📋</span> Logs</a>
       </nav>
       <div class="sidebar-footer">
         <span class="sidebar-status" id="sidebar-status">
@@ -172,6 +286,9 @@
         <button class="aba" data-aba="grupos">👥 Grupos</button>
         <button class="aba" data-aba="mensagens">✉️ Msgs</button>
         <button class="aba" data-aba="warns">⚠️ Warns</button>
+        <button class="aba" data-aba="usuarios">👤 Users</button>
+        <button class="aba" data-aba="economia">💰 Eco</button>
+        <button class="aba" data-aba="logs">📋 Logs</button>
       </div>
 
       <!-- ===== ABA: DASHBOARD ===== -->
@@ -223,8 +340,8 @@
         </div>
 
         <p class="secao-hint">
-          Os nomes dos grupos vêm do WhatsApp e nem sempre estão disponíveis para a API — use o ícone
-          <span class="hint-icon">✎</span> para renomear manualmente um grupo aqui no painel.
+          Use o ícone <span class="hint-icon">✎</span> para renomear um grupo. Clique em
+          <strong>🪙 Ver Gold</strong> em cada grupo para ver o ranking e ajustar saldos.
         </p>
 
         <div class="grupos-toolbar">
@@ -318,8 +435,182 @@
         </div>
       </section>
 
-    </div>
-  </div>
+      <!-- ===== ABA: USUÁRIOS ===== -->
+      <section id="aba-usuarios" class="aba-conteudo hidden">
+        <div class="secao-header">
+          <h2>Buscar Usuário</h2>
+          <button class="btn-icon" id="btn-refresh-usuarios" title="Limpar busca">✕</button>
+        </div>
+
+        <div class="usr-busca-row">
+          <input type="text" id="usuarios-busca-input" class="busca-input" placeholder="Número (5511999...) ou JID completo" style="margin-bottom:0;" />
+          <button class="btn-primary" id="btn-buscar-usuario">Buscar</button>
+        </div>
+
+        <div id="usuarios-loading" class="estado-loading hidden"><div class="spinner"></div> Buscando...</div>
+        <div id="usuarios-erro"    class="estado-erro hidden">Erro ao buscar. <button class="link-btn" onclick="buscarUsuario()">Tentar novamente</button></div>
+        <div id="usuarios-vazio"   class="estado-vazio hidden">Usuário não encontrado.</div>
+
+        <div id="usuarios-resultado" class="hidden">
+          <div class="usr-card">
+            <!-- Header do usuário -->
+            <div class="usr-header">
+              <div class="usr-avatar">👤</div>
+              <div class="usr-info">
+                <div class="usr-nome-display" id="usr-nome"></div>
+                <div class="usr-jid-display"  id="usr-jid"></div>
+              </div>
+            </div>
+
+            <!-- Stats globais -->
+            <div class="usr-stats-row">
+              <div class="usr-stat">
+                <span class="usr-stat-val xp"   id="usr-xp-global">0</span>
+                <span class="usr-stat-label">XP Global</span>
+              </div>
+              <div class="usr-stat">
+                <span class="usr-stat-val roxo" id="usr-level-global">1</span>
+                <span class="usr-stat-label">Level</span>
+              </div>
+              <div class="usr-stat">
+                <span class="usr-stat-val gold" id="usr-gold-global">0</span>
+                <span class="usr-stat-label">Gold Total</span>
+              </div>
+              <div class="usr-stat">
+                <span class="usr-stat-val"      id="usr-msgs-global">0</span>
+                <span class="usr-stat-label">Mensagens</span>
+              </div>
+            </div>
+
+            <!-- Grupos do usuário -->
+            <div>
+              <div class="usr-grupos-titulo">Grupos ativos</div>
+              <div id="usr-grupos-lista"></div>
+            </div>
+
+            <!-- Ações -->
+            <div>
+              <div class="usr-acoes-titulo">Ajustar Gold</div>
+              <div class="usr-acoes-grid">
+                <div class="usr-acao-row">
+                  <div class="field">
+                    <label>Grupo</label>
+                    <select id="usr-acao-grupo"></select>
+                  </div>
+                  <div class="field" style="max-width:120px;">
+                    <label>Quantidade</label>
+                    <input type="number" id="usr-gold-valor" min="1" placeholder="500" />
+                  </div>
+                  <button class="btn-gold-dar" id="btn-dar-gold">+ Dar</button>
+                  <button class="btn-gold-rem" id="btn-remover-gold">− Remover</button>
+                  <button class="btn-gold-reset" id="btn-resetar-gold-usuario">🗑 Zerar tudo</button>
+                </div>
+
+                <!-- Transferência entre usuários -->
+                <div class="usr-acao-row">
+                  <div class="usr-acao-title">🔄 Transferir gold para outro usuário</div>
+                  <div class="usr-transferencia" style="width:100%;">
+                    <div class="transfer-row">
+                      <div class="field">
+                        <label>Grupo de origem</label>
+                        <select id="transfer-grupo-origem"></select>
+                      </div>
+                      <div class="field">
+                        <label>Destino (número/JID)</label>
+                        <input type="text" id="transfer-destino" placeholder="5511999..." />
+                      </div>
+                      <div class="field" style="max-width:110px;">
+                        <label>Quantidade</label>
+                        <input type="number" id="transfer-valor" min="1" placeholder="100" />
+                      </div>
+                      <button class="btn-gold-dar" id="btn-transferir-gold">Transferir</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ABA: ECONOMIA ===== -->
+      <section id="aba-economia" class="aba-conteudo hidden">
+        <div class="secao-header">
+          <h2>Economia Global</h2>
+          <button class="btn-icon" id="btn-refresh-economia" title="Recarregar">↺</button>
+        </div>
+
+        <div id="economia-loading" class="estado-loading">
+          <div class="spinner"></div> Carregando dados...
+        </div>
+
+        <div id="economia-conteudo" class="hidden">
+          <div class="dash-grid" style="margin-bottom:1.75rem;">
+            <div class="dash-card warn">
+              <span class="dash-card-valor" id="eco-total-gold">0</span>
+              <span class="dash-card-label">Gold em circulação</span>
+            </div>
+            <div class="dash-card mint">
+              <span class="dash-card-valor" id="eco-total-xp">0</span>
+              <span class="dash-card-label">XP total acumulado</span>
+            </div>
+            <div class="dash-card accent">
+              <span class="dash-card-valor" id="eco-media-gold">0</span>
+              <span class="dash-card-label">Média gold/usuário</span>
+            </div>
+            <div class="dash-card">
+              <span class="dash-card-valor" id="eco-total-usuarios">0</span>
+              <span class="dash-card-label">Usuários com gold</span>
+            </div>
+          </div>
+
+          <div class="dash-sub-titulo">🪙 Top 10 — Maior Gold Global</div>
+          <div id="eco-rank-gold" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.75rem;"></div>
+
+          <div class="dash-sub-titulo">⚡ Top 10 — Maior XP Global</div>
+          <div id="eco-rank-xp" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.75rem;"></div>
+
+          <div class="dash-sub-titulo">💬 Top 10 — Mais Mensagens</div>
+          <div id="eco-rank-msgs" style="display:flex;flex-direction:column;gap:.4rem;"></div>
+        </div>
+      </section>
+
+      <!-- ===== ABA: LOGS ===== -->
+      <section id="aba-logs" class="aba-conteudo hidden">
+        <div class="secao-header">
+          <h2>Logs do Bot <span class="contagem-badge" id="logs-contagem"></span></h2>
+          <button class="btn-icon" id="btn-refresh-logs" title="Recarregar">↺</button>
+        </div>
+
+        <div class="logs-toolbar">
+          <input type="text" id="logs-busca" class="busca-input" placeholder="Buscar por comando, usuário, grupo..." style="margin-bottom:0;" />
+          <select id="logs-tipo-filtro" class="log-filtro-select">
+            <option value="">Todos os tipos</option>
+            <option value="cmd">Comandos</option>
+            <option value="erro">Erros</option>
+            <option value="warn">Warnings</option>
+            <option value="info">Info</option>
+          </select>
+          <label class="logs-auto">
+            <input type="checkbox" id="chk-logs-live" /> Live (atualiza a cada 10s)
+          </label>
+        </div>
+
+        <div id="logs-loading" class="estado-loading hidden"><div class="spinner"></div> Carregando logs...</div>
+        <div id="logs-vazio"   class="estado-vazio hidden">Nenhum log encontrado.</div>
+        <div id="logs-erro"    class="estado-erro hidden">Erro ao carregar logs. <button class="link-btn" id="btn-retry-logs">Tentar novamente</button></div>
+
+        <div id="logs-lista" class="logs-lista hidden"></div>
+
+        <div id="logs-paginacao" class="logs-paginacao hidden">
+          <button id="logs-prev" disabled>← Anterior</button>
+          <span id="logs-pagina-info">Pág 1</span>
+          <button id="logs-next">Próxima →</button>
+        </div>
+      </section>
+
+    </div><!-- /conteudo -->
+  </div><!-- /painel -->
 
   <!-- MODAL DE CONFIRMAÇÃO -->
   <div id="modal-overlay" class="modal-overlay hidden">
@@ -383,6 +674,10 @@
       return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
 
+    function formatNum(n) {
+      return Number(n || 0).toLocaleString('pt-BR');
+    }
+
     /* ── Nomes customizados (localStorage como cache local) ── */
     function nomesCustomLocais() {
       try { return JSON.parse(localStorage.getItem('piro_nomes_grupo') || '{}'); }
@@ -394,7 +689,6 @@
       localStorage.setItem('piro_nomes_grupo', JSON.stringify(atual));
     }
     function nomeExibicao(grupo) {
-      // Prioridade: 1) nomeCustom do backend, 2) cache local, 3) fallback
       const local = nomesCustomLocais()[grupo.idGrupo];
       return grupo.nomeCustom || local || grupo.nome || 'Grupo sem nome';
     }
@@ -438,6 +732,7 @@
     $('btn-logout').addEventListener('click', () => {
       sessionStorage.removeItem('piro_admin_key');
       if (autosyncTimer) clearInterval(autosyncTimer);
+      if (logsLiveTimer) clearInterval(logsLiveTimer);
       hide('painel');
       show('tela-login');
       $('admin-key').value = '';
@@ -457,8 +752,11 @@
     }
 
     /* ===== NAVEGAÇÃO ===== */
-    const ABAS_VALIDAS = ['dashboard', 'grupos', 'mensagens', 'warns'];
-    const titulosAbas  = { dashboard: 'Dashboard', grupos: 'Grupos', mensagens: 'Mensagens', warns: 'Warns / Bans' };
+    const ABAS_VALIDAS = ['dashboard', 'grupos', 'mensagens', 'warns', 'usuarios', 'economia', 'logs'];
+    const titulosAbas  = {
+      dashboard: 'Dashboard', grupos: 'Grupos', mensagens: 'Mensagens',
+      warns: 'Warns / Bans', usuarios: 'Usuários', economia: 'Economia', logs: 'Logs'
+    };
 
     function ativarAba(aba) {
       if (!ABAS_VALIDAS.includes(aba)) aba = 'dashboard';
@@ -471,6 +769,9 @@
       $('topbar-titulo').textContent = titulosAbas[aba] || '';
       if (location.hash !== `#${aba}`) history.replaceState(null, '', `#${aba}`);
       fecharSidebar();
+
+      if (aba === 'economia') carregarEconomia();
+      if (aba === 'logs')     carregarLogs();
     }
 
     document.querySelectorAll('.nav-item').forEach(el => {
@@ -527,10 +828,8 @@
       const jid = renomearJidAtual;
       $('renomear-salvar').disabled = true;
 
-      // Salva localmente como cache imediato
       salvarNomeCustomLocal(jid, novoNome);
 
-      // Persiste no backend — CarteiraGrupo.js já tem nomeCustom no schema
       try {
         const res = await fetch(`${API}/admin/grupo/${encodeURIComponent(jid)}/nome`, {
           method: 'PATCH',
@@ -622,44 +921,73 @@
         const nomeEsc    = escapeHtml(nomeReal);
         const jidEsc     = escapeHtml(g.idGrupo);
         const membrosTxt = g.membros != null ? `${g.membros} membro${g.membros === 1 ? '' : 's'}` : '';
-        const xpTxt      = g.xpTotal != null ? `${Number(g.xpTotal).toLocaleString('pt-BR')} XP total` : '';
+        const xpTxt      = g.xpTotal != null ? `${formatNum(g.xpTotal)} XP total` : '';
 
         return `
         <div class="grupo-card" data-jid="${jidEsc}">
-          <div class="grupo-info">
-            <div class="grupo-nome-linha">
-              <span class="grupo-nome">${nomeEsc}</span>
-              <button class="btn-renomear" data-jid="${jidEsc}" data-nome="${nomeEsc}" title="Renomear grupo">✎</button>
+          <div class="grupo-card-body" style="width:100%;">
+            <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <div class="grupo-info" style="flex:1;min-width:180px;">
+                <div class="grupo-nome-linha">
+                  <span class="grupo-nome">${nomeEsc}</span>
+                  <button class="btn-renomear" data-jid="${jidEsc}" data-nome="${nomeEsc}" title="Renomear grupo">✎</button>
+                </div>
+                <span class="grupo-jid">${jidEsc}<button class="btn-copiar-jid" data-jid="${jidEsc}">copiar</button></span>
+                ${(membrosTxt || xpTxt) ? `<span class="grupo-meta">${[membrosTxt, xpTxt].filter(Boolean).join(' · ')}</span>` : ''}
+                <button class="btn-ver-gold" data-jid="${jidEsc}">🪙 Ver Gold</button>
+              </div>
+              <div class="grupo-toggles">
+                <label class="toggle-wrap">
+                  <span class="toggle-label">XP</span>
+                  <button class="toggle ${g.config?.xpAtivo !== false ? 'on' : ''}"
+                    data-jid="${jidEsc}" data-campo="xpAtivo"
+                    aria-pressed="${g.config?.xpAtivo !== false}"
+                    aria-label="Toggle XP"></button>
+                </label>
+                <label class="toggle-wrap">
+                  <span class="toggle-label">Anti-Link</span>
+                  <button class="toggle ${g.config?.antiLink ? 'on' : ''}"
+                    data-jid="${jidEsc}" data-campo="antiLink"
+                    aria-pressed="${!!g.config?.antiLink}"
+                    aria-label="Toggle Anti-Link"></button>
+                </label>
+                <label class="toggle-wrap">
+                  <span class="toggle-label">Boas-Vindas</span>
+                  <button class="toggle ${g.config?.boasVindas !== false ? 'on' : ''}"
+                    data-jid="${jidEsc}" data-campo="boasVindas"
+                    aria-pressed="${g.config?.boasVindas !== false}"
+                    aria-label="Toggle Boas-Vindas"></button>
+                </label>
+              </div>
             </div>
-            <span class="grupo-jid">${jidEsc}<button class="btn-copiar-jid" data-jid="${jidEsc}">copiar</button></span>
-            ${(membrosTxt || xpTxt) ? `<span class="grupo-meta">${[membrosTxt, xpTxt].filter(Boolean).join(' · ')}</span>` : ''}
-          </div>
-          <div class="grupo-toggles">
-            <label class="toggle-wrap">
-              <span class="toggle-label">Sistema de XP</span>
-              <button class="toggle ${g.config?.xpAtivo !== false ? 'on' : ''}"
-                data-jid="${jidEsc}" data-campo="xpAtivo"
-                aria-pressed="${g.config?.xpAtivo !== false}"
-                aria-label="Toggle XP"></button>
-            </label>
-            <label class="toggle-wrap">
-              <span class="toggle-label">Anti-Link</span>
-              <button class="toggle ${g.config?.antiLink ? 'on' : ''}"
-                data-jid="${jidEsc}" data-campo="antiLink"
-                aria-pressed="${!!g.config?.antiLink}"
-                aria-label="Toggle Anti-Link"></button>
-            </label>
-            <label class="toggle-wrap">
-              <span class="toggle-label">Boas-Vindas</span>
-              <button class="toggle ${g.config?.boasVindas !== false ? 'on' : ''}"
-                data-jid="${jidEsc}" data-campo="boasVindas"
-                aria-pressed="${g.config?.boasVindas !== false}"
-                aria-label="Toggle Boas-Vindas"></button>
-            </label>
+            <!-- Painel de gold (oculto por padrão) -->
+            <div class="gold-painel hidden" id="gold-painel-${jidEsc.replace(/[^a-z0-9]/gi,'_')}">
+              <div class="gold-painel-titulo">🪙 Ranking Gold do Grupo</div>
+              <div class="gold-loading" id="gold-loading-${jidEsc.replace(/[^a-z0-9]/gi,'_')}">
+                <div class="spinner"></div> Carregando...
+              </div>
+              <div class="gold-rank-lista" id="gold-rank-${jidEsc.replace(/[^a-z0-9]/gi,'_')}"></div>
+
+              <div class="gold-painel-titulo" style="margin-top:.85rem;">Ajustar Gold de Membro</div>
+              <div class="gold-acoes">
+                <div class="field" style="flex:2;min-width:160px;">
+                  <label>Membro (número ou JID)</label>
+                  <input type="text" class="gold-membro-input" id="gold-membro-${jidEsc.replace(/[^a-z0-9]/gi,'_')}" placeholder="5511999..." />
+                </div>
+                <div class="field" style="max-width:110px;">
+                  <label>Quantidade</label>
+                  <input type="number" class="gold-qty-input" id="gold-qty-${jidEsc.replace(/[^a-z0-9]/gi,'_')}" min="1" placeholder="100" />
+                </div>
+                <button class="btn-gold-dar"   data-jid="${jidEsc}" data-op="dar">+ Dar</button>
+                <button class="btn-gold-rem"   data-jid="${jidEsc}" data-op="remover">− Remover</button>
+                <button class="btn-gold-reset" data-jid="${jidEsc}" data-op="reset-grupo">🗑 Zerar grupo</button>
+              </div>
+            </div>
           </div>
         </div>`;
       }).join('');
 
+      // Eventos
       lista.querySelectorAll('.toggle').forEach(btn => {
         btn.addEventListener('click', () => alternarToggle(btn));
       });
@@ -676,8 +1004,128 @@
           }
         });
       });
+      lista.querySelectorAll('.btn-ver-gold').forEach(btn => {
+        btn.addEventListener('click', () => toggleGoldPainel(btn.dataset.jid));
+      });
+      lista.querySelectorAll('.btn-gold-dar, .btn-gold-rem, .btn-gold-reset').forEach(btn => {
+        btn.addEventListener('click', () => acaoGoldGrupo(btn.dataset.jid, btn.dataset.op));
+      });
 
       show('grupos-lista');
+    }
+
+    /* ===== GOLD PAINEL (por grupo) ===== */
+    const goldPainelAberto = new Set();
+
+    function idSafe(jid) { return jid.replace(/[^a-z0-9]/gi,'_'); }
+
+    async function toggleGoldPainel(jid) {
+      const safe   = idSafe(jid);
+      const painel = $(`gold-painel-${safe}`);
+      if (!painel) return;
+
+      if (painel.classList.contains('hidden')) {
+        painel.classList.remove('hidden');
+        goldPainelAberto.add(jid);
+        await carregarGoldRanking(jid);
+      } else {
+        painel.classList.add('hidden');
+        goldPainelAberto.delete(jid);
+      }
+    }
+
+    async function carregarGoldRanking(jid) {
+      const safe    = idSafe(jid);
+      const loading = $(`gold-loading-${safe}`);
+      const lista   = $(`gold-rank-${safe}`);
+      if (!loading || !lista) return;
+
+      loading.style.display = 'flex';
+      lista.innerHTML = '';
+
+      try {
+        const res = await fetch(`${API}/admin/grupo/${encodeURIComponent(jid)}/gold-ranking`, {
+          headers: adminHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const { ranking } = await res.json();
+
+        loading.style.display = 'none';
+
+        if (!ranking || !ranking.length) {
+          lista.innerHTML = '<div class="dash-vazio">Nenhum membro com gold neste grupo.</div>';
+          return;
+        }
+
+        lista.innerHTML = ranking.map((m, i) => {
+          const posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : '';
+          return `
+          <div class="gold-rank-item">
+            <span class="gold-rank-pos ${posClass}">${i+1}</span>
+            <span class="gold-rank-nome">${escapeHtml(m.nome || m.idWhatsApp?.split('@')[0] || '—')}</span>
+            <span class="gold-rank-val">🪙 ${formatNum(m.gold)}</span>
+          </div>`;
+        }).join('');
+      } catch {
+        loading.style.display = 'none';
+        lista.innerHTML = '<div class="estado-erro" style="font-size:.8rem;padding:.5rem .75rem;">Erro ao carregar ranking.</div>';
+      }
+    }
+
+    async function acaoGoldGrupo(jid, op) {
+      const safe = idSafe(jid);
+
+      if (op === 'reset-grupo') {
+        abrirModal(
+          'Zerar Gold do Grupo',
+          `Isso vai zerar o gold de TODOS os membros de "${nomeGrupoPorJid(jid)}". Não pode ser desfeito!`,
+          async () => {
+            try {
+              const res = await fetch(`${API}/admin/grupo/${encodeURIComponent(jid)}/gold/reset`, {
+                method: 'DELETE', headers: adminHeaders()
+              });
+              if (!res.ok) throw new Error();
+              toast('✅ Gold de todos os membros zerado.');
+              await carregarGoldRanking(jid);
+            } catch {
+              toast('Erro ao zerar gold do grupo.', 'erro');
+            }
+          }
+        );
+        return;
+      }
+
+      const membroInput = $(`gold-membro-${safe}`);
+      const qtyInput    = $(`gold-qty-${safe}`);
+      const membro = membroInput?.value.trim();
+      const valor  = parseInt(qtyInput?.value, 10);
+
+      if (!membro) { toast('Digite o número ou JID do membro.', 'erro'); return; }
+      if (!valor || valor <= 0) { toast('Digite uma quantidade válida.', 'erro'); return; }
+
+      const nomeG  = nomeGrupoPorJid(jid);
+      const titulo = op === 'dar' ? 'Dar Gold' : 'Remover Gold';
+      const texto  = op === 'dar'
+        ? `Dar ${formatNum(valor)} gold para ${membro} em "${nomeG}"?`
+        : `Remover ${formatNum(valor)} gold de ${membro} em "${nomeG}"?`;
+
+      abrirModal(titulo, texto, async () => {
+        try {
+          const jidMembro = membro.includes('@') ? membro : `${membro}@s.whatsapp.net`;
+          const res = await fetch(`${API}/admin/usuario/${encodeURIComponent(jidMembro)}/gold`, {
+            method: 'PATCH',
+            headers: adminHeaders(),
+            body: JSON.stringify({ idGrupo: jid, valor, operacao: op })
+          });
+          if (!res.ok) throw new Error();
+          toast(`✅ Gold ${op === 'dar' ? 'adicionado' : 'removido'} com sucesso.`);
+          if (membroInput) membroInput.value = '';
+          if (qtyInput)    qtyInput.value    = '';
+          await carregarGoldRanking(jid);
+        } catch {
+          toast('Erro ao ajustar gold.', 'erro');
+        }
+      });
     }
 
     async function alternarToggle(btn) {
@@ -941,7 +1389,6 @@
       show('warns-tabela-wrap');
     }
 
-    /* Listener delegado — sobrevive a re-renders da tbody */
     $('warns-tbody').addEventListener('click', e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
@@ -980,7 +1427,7 @@
         toast('Warn removido.');
         carregarWarnUsers();
       } catch {
-        toast('Erro ao remover warn. Tente novamente.', 'erro');
+        toast('Erro ao remover warn.', 'erro');
       }
     }
 
@@ -993,7 +1440,7 @@
         toast('Todos os warns foram zerados.');
         carregarWarnUsers();
       } catch {
-        toast('Erro ao zerar warns. Tente novamente.', 'erro');
+        toast('Erro ao zerar warns.', 'erro');
       }
     }
 
@@ -1008,7 +1455,7 @@
         toast(novoBanido ? '🔴 Usuário banido.' : '✅ Usuário desbanido.');
         carregarWarnUsers();
       } catch {
-        toast('Erro ao alterar ban. Tente novamente.', 'erro');
+        toast('Erro ao alterar ban.', 'erro');
       }
     }
 
@@ -1046,8 +1493,8 @@
       const totalBanidos   = warnsCache.filter(u => u.banido).length;
 
       $('dash-total-grupos').textContent    = totalGrupos;
-      $('dash-total-membros').textContent   = totalMembros.toLocaleString('pt-BR');
-      $('dash-total-xp').textContent        = totalXp.toLocaleString('pt-BR');
+      $('dash-total-membros').textContent   = formatNum(totalMembros);
+      $('dash-total-xp').textContent        = formatNum(totalXp);
       $('dash-total-warns').textContent     = totalWarnUsers;
       $('dash-total-banidos').textContent   = totalBanidos;
       $('dash-grupos-xp-ativo').textContent = `${gruposXpAtivo}/${totalGrupos}`;
@@ -1058,7 +1505,7 @@
           <div class="dash-top-grupo">
             <span class="dash-top-pos">${i + 1}</span>
             <span class="dash-top-nome">${escapeHtml(nomeExibicao(g))}</span>
-            <span class="dash-top-xp">${Number(g.xpTotal || 0).toLocaleString('pt-BR')} XP</span>
+            <span class="dash-top-xp">${formatNum(g.xpTotal || 0)} XP</span>
           </div>`).join('')
         : '<p class="dash-vazio">Nenhum grupo encontrado ainda.</p>';
 
@@ -1069,6 +1516,337 @@
     $('btn-refresh-dashboard').addEventListener('click', () => {
       carregarGrupos();
       carregarWarnUsers();
+    });
+
+    /* ===== USUÁRIOS ===== */
+    let usuarioAtual = null;
+
+    async function buscarUsuario() {
+      const termo = $('usuarios-busca-input').value.trim();
+      if (!termo) { toast('Digite um número ou JID.', 'erro'); return; }
+
+      hide('usuarios-resultado');
+      hide('usuarios-vazio');
+      hide('usuarios-erro');
+      show('usuarios-loading');
+
+      try {
+        const res = await fetch(`${API}/admin/usuario/${encodeURIComponent(termo)}`, {
+          headers: adminHeaders()
+        });
+        if (res.status === 404) {
+          hide('usuarios-loading');
+          show('usuarios-vazio');
+          return;
+        }
+        if (!res.ok) throw new Error();
+        const { usuario } = await res.json();
+        usuarioAtual = usuario;
+        renderUsuario(usuario);
+      } catch {
+        hide('usuarios-loading');
+        show('usuarios-erro');
+      }
+    }
+
+    function renderUsuario(u) {
+      hide('usuarios-loading');
+
+      $('usr-nome').textContent         = u.nome || '(sem nome)';
+      $('usr-jid').textContent          = u.idWhatsApp || '—';
+      $('usr-xp-global').textContent    = formatNum(u.xp    || 0);
+      $('usr-level-global').textContent = u.level || 1;
+      $('usr-gold-global').textContent  = formatNum(u.gold  || 0);
+      $('usr-msgs-global').textContent  = formatNum(u.mensagens || 0);
+
+      const grupos   = u.grupos || [];
+      const listaEl  = $('usr-grupos-lista');
+      const selectEl = $('usr-acao-grupo');
+      const selectOr = $('transfer-grupo-origem');
+
+      if (!grupos.length) {
+        listaEl.innerHTML = '<p class="dash-vazio">Nenhum grupo ativo encontrado.</p>';
+        selectEl.innerHTML  = '<option value="">Nenhum grupo</option>';
+        selectOr.innerHTML  = '<option value="">Nenhum grupo</option>';
+      } else {
+        listaEl.innerHTML = grupos.map(g => `
+          <div class="usr-grupo-item">
+            <span class="usr-grupo-nome">${escapeHtml(g.nomeGrupo || g.idGrupo)}</span>
+            <div class="usr-grupo-tags">
+              <span class="usr-tag gold">🪙 ${formatNum(g.gold || 0)}</span>
+              <span class="usr-tag xp">⚡ ${formatNum(g.xp || 0)} XP</span>
+              <span class="usr-tag lv">Lv ${g.level || 1}</span>
+              ${g.empregoAtual ? `<span class="usr-tag">${escapeHtml(g.empregoAtual)}</span>` : ''}
+            </div>
+          </div>
+        `).join('');
+
+        const optGrupos = grupos.map(g =>
+          `<option value="${escapeHtml(g.idGrupo)}">${escapeHtml(g.nomeGrupo || g.idGrupo)}</option>`
+        ).join('');
+        selectEl.innerHTML = optGrupos;
+        selectOr.innerHTML = optGrupos;
+      }
+
+      show('usuarios-resultado');
+    }
+
+    $('btn-buscar-usuario').addEventListener('click', buscarUsuario);
+    $('usuarios-busca-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') buscarUsuario();
+    });
+
+    $('btn-refresh-usuarios').addEventListener('click', () => {
+      $('usuarios-busca-input').value = '';
+      usuarioAtual = null;
+      hide('usuarios-resultado');
+      hide('usuarios-vazio');
+      hide('usuarios-erro');
+    });
+
+    async function ajustarGold(operacao) {
+      if (!usuarioAtual) return;
+      const jid   = $('usr-acao-grupo').value;
+      const valor = parseInt($('usr-gold-valor').value, 10);
+
+      if (!jid)             { toast('Selecione um grupo.', 'erro'); return; }
+      if (!valor || valor <= 0) { toast('Digite uma quantidade válida.', 'erro'); return; }
+
+      const nomeU = usuarioAtual.nome || usuarioAtual.idWhatsApp;
+      const nomeG = $('usr-acao-grupo').selectedOptions[0]?.text || jid;
+
+      abrirModal(
+        operacao === 'dar' ? 'Dar Gold' : 'Remover Gold',
+        operacao === 'dar'
+          ? `Dar ${formatNum(valor)} gold para ${nomeU} em "${nomeG}"?`
+          : `Remover ${formatNum(valor)} gold de ${nomeU} em "${nomeG}"?`,
+        async () => {
+          try {
+            const res = await fetch(`${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/gold`, {
+              method: 'PATCH',
+              headers: adminHeaders(),
+              body: JSON.stringify({ idGrupo: jid, valor, operacao })
+            });
+            if (!res.ok) throw new Error();
+            toast(`✅ Gold ${operacao === 'dar' ? 'adicionado' : 'removido'} com sucesso.`);
+            buscarUsuario();
+          } catch {
+            toast('Erro ao ajustar gold.', 'erro');
+          }
+        }
+      );
+    }
+
+    $('btn-dar-gold').addEventListener('click',     () => ajustarGold('dar'));
+    $('btn-remover-gold').addEventListener('click', () => ajustarGold('remover'));
+
+    $('btn-resetar-gold-usuario').addEventListener('click', () => {
+      if (!usuarioAtual) return;
+      const nomeU = usuarioAtual.nome || usuarioAtual.idWhatsApp;
+      abrirModal(
+        'Zerar Gold',
+        `Zerar TODO o gold de ${nomeU} em todos os grupos?`,
+        async () => {
+          try {
+            const res = await fetch(`${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/gold/reset`, {
+              method: 'DELETE', headers: adminHeaders()
+            });
+            if (!res.ok) throw new Error();
+            toast('✅ Gold zerado em todos os grupos.');
+            buscarUsuario();
+          } catch {
+            toast('Erro ao zerar gold.', 'erro');
+          }
+        }
+      );
+    });
+
+    $('btn-transferir-gold').addEventListener('click', async () => {
+      if (!usuarioAtual) return;
+      const idGrupoOrigem = $('transfer-grupo-origem').value;
+      const destino       = $('transfer-destino').value.trim();
+      const valor         = parseInt($('transfer-valor').value, 10);
+
+      if (!idGrupoOrigem)       { toast('Selecione o grupo de origem.', 'erro'); return; }
+      if (!destino)             { toast('Digite o número/JID de destino.', 'erro'); return; }
+      if (!valor || valor <= 0) { toast('Digite uma quantidade válida.', 'erro'); return; }
+
+      const jidDestino = destino.includes('@') ? destino : `${destino}@s.whatsapp.net`;
+      const nomeOrigem = usuarioAtual.nome || usuarioAtual.idWhatsApp;
+      const nomeGrupo  = $('transfer-grupo-origem').selectedOptions[0]?.text || idGrupoOrigem;
+
+      abrirModal(
+        'Transferir Gold',
+        `Transferir ${formatNum(valor)} gold de ${nomeOrigem} para ${destino} no grupo "${nomeGrupo}"?`,
+        async () => {
+          try {
+            const res = await fetch(`${API}/admin/gold/transferir`, {
+              method: 'POST',
+              headers: adminHeaders(),
+              body: JSON.stringify({
+                idGrupo: idGrupoOrigem,
+                idOrigem: usuarioAtual.idWhatsApp,
+                idDestino: jidDestino,
+                valor
+              })
+            });
+            if (!res.ok) throw new Error();
+            toast(`✅ ${formatNum(valor)} gold transferido com sucesso.`);
+            $('transfer-destino').value = '';
+            $('transfer-valor').value   = '';
+            buscarUsuario();
+          } catch {
+            toast('Erro ao transferir gold.', 'erro');
+          }
+        }
+      );
+    });
+
+    /* ===== ECONOMIA ===== */
+    let economiaCarregada = false;
+
+    async function carregarEconomia() {
+      if (economiaCarregada) return;
+      hide('economia-conteudo');
+      show('economia-loading');
+
+      try {
+        const res = await fetch(`${API}/admin/economia`, { headers: adminHeaders() });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        $('eco-total-gold').textContent     = formatNum(data.totalGold);
+        $('eco-total-xp').textContent       = formatNum(data.totalXp);
+        $('eco-media-gold').textContent     = formatNum(data.mediaGold);
+        $('eco-total-usuarios').textContent = formatNum(data.totalUsuariosComGold);
+
+        renderEcoRank($('eco-rank-gold'), data.topGold,  'gold', m => `🪙 ${formatNum(m.gold)}`);
+        renderEcoRank($('eco-rank-xp'),  data.topXp,    'xp',   m => `⚡ ${formatNum(m.xp)} XP`);
+        renderEcoRank($('eco-rank-msgs'), data.topMsgs, 'msg',  m => `💬 ${formatNum(m.mensagens)}`);
+
+        hide('economia-loading');
+        show('economia-conteudo');
+        economiaCarregada = true;
+      } catch {
+        hide('economia-loading');
+        $('economia-loading').innerHTML = '<div class="estado-erro">Erro ao carregar economia. <button class="link-btn" onclick="economiaCarregada=false;carregarEconomia()">Tentar novamente</button></div>';
+        $('economia-loading').classList.remove('estado-loading');
+        show('economia-loading');
+      }
+    }
+
+    function renderEcoRank(container, lista, tipo, valorFn) {
+      if (!lista || !lista.length) {
+        container.innerHTML = '<div class="dash-vazio">Sem dados.</div>';
+        return;
+      }
+      container.innerHTML = lista.map((m, i) => {
+        const posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : '';
+        return `
+        <div class="eco-rank-item">
+          <span class="eco-rank-pos ${posClass}">${i+1}</span>
+          <div style="flex:1;overflow:hidden;">
+            <div class="eco-rank-nome">${escapeHtml(m.nome || m.idWhatsApp?.split('@')[0] || '—')}</div>
+            ${m.nomeGrupo ? `<div class="eco-rank-grupo">${escapeHtml(m.nomeGrupo)}</div>` : ''}
+          </div>
+          <span class="eco-rank-val ${tipo}">${valorFn(m)}</span>
+        </div>`;
+      }).join('');
+    }
+
+    $('btn-refresh-economia').addEventListener('click', () => {
+      economiaCarregada = false;
+      carregarEconomia();
+    });
+
+    /* ===== LOGS ===== */
+    let logsCache      = [];
+    let logsPagina     = 1;
+    const LOGS_POR_PAG = 50;
+    let logsLiveTimer  = null;
+
+    async function carregarLogs(pagina = 1) {
+      logsPagina = pagina;
+      hide('logs-lista');
+      hide('logs-vazio');
+      hide('logs-erro');
+      hide('logs-paginacao');
+      show('logs-loading');
+
+      const tipo  = $('logs-tipo-filtro').value;
+      const busca = $('logs-busca').value.trim();
+      const qs    = new URLSearchParams({ pagina, limite: LOGS_POR_PAG });
+      if (tipo)  qs.set('tipo',  tipo);
+      if (busca) qs.set('busca', busca);
+
+      try {
+        const res = await fetch(`${API}/admin/logs?${qs}`, { headers: adminHeaders() });
+        if (!res.ok) throw new Error();
+        const { logs, total } = await res.json();
+        logsCache = logs || [];
+        renderLogs(logsCache, total, pagina);
+      } catch {
+        hide('logs-loading');
+        show('logs-erro');
+      }
+    }
+
+    function renderLogs(logs, total = 0, pagina = 1) {
+      hide('logs-loading');
+      $('logs-contagem').textContent = total ? `(${total})` : '';
+
+      if (!logs.length) {
+        show('logs-vazio');
+        return;
+      }
+
+      const lista = $('logs-lista');
+      lista.innerHTML = logs.map(l => {
+        const tipoClass = `tipo-${l.tipo || 'info'}`;
+        const hora      = l.timestamp
+          ? new Date(l.timestamp).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' })
+          : '—';
+        return `
+        <div class="log-item ${tipoClass}">
+          <span class="log-hora">${hora}</span>
+          <div class="log-corpo">
+            <span class="log-cmd">${escapeHtml(l.comando || l.mensagem || '—')}</span>
+            ${l.detalhe ? `<span class="log-detalhe">${escapeHtml(l.detalhe)}</span>` : ''}
+            <div class="log-meta">
+              ${l.tipo    ? `<span class="log-badge ${l.tipo}">${l.tipo.toUpperCase()}</span>` : ''}
+              ${l.usuario ? `<span class="log-badge">👤 ${escapeHtml(l.usuario)}</span>` : ''}
+              ${l.grupo   ? `<span class="log-badge">👥 ${escapeHtml(nomeGrupoPorJid(l.grupo) || l.grupo)}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+      show('logs-lista');
+
+      // Paginação
+      const totalPags = Math.ceil(total / LOGS_POR_PAG);
+      if (totalPags > 1) {
+        $('logs-pagina-info').textContent = `Pág ${pagina} / ${totalPags}`;
+        $('logs-prev').disabled = pagina <= 1;
+        $('logs-next').disabled = pagina >= totalPags;
+        show('logs-paginacao');
+      }
+    }
+
+    $('btn-refresh-logs').addEventListener('click',  () => carregarLogs(1));
+    $('btn-retry-logs').addEventListener('click',    () => carregarLogs(1));
+    $('logs-tipo-filtro').addEventListener('change', () => carregarLogs(1));
+    $('logs-busca').addEventListener('input',        () => { clearTimeout(logsLiveTimer); setTimeout(() => carregarLogs(1), 400); });
+    $('logs-prev').addEventListener('click', () => carregarLogs(logsPagina - 1));
+    $('logs-next').addEventListener('click', () => carregarLogs(logsPagina + 1));
+
+    $('chk-logs-live').addEventListener('change', e => {
+      if (logsLiveTimer) clearInterval(logsLiveTimer);
+      if (e.target.checked) {
+        logsLiveTimer = setInterval(() => carregarLogs(1), 10000);
+      } else {
+        logsLiveTimer = null;
+      }
     });
 
     /* ===== AUTO-ATUALIZAÇÃO ===== */
@@ -1101,7 +1879,6 @@
       if ($('chk-autosync').checked) aplicarAutosync(true);
     }
 
-    /* Auto-login se já tiver chave na sessão */
     if (adminKey()) {
       hide('tela-login');
       show('painel');
