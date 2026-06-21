@@ -7,10 +7,7 @@
   <link rel="stylesheet" href="admin.css" />
   <style>
     /* ======================================================================
-       EXTENSÕES DESTE ARQUIVO — não dependem de mudanças no admin.css.
-       Cobrem classes novas (dashboard, toolbar de grupos, ações em massa,
-       detalhe de warns por grupo, exportação CSV etc.) e alguns reforços de
-       classes que o admin.css ainda não definia (ex: .sidebar-status).
+       EXTENSÕES — classes novas não cobertas pelo admin.css
        ====================================================================== */
 
     /* login */
@@ -44,10 +41,9 @@
     .dash-card-valor { font-size: 1.55rem; font-weight: 700; color: var(--text); line-height: 1.1; }
     .dash-card-label { font-size: 0.74rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
     .dash-card.accent .dash-card-valor { color: var(--roxo); }
-    .dash-card.mint .dash-card-valor { color: var(--mint); }
-    .dash-card.warn .dash-card-valor { color: var(--amarelo); }
+    .dash-card.mint   .dash-card-valor { color: var(--mint); }
+    .dash-card.warn   .dash-card-valor { color: var(--amarelo); }
     .dash-card.danger .dash-card-valor { color: var(--vermelho); }
-
     .dash-sub-titulo { font-size: 0.92rem; font-weight: 600; color: var(--text); margin: 0.5rem 0 0.75rem; }
     .dash-top-grupo { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.9rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 0.5rem; }
     .dash-top-pos { width: 22px; height: 22px; border-radius: 50%; background: var(--roxo-dim); color: var(--roxo); font-size: 0.74rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -55,7 +51,7 @@
     .dash-top-xp { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
     .dash-vazio { color: var(--muted); font-size: 0.88rem; }
 
-    /* toolbar / busca / ordenação de grupos */
+    /* toolbar grupos */
     .grupos-toolbar { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1rem; }
     .grupos-toolbar .busca-input { flex: 1; min-width: 180px; margin-bottom: 0; }
     .sort-select { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); padding: 0.55rem 0.75rem; font-size: 0.85rem; cursor: pointer; outline: none; }
@@ -78,10 +74,11 @@
     .btn-copiar-jid { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.7rem; padding: 0; margin-left: 0.45rem; text-decoration: underline; }
     .btn-copiar-jid:hover { color: var(--roxo); }
 
+    /* modal renomear */
     .modal-jid-ref { font-family: 'Courier New', monospace; font-size: 0.74rem; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; margin-bottom: 1rem; word-break: break-all; }
     .modal-actions-btn-auto { width: auto; }
 
-    /* mensagens — preview e contador */
+    /* mensagens — contador e preview */
     .char-counter { align-self: flex-end; font-size: 0.72rem; color: var(--muted); }
     .msgs-preview { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
     .preview-titulo { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.5rem; }
@@ -93,7 +90,6 @@
     .warns-toolbar .busca-input { flex: 1; min-width: 180px; margin-bottom: 0; }
     .btn-csv { background: var(--mint-dim); border: 1px solid rgba(0,255,176,0.3); color: var(--mint); border-radius: var(--radius-sm); padding: 0.55rem 0.9rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .btn-csv:hover { opacity: .85; }
-
     .warn-detalhe-row td { background: var(--surface2); padding: 0.75rem 1rem !important; }
     .warn-grupos-detalhe { display: flex; flex-direction: column; gap: 0.35rem; }
     .warn-grupo-linha { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--muted2); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.6rem; }
@@ -140,18 +136,10 @@
         <button class="sidebar-close" id="btn-fechar-sidebar" aria-label="Fechar menu">✕</button>
       </div>
       <nav class="sidebar-nav">
-        <a href="#dashboard" class="nav-item active" data-aba="dashboard">
-          <span class="nav-icon">📊</span> Dashboard
-        </a>
-        <a href="#grupos" class="nav-item" data-aba="grupos">
-          <span class="nav-icon">👥</span> Grupos
-        </a>
-        <a href="#mensagens" class="nav-item" data-aba="mensagens">
-          <span class="nav-icon">✉️</span> Mensagens
-        </a>
-        <a href="#warns" class="nav-item" data-aba="warns">
-          <span class="nav-icon">⚠️</span> Warns / Bans
-        </a>
+        <a href="#dashboard" class="nav-item active" data-aba="dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="#grupos"    class="nav-item" data-aba="grupos">   <span class="nav-icon">👥</span> Grupos</a>
+        <a href="#mensagens" class="nav-item" data-aba="mensagens"><span class="nav-icon">✉️</span> Mensagens</a>
+        <a href="#warns"     class="nav-item" data-aba="warns">    <span class="nav-icon">⚠️</span> Warns / Bans</a>
       </nav>
       <div class="sidebar-footer">
         <span class="sidebar-status" id="sidebar-status">
@@ -192,11 +180,9 @@
           <h2>Visão Geral</h2>
           <button class="btn-icon" id="btn-refresh-dashboard" title="Recarregar">↺</button>
         </div>
-
         <div id="dash-loading" class="estado-loading">
           <div class="spinner"></div> Carregando dados...
         </div>
-
         <div id="dash-conteudo" class="hidden">
           <div class="dash-grid">
             <div class="dash-card accent">
@@ -224,7 +210,6 @@
               <span class="dash-card-label">Grupos c/ XP ativo</span>
             </div>
           </div>
-
           <div class="dash-sub-titulo">🏆 Top 5 grupos por XP</div>
           <div id="dash-top-grupos"></div>
         </div>
@@ -261,17 +246,10 @@
           <button class="bulk-btn" data-bulk="boasVindas:false">Desativar Boas-Vindas em todos</button>
         </div>
 
-        <div id="grupos-loading" class="estado-loading">
-          <div class="spinner"></div> Carregando grupos...
-        </div>
-
-        <div id="grupos-erro" class="estado-erro hidden">
-          Erro ao carregar grupos. <button class="link-btn" id="btn-retry-grupos">Tentar novamente</button>
-        </div>
-
-        <div id="grupos-vazio" class="estado-vazio hidden"></div>
-
-        <div id="grupos-lista" class="grupos-lista hidden"></div>
+        <div id="grupos-loading" class="estado-loading"><div class="spinner"></div> Carregando grupos...</div>
+        <div id="grupos-erro"    class="estado-erro hidden">Erro ao carregar grupos. <button class="link-btn" id="btn-retry-grupos">Tentar novamente</button></div>
+        <div id="grupos-vazio"   class="estado-vazio hidden"></div>
+        <div id="grupos-lista"   class="grupos-lista hidden"></div>
       </section>
 
       <!-- ===== ABA: MENSAGENS ===== -->
@@ -279,38 +257,29 @@
         <div class="secao-header">
           <h2>Editor de Mensagens</h2>
         </div>
-
-        <div id="msgs-loading" class="estado-loading">
-          <div class="spinner"></div> Carregando grupos...
-        </div>
-
-        <div id="msgs-vazio" class="estado-vazio hidden">Nenhum grupo encontrado.</div>
-
-        <div id="msgs-editor" class="msgs-editor hidden">
+        <div id="msgs-loading" class="estado-loading"><div class="spinner"></div> Carregando grupos...</div>
+        <div id="msgs-vazio"   class="estado-vazio hidden">Nenhum grupo encontrado.</div>
+        <div id="msgs-editor"  class="msgs-editor hidden">
           <div class="field-group">
             <label>Grupo selecionado</label>
             <select id="msgs-select-grupo" class="select-grupo"></select>
           </div>
-
           <div class="field-group">
             <label for="msg-boas-vindas">Mensagem de Boas-Vindas</label>
             <p class="field-hint">Use <code>{nome}</code> para o nome do usuário e <code>{grupo}</code> para o nome do grupo.</p>
             <textarea id="msg-boas-vindas" rows="5" maxlength="5000" placeholder="Bem-vindo(a) ao {grupo}, {nome}! 🎉"></textarea>
             <span class="char-counter" id="contador-boas-vindas">0 / 5000</span>
           </div>
-
           <div class="field-group">
             <label for="msg-regras">Regras do Grupo</label>
             <textarea id="msg-regras" rows="7" maxlength="5000" placeholder="1. Respeite todos os membros&#10;2. Sem spam&#10;3. ..."></textarea>
             <span class="char-counter" id="contador-regras">0 / 5000</span>
           </div>
-
           <div class="msgs-actions">
             <span id="msgs-feedback" class="msgs-feedback hidden"></span>
             <button class="btn-ghost" id="btn-preview-msgs">Pré-visualizar</button>
             <button class="btn-primary" id="btn-salvar-msgs" style="width:auto;">Salvar Mensagens</button>
           </div>
-
           <div id="msgs-preview" class="msgs-preview hidden">
             <div class="preview-titulo">Pré-visualização — Boas-Vindas</div>
             <div class="preview-bolha" id="preview-boas-vindas"></div>
@@ -326,24 +295,13 @@
           <h2>Controle de Warns / Bans <span class="contagem-badge" id="warns-contagem"></span></h2>
           <button class="btn-icon" id="btn-refresh-warns" title="Recarregar">↺</button>
         </div>
-
         <div class="warns-toolbar">
           <input type="text" id="warns-busca" class="busca-input" placeholder="Buscar por nome ou número..." />
           <button class="btn-csv" id="btn-export-csv">⬇ Exportar CSV</button>
         </div>
-
-        <div id="warns-loading" class="estado-loading">
-          <div class="spinner"></div> Carregando usuários...
-        </div>
-
-        <div id="warns-vazio" class="estado-vazio hidden">
-          ✅ Nenhum usuário com warns ou banido no momento.
-        </div>
-
-        <div id="warns-erro" class="estado-erro hidden">
-          Erro ao carregar. <button class="link-btn" id="btn-retry-warns">Tentar novamente</button>
-        </div>
-
+        <div id="warns-loading" class="estado-loading"><div class="spinner"></div> Carregando usuários...</div>
+        <div id="warns-vazio"   class="estado-vazio hidden">✅ Nenhum usuário com warns ou banido no momento.</div>
+        <div id="warns-erro"    class="estado-erro hidden">Erro ao carregar. <button class="link-btn" id="btn-retry-warns">Tentar novamente</button></div>
         <div id="warns-tabela-wrap" class="tabela-wrap hidden">
           <table class="tabela-warns">
             <thead>
@@ -367,9 +325,9 @@
   <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal-box">
       <h3 id="modal-titulo">Confirmar ação</h3>
-      <p id="modal-msg">Tem certeza?</p>
+      <p  id="modal-msg">Tem certeza?</p>
       <div class="modal-actions">
-        <button class="btn-ghost" id="modal-cancelar">Cancelar</button>
+        <button class="btn-ghost"  id="modal-cancelar">Cancelar</button>
         <button class="btn-danger" id="modal-confirmar">Confirmar</button>
       </div>
     </div>
@@ -385,7 +343,7 @@
         <input type="text" id="renomear-input" placeholder="Ex: Galera do Trampo" maxlength="80" />
       </div>
       <div class="modal-actions">
-        <button class="btn-ghost" id="renomear-cancelar">Cancelar</button>
+        <button class="btn-ghost"   id="renomear-cancelar">Cancelar</button>
         <button class="btn-primary modal-actions-btn-auto" id="renomear-salvar">Salvar nome</button>
       </div>
     </div>
@@ -403,15 +361,12 @@
 
     function escapeHtml(str) {
       return String(str ?? '').replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
       }[c]));
     }
 
-    function adminKey() { return sessionStorage.getItem('piro_admin_key'); }
-
-    function adminHeaders() {
-      return { 'x-admin-key': adminKey(), 'Content-Type': 'application/json' };
-    }
+    function adminKey()     { return sessionStorage.getItem('piro_admin_key'); }
+    function adminHeaders() { return { 'x-admin-key': adminKey(), 'Content-Type': 'application/json' }; }
 
     let toastTimer;
     function toast(msg, tipo = 'ok') {
@@ -428,14 +383,7 @@
       return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
 
-    // ── Nomes customizados de grupo ──────────────────────────────────────
-    // O CarteiraGrupo não guarda o nome real do grupo do WhatsApp (só o JID),
-    // então o backend devolve um fallback feio tipo "Grupo 1203639xxxx…".
-    // Aqui guardamos um nome de exibição definido manualmente pelo admin.
-    // Sempre salvamos no localStorage (funciona na hora, sem depender do
-    // backend) e tentamos também persistir via PATCH /admin/grupo/:jid/nome —
-    // essa rota ainda PRECISA ser criada no backend para o nome valer pra
-    // qualquer admin/navegador; até lá, fica só local neste navegador.
+    /* ── Nomes customizados (localStorage como cache local) ── */
     function nomesCustomLocais() {
       try { return JSON.parse(localStorage.getItem('piro_nomes_grupo') || '{}'); }
       catch { return {}; }
@@ -446,8 +394,9 @@
       localStorage.setItem('piro_nomes_grupo', JSON.stringify(atual));
     }
     function nomeExibicao(grupo) {
-      const custom = nomesCustomLocais()[grupo.idGrupo];
-      return custom || grupo.nomeCustom || grupo.nome || 'Grupo sem nome';
+      // Prioridade: 1) nomeCustom do backend, 2) cache local, 3) fallback
+      const local = nomesCustomLocais()[grupo.idGrupo];
+      return grupo.nomeCustom || local || grupo.nome || 'Grupo sem nome';
     }
     function nomeGrupoPorJid(jid) {
       const g = gruposCache.find(x => x.idGrupo === jid);
@@ -468,11 +417,8 @@
       $('btn-login').disabled = true;
       $('btn-login').textContent = 'Verificando...';
       hide('login-erro');
-
       try {
-        const res = await fetch(`${API}/admin/verify`, {
-          headers: { 'x-admin-key': chave }
-        });
+        const res = await fetch(`${API}/admin/verify`, { headers: { 'x-admin-key': chave } });
         if (!res.ok) throw new Error();
         sessionStorage.setItem('piro_admin_key', chave);
         hide('tela-login');
@@ -486,9 +432,7 @@
       }
     });
 
-    $('admin-key').addEventListener('keydown', e => {
-      if (e.key === 'Enter') $('btn-login').click();
-    });
+    $('admin-key').addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-login').click(); });
 
     /* ===== LOGOUT ===== */
     $('btn-logout').addEventListener('click', () => {
@@ -514,7 +458,7 @@
 
     /* ===== NAVEGAÇÃO ===== */
     const ABAS_VALIDAS = ['dashboard', 'grupos', 'mensagens', 'warns'];
-    const titulosAbas = { dashboard: 'Dashboard', grupos: 'Grupos', mensagens: 'Mensagens', warns: 'Warns / Bans' };
+    const titulosAbas  = { dashboard: 'Dashboard', grupos: 'Grupos', mensagens: 'Mensagens', warns: 'Warns / Bans' };
 
     function ativarAba(aba) {
       if (!ABAS_VALIDAS.includes(aba)) aba = 'dashboard';
@@ -536,30 +480,30 @@
       el.addEventListener('click', () => ativarAba(el.dataset.aba));
     });
 
-    /* ===== MODAL DE CONFIRMAÇÃO (genérico — reusado por warns e ações em massa) ===== */
+    /* ===== MODAL DE CONFIRMAÇÃO ===== */
     let modalCallback = null;
 
     function abrirModal(titulo, msg, cb) {
       $('modal-titulo').textContent = titulo;
-      $('modal-msg').textContent = msg;
+      $('modal-msg').textContent    = msg;
       modalCallback = cb;
       show('modal-overlay');
     }
 
-    $('modal-cancelar').addEventListener('click', () => hide('modal-overlay'));
+    $('modal-cancelar').addEventListener('click',  () => hide('modal-overlay'));
     $('modal-confirmar').addEventListener('click', () => {
       hide('modal-overlay');
       if (modalCallback) modalCallback();
     });
     $('modal-overlay').addEventListener('click', e => { if (e.target.id === 'modal-overlay') hide('modal-overlay'); });
 
-    /* ===== MODAL DE RENOMEAR GRUPO ===== */
+    /* ===== MODAL RENOMEAR GRUPO ===== */
     let renomearJidAtual = null;
 
     function abrirModalRenomear(jid, nomeAtual) {
       renomearJidAtual = jid;
       $('renomear-jid-ref').textContent = jid;
-      $('renomear-input').value = nomeAtual === jid ? '' : nomeAtual;
+      $('renomear-input').value = (nomeAtual === jid || nomeAtual === 'Grupo sem nome') ? '' : nomeAtual;
       show('modal-renomear-overlay');
       setTimeout(() => $('renomear-input').focus(), 50);
     }
@@ -570,7 +514,9 @@
     }
 
     $('renomear-cancelar').addEventListener('click', fecharModalRenomear);
-    $('modal-renomear-overlay').addEventListener('click', e => { if (e.target.id === 'modal-renomear-overlay') fecharModalRenomear(); });
+    $('modal-renomear-overlay').addEventListener('click', e => {
+      if (e.target.id === 'modal-renomear-overlay') fecharModalRenomear();
+    });
     $('renomear-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('renomear-salvar').click(); });
 
     $('renomear-salvar').addEventListener('click', async () => {
@@ -581,40 +527,41 @@
       const jid = renomearJidAtual;
       $('renomear-salvar').disabled = true;
 
-      // salva localmente sempre — funciona já de cara, independente do backend
+      // Salva localmente como cache imediato
       salvarNomeCustomLocal(jid, novoNome);
-      const grupo = gruposCache.find(g => g.idGrupo === jid);
-      if (grupo) grupo.nomeCustom = novoNome;
 
-      // tenta também persistir no backend, se o endpoint existir
-      // (rota sugerida: PATCH /api/admin/grupo/:jid/nome — quando o backend
-      // tiver esse campo, o nome passa a valer pra qualquer admin; se a rota
-      // não existir ainda, o catch só ignora e o localStorage cobre o resto)
+      // Persiste no backend — CarteiraGrupo.js já tem nomeCustom no schema
       try {
-        await fetch(`${API}/admin/grupo/${encodeURIComponent(jid)}/nome`, {
+        const res = await fetch(`${API}/admin/grupo/${encodeURIComponent(jid)}/nome`, {
           method: 'PATCH',
           headers: adminHeaders(),
           body: JSON.stringify({ nome: novoNome })
         });
-      } catch { /* sem problema — fallback local já cobre */ }
+        if (!res.ok) throw new Error();
+        toast('Nome salvo no banco de dados!');
+      } catch {
+        toast('Nome salvo localmente (erro ao persistir no backend).', 'erro');
+      }
+
+      const grupo = gruposCache.find(g => g.idGrupo === jid);
+      if (grupo) grupo.nomeCustom = novoNome;
 
       atualizarListaGrupos();
       popularSelectMensagens(gruposCache);
       atualizarDashboard();
       fecharModalRenomear();
       $('renomear-salvar').disabled = false;
-      toast('Nome do grupo atualizado!');
     });
 
     /* ===== GRUPOS ===== */
-    let gruposCache = [];
+    let gruposCache    = [];
     let grupoSortAtual = 'xp';
 
     function ordenarGrupos(lista, modo) {
       const copia = [...lista];
-      if (modo === 'membros') copia.sort((a, b) => (b.membros || 0) - (a.membros || 0));
-      else if (modo === 'nome') copia.sort((a, b) => nomeExibicao(a).localeCompare(nomeExibicao(b), 'pt-BR'));
-      else copia.sort((a, b) => (b.xpTotal || 0) - (a.xpTotal || 0));
+      if      (modo === 'membros') copia.sort((a, b) => (b.membros || 0) - (a.membros || 0));
+      else if (modo === 'nome')    copia.sort((a, b) => nomeExibicao(a).localeCompare(nomeExibicao(b), 'pt-BR'));
+      else                         copia.sort((a, b) => (b.xpTotal || 0) - (a.xpTotal || 0));
       return copia;
     }
 
@@ -623,7 +570,8 @@
       let lista = gruposCache;
       if (termo) {
         lista = lista.filter(g =>
-          nomeExibicao(g).toLowerCase().includes(termo) || g.idGrupo.toLowerCase().includes(termo)
+          nomeExibicao(g).toLowerCase().includes(termo) ||
+          g.idGrupo.toLowerCase().includes(termo)
         );
       }
       return { lista: ordenarGrupos(lista, grupoSortAtual), comFiltro: !!termo };
@@ -639,7 +587,6 @@
       hide('grupos-lista');
       hide('grupos-vazio');
       show('grupos-loading');
-
       try {
         const res = await fetch(`${API}/grupos`, { headers: adminHeaders() });
         if (!res.ok) throw new Error();
@@ -671,11 +618,11 @@
 
       const lista = $('grupos-lista');
       lista.innerHTML = grupos.map(g => {
-        const nomeReal = nomeExibicao(g);
-        const nomeEsc  = escapeHtml(nomeReal);
-        const jidEsc   = escapeHtml(g.idGrupo);
+        const nomeReal   = nomeExibicao(g);
+        const nomeEsc    = escapeHtml(nomeReal);
+        const jidEsc     = escapeHtml(g.idGrupo);
         const membrosTxt = g.membros != null ? `${g.membros} membro${g.membros === 1 ? '' : 's'}` : '';
-        const xpTxt = g.xpTotal != null ? `${Number(g.xpTotal).toLocaleString('pt-BR')} XP total` : '';
+        const xpTxt      = g.xpTotal != null ? `${Number(g.xpTotal).toLocaleString('pt-BR')} XP total` : '';
 
         return `
         <div class="grupo-card" data-jid="${jidEsc}">
@@ -710,18 +657,15 @@
                 aria-label="Toggle Boas-Vindas"></button>
             </label>
           </div>
-        </div>
-      `;
+        </div>`;
       }).join('');
 
       lista.querySelectorAll('.toggle').forEach(btn => {
         btn.addEventListener('click', () => alternarToggle(btn));
       });
-
       lista.querySelectorAll('.btn-renomear').forEach(btn => {
         btn.addEventListener('click', () => abrirModalRenomear(btn.dataset.jid, btn.dataset.nome));
       });
-
       lista.querySelectorAll('.btn-copiar-jid').forEach(btn => {
         btn.addEventListener('click', async () => {
           try {
@@ -737,8 +681,8 @@
     }
 
     async function alternarToggle(btn) {
-      const jid = btn.dataset.jid;
-      const campo = btn.dataset.campo;
+      const jid      = btn.dataset.jid;
+      const campo    = btn.dataset.campo;
       const novoValor = !btn.classList.contains('on');
 
       btn.disabled = true;
@@ -766,14 +710,14 @@
     }
 
     $('btn-refresh-grupos').addEventListener('click', carregarGrupos);
-    $('btn-retry-grupos').addEventListener('click', carregarGrupos);
+    $('btn-retry-grupos').addEventListener('click',   carregarGrupos);
     $('grupos-busca').addEventListener('input', atualizarListaGrupos);
     $('grupos-sort').addEventListener('change', () => {
       grupoSortAtual = $('grupos-sort').value;
       atualizarListaGrupos();
     });
 
-    /* ===== AÇÕES EM MASSA (grupos) ===== */
+    /* ===== AÇÕES EM MASSA ===== */
     document.querySelectorAll('.bulk-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const [campo, valorStr] = btn.dataset.bulk.split(':');
@@ -809,9 +753,9 @@
       atualizarListaGrupos();
       atualizarDashboard();
 
-      if (falhou === 0) toast(`✅ ${ok} grupo(s) atualizado(s) com sucesso.`);
-      else if (ok === 0) toast(`❌ Falha ao atualizar todos os ${falhou} grupo(s).`, 'erro');
-      else toast(`${ok} atualizado(s), ${falhou} falharam.`, 'erro');
+      if      (falhou === 0) toast(`✅ ${ok} grupo(s) atualizado(s) com sucesso.`);
+      else if (ok === 0)     toast(`❌ Falha ao atualizar todos os ${falhou} grupo(s).`, 'erro');
+      else                   toast(`${ok} atualizado(s), ${falhou} falharam.`, 'erro');
     }
 
     /* ===== MENSAGENS ===== */
@@ -820,18 +764,13 @@
       const sel = $('msgs-select-grupo');
       const valorAnterior = sel.value;
 
-      if (!grupos.length) {
-        hide('msgs-editor');
-        show('msgs-vazio');
-        return;
-      }
+      if (!grupos.length) { hide('msgs-editor'); show('msgs-vazio'); return; }
       hide('msgs-vazio');
 
       sel.innerHTML = grupos.map(g =>
         `<option value="${escapeHtml(g.idGrupo)}">${escapeHtml(nomeExibicao(g))}</option>`
       ).join('');
 
-      // mantém o grupo selecionado anteriormente, se ainda existir na lista
       const aindaExiste = grupos.some(g => g.idGrupo === valorAnterior);
       sel.value = aindaExiste ? valorAnterior : grupos[0].idGrupo;
 
@@ -842,7 +781,7 @@
     function preencherMensagens(jid) {
       const grupo = gruposCache.find(g => g.idGrupo === jid);
       $('msg-boas-vindas').value = grupo?.mensagens?.boasVindas || '';
-      $('msg-regras').value      = grupo?.mensagens?.regras || '';
+      $('msg-regras').value      = grupo?.mensagens?.regras     || '';
       atualizarContadores();
       hide('msgs-preview');
     }
@@ -854,31 +793,26 @@
 
     $('msg-boas-vindas').addEventListener('input', atualizarContadores);
     $('msg-regras').addEventListener('input', atualizarContadores);
-
     $('msgs-select-grupo').addEventListener('change', e => preencherMensagens(e.target.value));
 
     $('btn-preview-msgs').addEventListener('click', () => {
-      const jid = $('msgs-select-grupo').value;
-      const grupo = gruposCache.find(g => g.idGrupo === jid);
+      const jid       = $('msgs-select-grupo').value;
+      const grupo     = gruposCache.find(g => g.idGrupo === jid);
       const nomeGrupo = grupo ? nomeExibicao(grupo) : 'Grupo';
 
-      const boasVindas = $('msg-boas-vindas').value
-        .replace(/\{nome\}/gi, 'João')
-        .replace(/\{grupo\}/gi, nomeGrupo);
-      const regras = $('msg-regras').value
-        .replace(/\{nome\}/gi, 'João')
-        .replace(/\{grupo\}/gi, nomeGrupo);
+      const boasVindas = $('msg-boas-vindas').value.replace(/\{nome\}/gi, 'João').replace(/\{grupo\}/gi, nomeGrupo);
+      const regras     = $('msg-regras').value.replace(/\{nome\}/gi, 'João').replace(/\{grupo\}/gi, nomeGrupo);
 
       $('preview-boas-vindas').textContent = boasVindas || '(mensagem vazia)';
-      $('preview-regras').textContent = regras || '(mensagem vazia)';
+      $('preview-regras').textContent      = regras     || '(mensagem vazia)';
       show('msgs-preview');
     });
 
     $('btn-salvar-msgs').addEventListener('click', async () => {
-      const jid = $('msgs-select-grupo').value;
+      const jid        = $('msgs-select-grupo').value;
       const boasVindas = $('msg-boas-vindas').value.trim();
-      const regras = $('msg-regras').value.trim();
-      const feedback = $('msgs-feedback');
+      const regras     = $('msg-regras').value.trim();
+      const feedback   = $('msgs-feedback');
 
       $('btn-salvar-msgs').disabled = true;
       hide('msgs-feedback');
@@ -890,17 +824,15 @@
           body: JSON.stringify({ boasVindas, regras })
         });
         if (!res.ok) throw new Error();
-
         const grupo = gruposCache.find(g => g.idGrupo === jid);
         if (grupo) grupo.mensagens = { boasVindas, regras };
-
         feedback.textContent = '✅ Salvo com sucesso!';
-        feedback.className = 'msgs-feedback ok';
+        feedback.className   = 'msgs-feedback ok';
         show('msgs-feedback');
         toast('Mensagens salvas com sucesso!');
       } catch {
         feedback.textContent = '❌ Erro ao salvar. Tente novamente.';
-        feedback.className = 'msgs-feedback erro';
+        feedback.className   = 'msgs-feedback erro';
         show('msgs-feedback');
         toast('Erro ao salvar mensagens.', 'erro');
       } finally {
@@ -917,7 +849,6 @@
       hide('warns-vazio');
       hide('warns-erro');
       show('warns-loading');
-
       try {
         const res = await fetch(`${API}/admin/usuarios`, { headers: adminHeaders() });
         if (!res.ok) throw new Error();
@@ -959,29 +890,34 @@
 
       const tbody = $('warns-tbody');
       tbody.innerHTML = usuarios.map(u => {
-        const banido    = u.banido ? '<span class="badge-ban">Banido</span>' : '<span class="badge-ok">Ativo</span>';
-        const warns     = u.warns ?? 0;
-        const maxWarns  = u.maxWarns ?? 3;
-        const idEsc     = escapeHtml(u.idWhatsApp);
-        const nomeEsc   = escapeHtml(u.nome || u.idWhatsApp || '—');
-        const numeroEsc = escapeHtml(u.telefone || u.idWhatsApp?.split('@')[0] || '—');
-        const grupos    = Object.entries(u.warnsPorGrupo || {}).filter(([, q]) => Number(q) > 0);
+        const banido   = u.banido
+          ? '<span class="badge-ban">Banido</span>'
+          : '<span class="badge-ok">Ativo</span>';
+        const warns    = u.warns    ?? 0;
+        const maxWarns = u.maxWarns ?? 3;
+        const idEsc    = escapeHtml(u.idWhatsApp);
+        const nomeEsc  = escapeHtml(u.nome || u.idWhatsApp || '—');
+        const numEsc   = escapeHtml(u.telefone || u.idWhatsApp?.split('@')[0] || '—');
+        const grupos   = Object.entries(u.warnsPorGrupo || {}).filter(([, q]) => Number(q) > 0);
 
         return `
           <tr>
-            <td><span class="user-nome">${escapeHtml(u.nome || '—')}</span></td>
-            <td><span class="user-num">+${numeroEsc}</span></td>
+            <td><span class="user-nome">${nomeEsc}</span></td>
+            <td><span class="user-num">+${numEsc}</span></td>
             <td><span class="warns-count ${warns >= maxWarns ? 'full' : ''}">${warns}/${maxWarns}</span></td>
             <td>${banido}</td>
             <td class="acoes-cell">
               ${grupos.length > 1
                 ? `<button class="btn-acao" data-action="detalhar" data-id="${idEsc}">Detalhar (${grupos.length})</button>`
                 : ''}
-              <button class="btn-acao" data-action="remover-warn" data-id="${idEsc}" data-nome="${nomeEsc}" data-grupo="${grupos[0] ? escapeHtml(grupos[0][0]) : ''}">−1 warn</button>
-              <button class="btn-acao" data-action="zerar-warns" data-id="${idEsc}" data-nome="${nomeEsc}">Zerar tudo</button>
+              <button class="btn-acao" data-action="remover-warn"
+                data-id="${idEsc}" data-nome="${nomeEsc}"
+                data-grupo="${grupos[0] ? escapeHtml(grupos[0][0]) : ''}">−1 warn</button>
+              <button class="btn-acao" data-action="zerar-warns"
+                data-id="${idEsc}" data-nome="${nomeEsc}">Zerar tudo</button>
               <button class="btn-acao ${u.banido ? 'btn-acao--unban' : 'btn-acao--ban'}"
-                data-action="toggle-ban" data-id="${idEsc}" data-nome="${nomeEsc}" data-banido="${!!u.banido}"
-                title="Requer rota de ban no backend (PATCH /admin/usuario/:id/ban)">
+                data-action="toggle-ban"
+                data-id="${idEsc}" data-nome="${nomeEsc}" data-banido="${!!u.banido}">
                 ${u.banido ? 'Desbanir' : 'Banir'}
               </button>
             </td>
@@ -993,19 +929,19 @@
                   <div class="warn-grupo-linha">
                     <span class="wg-nome">${escapeHtml(nomeGrupoPorJid(jid))}</span>
                     <span class="wg-qtd">${qtd}</span>
-                    <button class="btn-remover-1" data-action="remover-warn" data-id="${idEsc}" data-nome="${nomeEsc}" data-grupo="${escapeHtml(jid)}">−1</button>
-                  </div>
-                `).join('')}
+                    <button class="btn-remover-1" data-action="remover-warn"
+                      data-id="${idEsc}" data-nome="${nomeEsc}"
+                      data-grupo="${escapeHtml(jid)}">−1</button>
+                  </div>`).join('')}
               </div>
             </td>
-          </tr>
-        `;
+          </tr>`;
       }).join('');
 
       show('warns-tabela-wrap');
     }
 
-    // Listener único e delegado — sobrevive a re-renders da tbody
+    /* Listener delegado — sobrevive a re-renders da tbody */
     $('warns-tbody').addEventListener('click', e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
@@ -1014,13 +950,16 @@
       if (action === 'detalhar') {
         const row = document.querySelector(`tr.warn-detalhe-row[data-detalhe-de="${CSS.escape(id)}"]`);
         if (row) row.classList.toggle('hidden');
+
       } else if (action === 'remover-warn') {
         const texto = grupo
           ? `Remover 1 warn de ${nome} em ${escapeHtml(nomeGrupoPorJid(grupo))}?`
           : `Remover 1 warn de ${nome}?`;
         abrirModal('Remover warn', texto, () => removerWarn(id, grupo));
+
       } else if (action === 'zerar-warns') {
         abrirModal('Zerar warns', `Zerar TODOS os warns de ${nome} em todos os grupos?`, () => zerarWarns(id));
+
       } else if (action === 'toggle-ban') {
         const banidoAtual = btn.dataset.banido === 'true';
         const titulo = banidoAtual ? 'Desbanir usuário' : 'Banir usuário';
@@ -1033,10 +972,9 @@
 
     async function removerWarn(idWhatsApp, grupo) {
       try {
-        const qs = grupo ? `?grupo=${encodeURIComponent(grupo)}` : '';
+        const qs  = grupo ? `?grupo=${encodeURIComponent(grupo)}` : '';
         const res = await fetch(`${API}/admin/warn/${encodeURIComponent(idWhatsApp)}${qs}`, {
-          method: 'DELETE',
-          headers: adminHeaders()
+          method: 'DELETE', headers: adminHeaders()
         });
         if (!res.ok) throw new Error();
         toast('Warn removido.');
@@ -1048,10 +986,8 @@
 
     async function zerarWarns(idWhatsApp) {
       try {
-        // sem ?grupo= a rota DELETE limpa todos os warns do usuário de uma vez
         const res = await fetch(`${API}/admin/warn/${encodeURIComponent(idWhatsApp)}`, {
-          method: 'DELETE',
-          headers: adminHeaders()
+          method: 'DELETE', headers: adminHeaders()
         });
         if (!res.ok) throw new Error();
         toast('Todos os warns foram zerados.');
@@ -1069,27 +1005,28 @@
           body: JSON.stringify({ banido: novoBanido })
         });
         if (!res.ok) throw new Error();
-        toast(novoBanido ? 'Usuário banido.' : 'Usuário desbanido.');
+        toast(novoBanido ? '🔴 Usuário banido.' : '✅ Usuário desbanido.');
         carregarWarnUsers();
       } catch {
-        toast('Banir/desbanir ainda não está disponível — falta essa rota no backend.', 'erro');
+        toast('Erro ao alterar ban. Tente novamente.', 'erro');
       }
     }
 
     $('btn-refresh-warns').addEventListener('click', carregarWarnUsers);
-    $('btn-retry-warns').addEventListener('click', carregarWarnUsers);
+    $('btn-retry-warns').addEventListener('click',   carregarWarnUsers);
     $('warns-busca').addEventListener('input', renderWarnUsersFiltrado);
 
     $('btn-export-csv').addEventListener('click', () => {
       if (!warnsCache.length) { toast('Nada para exportar ainda.', 'erro'); return; }
       const linhas = [['Nome', 'Telefone', 'idWhatsApp', 'Warns', 'Banido']];
       warnsCache.forEach(u => linhas.push([
-        u.nome || '', u.telefone || '', u.idWhatsApp || '', String(u.warns ?? 0), u.banido ? 'Sim' : 'Não'
+        u.nome || '', u.telefone || '', u.idWhatsApp || '',
+        String(u.warns ?? 0), u.banido ? 'Sim' : 'Não'
       ]));
-      const csv = linhas.map(l => l.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const csv  = linhas.map(l => l.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
       const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
       a.href = url;
       a.download = `warns_piroquinhas_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
@@ -1102,17 +1039,17 @@
     /* ===== DASHBOARD ===== */
     function atualizarDashboard() {
       const totalGrupos    = gruposCache.length;
-      const totalMembros   = gruposCache.reduce((s, g) => s + (g.membros || 0), 0);
-      const totalXp        = gruposCache.reduce((s, g) => s + (g.xpTotal || 0), 0);
+      const totalMembros   = gruposCache.reduce((s, g) => s + (g.membros  || 0), 0);
+      const totalXp        = gruposCache.reduce((s, g) => s + (g.xpTotal  || 0), 0);
       const gruposXpAtivo  = gruposCache.filter(g => g.config?.xpAtivo !== false).length;
       const totalWarnUsers = warnsCache.length;
       const totalBanidos   = warnsCache.filter(u => u.banido).length;
 
-      $('dash-total-grupos').textContent   = totalGrupos;
-      $('dash-total-membros').textContent  = totalMembros.toLocaleString('pt-BR');
-      $('dash-total-xp').textContent       = totalXp.toLocaleString('pt-BR');
-      $('dash-total-warns').textContent    = totalWarnUsers;
-      $('dash-total-banidos').textContent  = totalBanidos;
+      $('dash-total-grupos').textContent    = totalGrupos;
+      $('dash-total-membros').textContent   = totalMembros.toLocaleString('pt-BR');
+      $('dash-total-xp').textContent        = totalXp.toLocaleString('pt-BR');
+      $('dash-total-warns').textContent     = totalWarnUsers;
+      $('dash-total-banidos').textContent   = totalBanidos;
       $('dash-grupos-xp-ativo').textContent = `${gruposXpAtivo}/${totalGrupos}`;
 
       const top5 = ordenarGrupos(gruposCache, 'xp').slice(0, 5);
@@ -1122,8 +1059,7 @@
             <span class="dash-top-pos">${i + 1}</span>
             <span class="dash-top-nome">${escapeHtml(nomeExibicao(g))}</span>
             <span class="dash-top-xp">${Number(g.xpTotal || 0).toLocaleString('pt-BR')} XP</span>
-          </div>
-        `).join('')
+          </div>`).join('')
         : '<p class="dash-vazio">Nenhum grupo encontrado ainda.</p>';
 
       hide('dash-loading');
@@ -1148,26 +1084,24 @@
 
     $('chk-autosync').addEventListener('change', e => aplicarAutosync(e.target.checked));
 
-    /* ===== ATALHO DE TECLADO: ESC fecha modais abertos ===== */
+    /* ===== ESC fecha modais ===== */
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
-      if (!$('modal-overlay').classList.contains('hidden')) hide('modal-overlay');
+      if (!$('modal-overlay').classList.contains('hidden'))          hide('modal-overlay');
       if (!$('modal-renomear-overlay').classList.contains('hidden')) fecharModalRenomear();
     });
 
-    /* ===== INICIALIZAÇÃO DO PAINEL ===== */
+    /* ===== INICIALIZAÇÃO ===== */
     function iniciarPainel() {
       const abaInicial = location.hash.replace('#', '');
       ativarAba(ABAS_VALIDAS.includes(abaInicial) ? abaInicial : 'dashboard');
-
       carregarGrupos();
       carregarWarnUsers();
-
       $('chk-autosync').checked = localStorage.getItem('piro_autosync') === '1';
       if ($('chk-autosync').checked) aplicarAutosync(true);
     }
 
-    /* ===== AUTO-LOGIN SE JÁ TIVER CHAVE NA SESSÃO ===== */
+    /* Auto-login se já tiver chave na sessão */
     if (adminKey()) {
       hide('tela-login');
       show('painel');
