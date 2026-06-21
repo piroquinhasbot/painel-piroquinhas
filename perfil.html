@@ -6,7 +6,6 @@
   <title>Meu Perfil — Piroquinhas Bot</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="perfil.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -22,7 +21,7 @@
     </div>
   </nav>
 
-  <!-- TELA DE INSTRUÇÃO -->
+  <!-- ── TELA DE INSTRUÇÃO ── -->
   <div id="tela-instrucao" class="instrucao-wrap hidden">
     <div class="instrucao-card">
       <span class="instrucao-icon">🔐</span>
@@ -33,13 +32,13 @@
     </div>
   </div>
 
-  <!-- LOADING -->
+  <!-- ── LOADING ── -->
   <div id="tela-loading" class="loading-wrap hidden">
     <div class="spinner"></div>
     <p>Carregando seu perfil…</p>
   </div>
 
-  <!-- ERRO -->
+  <!-- ── ERRO ── -->
   <div id="tela-erro" class="erro-wrap hidden">
     <div class="erro-card">
       <div class="erro-icon">⚠️</div>
@@ -49,16 +48,17 @@
     </div>
   </div>
 
-  <!-- PAINEL PRINCIPAL -->
+  <!-- ── PAINEL PRINCIPAL ── -->
   <main id="painel" class="hidden">
 
-    <!-- HEADER DO PERFIL -->
+    <!-- HEADER -->
     <section class="perfil-header">
       <div class="perfil-header-inner">
         <div class="avatar" id="avatar-iniciais"></div>
         <div class="perfil-info">
           <h1 id="perfil-nome">—</h1>
           <p class="perfil-numero" id="perfil-numero">—</p>
+          <p class="perfil-bio hidden" id="perfil-bio"></p>
         </div>
         <div class="perfil-stats-topo">
           <div class="stat-pill">
@@ -71,7 +71,7 @@
           </div>
           <div class="stat-pill">
             <span class="stat-label">Gold</span>
-            <span class="stat-val neon-mint" id="stat-gold">—</span>
+            <span class="stat-val neon-gold" id="stat-gold">—</span>
           </div>
           <div class="stat-pill">
             <span class="stat-label">Ranking</span>
@@ -120,6 +120,12 @@
       </div>
     </section>
 
+    <!-- RELACIONAMENTO -->
+    <section class="secao" id="secao-relacionamento">
+      <h2 class="secao-titulo">💑 Relacionamento</h2>
+      <div id="rel-conteudo"></div>
+    </section>
+
     <!-- INVENTÁRIO -->
     <section class="secao">
       <h2 class="secao-titulo">🎒 Inventário</h2>
@@ -136,42 +142,72 @@
   </footer>
 
   <script>
-    /* ===== CONFIGURAÇÃO ===== */
+    /* ════════════════════════════════════════
+       CONFIG
+    ════════════════════════════════════════ */
     const API = 'https://whatsappbot2-s3dx.onrender.com/api';
+    const JWT_KEY = 'piroquinhas_jwt';
 
-    /* ===== HELPERS ===== */
-    const $  = id => document.getElementById(id);
+    /* ════════════════════════════════════════
+       HELPERS
+    ════════════════════════════════════════ */
+    const $    = id => document.getElementById(id);
     const show = id => $(id).classList.remove('hidden');
     const hide = id => $(id).classList.add('hidden');
 
     function iniciais(nome) {
-      if (!nome) return '??';
-      return nome.trim().split(' ').slice(0, 2).map(p => p[0].toUpperCase()).join('');
+      if (!nome || typeof nome !== 'string') return '??';
+      const limpo = nome.trim().replace(/[^\p{L}\s]/gu, '').trim();
+      if (!limpo) return nome.slice(0, 2).toUpperCase();
+      const partes = limpo.split(/\s+/);
+      return partes.length >= 2
+        ? (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
+        : limpo.slice(0, 2).toUpperCase();
     }
 
     function fmtNum(n) {
       return (n ?? 0).toLocaleString('pt-BR');
     }
 
-    /* ===== CHARTS ===== */
-    const CHART_DEFAULTS = {
-      font: { family: "'Inter', sans-serif", size: 11 },
-      grid: '#1a1b2e',
-      tick: '#5a5f72',
-    };
+    // "vara_basica" → "Vara Básica"  |  "fishrod_gold" → "Fishrod Gold"
+    function fmtItemNome(chave) {
+      return chave
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    function fmtData(iso) {
+      if (!iso) return null;
+      return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    /* ════════════════════════════════════════
+       CHART — instâncias guardadas para destroy
+    ════════════════════════════════════════ */
+    let chartXP        = null;
+    let chartAtividade = null;
+
+    const CHART_FONT = { family: "'Inter', sans-serif", size: 11 };
+    const CHART_GRID = '#1a1b2e';
+    const CHART_TICK = '#5a5f72';
 
     function renderChartXP(xpHistory) {
-      const hoje  = new Date();
-      const labels = [], dados = [];
+      // Destrói instância anterior se existir (evita erro "canvas already in use")
+      if (chartXP) { chartXP.destroy(); chartXP = null; }
+
+      const hoje   = new Date();
+      const labels = [];
+      const dados  = [];
+
       for (let i = 29; i >= 0; i--) {
-        const d = new Date(hoje);
+        const d    = new Date(hoje);
         d.setDate(d.getDate() - i);
         const chave = d.toISOString().slice(0, 10);
-        labels.push(chave.slice(5));
-        dados.push(xpHistory[chave] || 0);
+        labels.push(chave.slice(5)); // "MM-DD"
+        dados.push(xpHistory[chave] ?? 0);
       }
 
-      new Chart($('chart-xp').getContext('2d'), {
+      chartXP = new Chart($('chart-xp').getContext('2d'), {
         type: 'line',
         data: {
           labels,
@@ -181,8 +217,8 @@
             borderColor: '#b855ff',
             backgroundColor: ctx => {
               const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 220);
-              g.addColorStop(0,   'rgba(184,85,255,0.22)');
-              g.addColorStop(1,   'rgba(184,85,255,0)');
+              g.addColorStop(0, 'rgba(184,85,255,0.22)');
+              g.addColorStop(1, 'rgba(184,85,255,0)');
               return g;
             },
             pointBackgroundColor: '#b855ff',
@@ -193,7 +229,7 @@
             tension: 0.45,
             fill: true,
             borderWidth: 2,
-          }]
+          }],
         },
         options: {
           responsive: true,
@@ -207,31 +243,31 @@
               titleColor: '#e8eaf0',
               bodyColor: '#b855ff',
               padding: 10,
-              callbacks: {
-                label: ctx => ` ${fmtNum(ctx.raw)} XP`
-              }
-            }
+              callbacks: { label: ctx => ` ${fmtNum(ctx.raw)} XP` },
+            },
           },
           scales: {
             x: {
-              ticks: { color: CHART_DEFAULTS.tick, font: CHART_DEFAULTS.font, maxTicksLimit: 8 },
-              grid: { color: CHART_DEFAULTS.grid },
+              ticks: { color: CHART_TICK, font: CHART_FONT, maxTicksLimit: 8 },
+              grid:  { color: CHART_GRID },
             },
             y: {
-              ticks: { color: CHART_DEFAULTS.tick, font: CHART_DEFAULTS.font },
-              grid: { color: CHART_DEFAULTS.grid },
+              ticks: { color: CHART_TICK, font: CHART_FONT },
+              grid:  { color: CHART_GRID },
               beginAtZero: true,
-            }
-          }
-        }
+            },
+          },
+        },
       });
     }
 
     function renderChartAtividade(atividadeSemanal) {
+      if (chartAtividade) { chartAtividade.destroy(); chartAtividade = null; }
+
       const dias  = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
       const dados = Array.isArray(atividadeSemanal) ? atividadeSemanal : Array(7).fill(0);
 
-      new Chart($('chart-atividade').getContext('2d'), {
+      chartAtividade = new Chart($('chart-atividade').getContext('2d'), {
         type: 'bar',
         data: {
           labels: dias,
@@ -248,7 +284,7 @@
             borderWidth: 2,
             borderRadius: 8,
             borderSkipped: false,
-          }]
+          }],
         },
         options: {
           responsive: true,
@@ -262,86 +298,135 @@
               titleColor: '#e8eaf0',
               bodyColor: '#00ffb0',
               padding: 10,
-              callbacks: {
-                label: ctx => ` ${fmtNum(ctx.raw)} msgs`
-              }
-            }
+              callbacks: { label: ctx => ` ${fmtNum(ctx.raw)} msgs` },
+            },
           },
           scales: {
             x: {
-              ticks: { color: CHART_DEFAULTS.tick, font: CHART_DEFAULTS.font },
-              grid: { display: false },
+              ticks: { color: CHART_TICK, font: CHART_FONT },
+              grid:  { display: false },
             },
             y: {
-              ticks: { color: CHART_DEFAULTS.tick, font: CHART_DEFAULTS.font },
-              grid: { color: CHART_DEFAULTS.grid },
+              ticks: { color: CHART_TICK, font: CHART_FONT },
+              grid:  { color: CHART_GRID },
               beginAtZero: true,
-            }
-          }
-        }
+            },
+          },
+        },
       });
     }
 
-    /* ===== INVENTÁRIO ===== */
+    /* ════════════════════════════════════════
+       RELACIONAMENTO
+    ════════════════════════════════════════ */
+    function renderRelacionamento(u) {
+      const container = $('rel-conteudo');
+
+      if (!u.casadoCom) {
+        container.innerHTML = `
+          <div class="rel-vazio">
+            💔 Você ainda não tem um relacionamento no bot.<br/>
+            Use <strong>!casar</strong> ou <strong>!namorar</strong> no grupo!
+          </div>`;
+        return;
+      }
+
+      const tipoEmoji = u.casadoTipo === 'casamento' ? '💍' : '💕';
+      const tipoLabel = u.casadoTipo === 'casamento' ? 'Casado(a) com' : 'Namorando';
+      const parceiro  = u.casadoCom.split('@')[0];
+      const desde     = fmtData(u.casadoDesde);
+
+      container.innerHTML = `
+        <div class="rel-card">
+          <span class="rel-heart">${tipoEmoji}</span>
+          <div class="rel-info">
+            <div class="rel-nome">+${parceiro}</div>
+            <div class="rel-tipo">${tipoLabel}</div>
+            ${desde ? `<div class="rel-desde">Desde ${desde}</div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    /* ════════════════════════════════════════
+       INVENTÁRIO
+    ════════════════════════════════════════ */
     function renderInventario(inventory) {
       const entries = inventory ? Object.entries(inventory) : [];
+
       if (entries.length === 0) {
         show('inventario-vazio');
         return;
       }
-      $('inventario-grid').innerHTML = entries.map(([nome, qtd]) => `
-        <div class="inv-item">
-          <span class="inv-nome">${nome}</span>
-          <span class="inv-qtd">×${qtd}</span>
-        </div>
-      `).join('');
+
+      hide('inventario-vazio');
+      $('inventario-grid').innerHTML = entries
+        .sort((a, b) => b[1] - a[1]) // ordena por quantidade desc
+        .map(([chave, qtd]) => `
+          <div class="inv-item">
+            <span class="inv-nome">${fmtItemNome(chave)}</span>
+            <span class="inv-qtd">×${fmtNum(qtd)}</span>
+          </div>
+        `).join('');
     }
 
-    /* ===== PREENCHER PERFIL ===== */
+    /* ════════════════════════════════════════
+       PREENCHER PERFIL
+    ════════════════════════════════════════ */
     function preencherPerfil(u) {
+      // Header
       $('avatar-iniciais').textContent = iniciais(u.nome);
       $('perfil-nome').textContent     = u.nome || 'Sem nome';
       $('perfil-numero').textContent   = u.telefone ? '+' + u.telefone : '—';
 
-      $('stat-level').textContent = u.level ?? 0;
+      if (u.bio) {
+        $('perfil-bio').textContent = u.bio;
+        show('perfil-bio');
+      }
+
+      // Stats topo
+      $('stat-level').textContent = u.level ?? '—';
       $('stat-xp').textContent    = fmtNum(u.xp);
       $('stat-gold').textContent  = fmtNum(u.gold);
       $('stat-rank').textContent  = u.posicaoRanking ? `#${u.posicaoRanking}` : '—';
 
-      // Barra de progresso
-      const xpAtual = u.xp ?? 0;
-      const xpProx  = u.xpParaProximo ?? 1;
-      const pct     = u.xpProgresso ?? Math.min(100, Math.round((xpAtual / xpProx) * 100));
+      // Barra de XP — usa xpProgresso já calculado pela API
+      // que considera apenas o XP dentro do nível atual (não o XP total)
+      const pct = u.xpProgresso ?? 0;
+      $('xp-atual-txt').textContent = fmtNum(u.xp) + ' XP';
+      $('xp-prox-txt').textContent  = `Próx. nível: ${fmtNum(u.xpParaProximo)} XP`;
 
-      $('xp-atual-txt').textContent = fmtNum(xpAtual) + ' XP';
-      $('xp-prox-txt').textContent  = `Próx. nível: ${fmtNum(xpProx)} XP`;
-
-      // anima a barra com pequeno delay
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          $('barra-xp').style.width = pct + '%';
-        }, 150);
+        setTimeout(() => { $('barra-xp').style.width = pct + '%'; }, 150);
       });
 
+      // Gráficos
       renderChartXP(u.xpHistory || {});
       renderChartAtividade(u.atividadeSemanal);
 
+      // Cards de atividade
       $('act-mensagens').textContent = fmtNum(u.mensagens);
       $('act-quiz').textContent      = fmtNum(u.quizPoints);
       $('act-pet').textContent       = u.pet?.nome
         ? `${u.pet.nome} nv${u.pet.level ?? 1}`
         : 'Nenhum';
 
+      // Relacionamento
+      renderRelacionamento(u);
+
+      // Inventário
       renderInventario(u.inventory);
     }
 
-    /* ===== INIT ===== */
+    /* ════════════════════════════════════════
+       INIT — fluxo de autenticação
+    ════════════════════════════════════════ */
     async function init() {
       const params     = new URLSearchParams(window.location.search);
       const tokenParam = params.get('token');
-      let jwt          = sessionStorage.getItem('piroquinhas_jwt');
+      let   jwtSalvo   = sessionStorage.getItem(JWT_KEY);
 
-      if (!tokenParam && !jwt) {
+      // Sem token na URL e sem JWT salvo → mostra instrução
+      if (!tokenParam && !jwtSalvo) {
         show('tela-instrucao');
         return;
       }
@@ -349,7 +434,7 @@
       show('tela-loading');
 
       try {
-        // Trocar token temporário por JWT de sessão
+        // ── Passo 1: trocar token temporário por JWT de sessão ──
         if (tokenParam) {
           const res  = await fetch(`${API}/auth/token`, {
             method: 'POST',
@@ -357,27 +442,35 @@
             body: JSON.stringify({ token: tokenParam }),
           });
           const data = await res.json();
+
           if (!res.ok) throw new Error(data.error || 'Token inválido ou expirado.');
-          jwt = data.jwt || data.sessionToken;
-          if (!jwt) throw new Error('Resposta inesperada da API.');
-          sessionStorage.setItem('piroquinhas_jwt', jwt);
+
+          // A API retorna { jwt: "..." }
+          jwtSalvo = data.jwt;
+          if (!jwtSalvo) throw new Error('Resposta inesperada da API.');
+
+          sessionStorage.setItem(JWT_KEY, jwtSalvo);
+
+          // Remove o token da URL sem recarregar a página
           history.replaceState(null, '', 'perfil.html');
         }
 
-        // Buscar dados do usuário
+        // ── Passo 2: buscar dados do usuário ──
         const meRes  = await fetch(`${API}/user/me`, {
-          headers: { 'Authorization': `Bearer ${jwt}` },
+          headers: { 'Authorization': `Bearer ${jwtSalvo}` },
         });
         const meData = await meRes.json();
 
         if (!meRes.ok) {
+          // JWT expirado (2h) — limpa sessão e pede novo link
           if (meRes.status === 401) {
-            sessionStorage.removeItem('piroquinhas_jwt');
-            throw new Error('Sessão expirada. Digite !meupainel para um novo link.');
+            sessionStorage.removeItem(JWT_KEY);
+            throw new Error('Sua sessão expirou. Digite !meupainel no grupo para um novo link.');
           }
           throw new Error(meData.error || 'Erro ao carregar perfil.');
         }
 
+        // ── Passo 3: renderizar ──
         hide('tela-loading');
         show('painel');
         preencherPerfil(meData);
