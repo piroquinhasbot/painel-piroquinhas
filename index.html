@@ -342,8 +342,8 @@
      ESTADO
   ══════════════════════════════════ */
   const state = {
-    global: { raw: [], sort: 'xp', query: '' },
-    grupo:  { raw: [], sort: 'xp', query: '' },
+    global: { raw: [], sort: 'xp', query: '', total: 0 },
+    grupo:  { raw: [], sort: 'xp', query: '', total: 0 },
   };
   let gruposCache = [];
   let currentModalUser = null;
@@ -569,9 +569,10 @@
       metaEl.innerHTML = `<strong>${filtered.length}</strong> resultado(s) para "${escapeHtml(query)}"`;
       renderSearchList(filtered, listId, s.sort, sorted[0]?.[s.sort], query);
     } else {
+      const totalLabel = s.total || sorted.length;
       metaEl.innerHTML = tab === 'global'
-        ? `Top <strong>${sorted.length}</strong> jogadores globais`
-        : `Top <strong>${sorted.length}</strong> do grupo`;
+        ? `Top <strong>${sorted.length}</strong> de <strong>${totalLabel}</strong> jogadores globais`
+        : `Top <strong>${sorted.length}</strong> de <strong>${totalLabel}</strong> do grupo`;
       renderPodium(sorted.slice(0, 3), podiumId, s.sort);
       renderList(sorted, listId, s.sort, sorted[0]?.[s.sort]);
     }
@@ -627,6 +628,7 @@
 
       const { ranking, total, totalMensagens, atualizadoEm } = data;
       state.global.raw = ranking || [];
+      state.global.total = total ?? ranking.length;
 
       countUp(document.getElementById('stat-total'), total ?? 0);
       countUp(document.getElementById('stat-msgs'), totalMensagens ?? 0);
@@ -634,7 +636,6 @@
 
       lastUpdateTime = atualizadoEm ? new Date(atualizadoEm) : new Date();
       document.getElementById('stat-updated').textContent = timeAgo(lastUpdateTime);
-      document.getElementById('global-count').textContent = total ?? ranking.length;
 
       renderTab('global');
       if (silent) showToast('Ranking global atualizado');
@@ -716,7 +717,7 @@
 
       const { ranking, total } = data;
       state.grupo.raw = ranking || [];
-      document.getElementById('grupo-count').textContent = total ?? ranking.length;
+      state.grupo.total = total ?? ranking.length;
 
       const info = gruposCache.find(g => g.jid === jid);
       if (info) {
