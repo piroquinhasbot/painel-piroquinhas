@@ -9,17 +9,17 @@
 </head>
 <body>
 
-  <!-- NAV -->
   <nav class="navbar">
     <a href="index.html" class="nav-logo">🔥 Piroquinhas</a>
     <div class="nav-links">
       <a href="index.html">Ranking</a>
       <a href="comandos.html">Comandos</a>
       <a href="perfil.html" class="active">Perfil</a>
+      <a href="admin.html">Admin</a>
     </div>
   </nav>
 
-  <!-- TELA DE INSTRUÇÃO (sem token) -->
+  <!-- TELA DE INSTRUÇÃO -->
   <div id="tela-instrucao" class="instrucao-wrap hidden">
     <div class="instrucao-card">
       <div class="instrucao-icon">🔐</div>
@@ -49,7 +49,6 @@
   <!-- PAINEL PRINCIPAL -->
   <main id="painel" class="hidden">
 
-    <!-- SEÇÃO 1: HEADER DO PERFIL -->
     <section class="perfil-header">
       <div class="perfil-header-inner">
         <div class="avatar" id="avatar-iniciais"></div>
@@ -78,7 +77,6 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 2: XP E PROGRESSO -->
     <section class="secao">
       <h2 class="secao-titulo">⚡ XP &amp; Progresso</h2>
       <div class="progresso-wrap">
@@ -95,7 +93,6 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 3: ATIVIDADE -->
     <section class="secao">
       <h2 class="secao-titulo">📊 Atividade Semanal</h2>
       <div class="chart-box chart-box--sm">
@@ -117,7 +114,6 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 4: INVENTÁRIO -->
     <section class="secao">
       <h2 class="secao-titulo">🎒 Inventário</h2>
       <div id="inventario-grid" class="inventario-grid"></div>
@@ -135,26 +131,18 @@
   <script>
     const API = 'https://whatsappbot2-s3dx.onrender.com/api';
 
-    function xpParaProximoNivel(level) {
-      return Math.floor(100 * Math.pow(1.5, level));
-    }
+    const $ = id => document.getElementById(id);
+    const mostrar = id => $(id).classList.remove('hidden');
+    const esconder = id => $(id).classList.add('hidden');
 
     function iniciais(nome) {
       if (!nome) return '??';
       return nome.trim().split(' ').slice(0, 2).map(p => p[0].toUpperCase()).join('');
     }
 
-    function mostrar(id) {
-      document.getElementById(id).classList.remove('hidden');
-    }
-    function esconder(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-
     function renderChartXP(xpHistory) {
       const hoje = new Date();
-      const labels = [];
-      const dados = [];
+      const labels = [], dados = [];
       for (let i = 29; i >= 0; i--) {
         const d = new Date(hoje);
         d.setDate(d.getDate() - i);
@@ -162,8 +150,7 @@
         labels.push(chave.slice(5));
         dados.push(xpHistory[chave] || 0);
       }
-      const ctx = document.getElementById('chart-xp').getContext('2d');
-      new Chart(ctx, {
+      new Chart($('chart-xp').getContext('2d'), {
         type: 'line',
         data: {
           labels,
@@ -183,7 +170,7 @@
           plugins: { legend: { display: false } },
           scales: {
             x: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: '#1e1f2e' } },
-            y: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: '#1e1f2e' } }
+            y: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: '#1e1f2e' }, beginAtZero: true }
           }
         }
       });
@@ -192,15 +179,14 @@
     function renderChartAtividade(atividadeSemanal) {
       const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
       const dados = Array.isArray(atividadeSemanal) ? atividadeSemanal : Array(7).fill(0);
-      const ctx = document.getElementById('chart-atividade').getContext('2d');
-      new Chart(ctx, {
+      new Chart($('chart-atividade').getContext('2d'), {
         type: 'bar',
         data: {
           labels: dias,
           datasets: [{
             label: 'Msgs',
             data: dados,
-            backgroundColor: 'rgba(0,255,176,0.25)',
+            backgroundColor: 'rgba(0,255,176,0.2)',
             borderColor: '#00ffb0',
             borderWidth: 2,
             borderRadius: 6,
@@ -211,21 +197,19 @@
           plugins: { legend: { display: false } },
           scales: {
             x: { ticks: { color: '#888' }, grid: { color: '#1e1f2e' } },
-            y: { ticks: { color: '#888' }, grid: { color: '#1e1f2e' } }
+            y: { ticks: { color: '#888' }, grid: { color: '#1e1f2e' }, beginAtZero: true }
           }
         }
       });
     }
 
     function renderInventario(inventory) {
-      const grid = document.getElementById('inventario-grid');
-      const vazio = document.getElementById('inventario-vazio');
       const entries = inventory ? Object.entries(inventory) : [];
       if (entries.length === 0) {
         mostrar('inventario-vazio');
         return;
       }
-      grid.innerHTML = entries.map(([nome, qtd]) => `
+      $('inventario-grid').innerHTML = entries.map(([nome, qtd]) => `
         <div class="inv-item">
           <span class="inv-nome">${nome}</span>
           <span class="inv-qtd">x${qtd}</span>
@@ -233,40 +217,42 @@
       `).join('');
     }
 
-    function preencherPerfil(user, rankPos) {
-      document.getElementById('avatar-iniciais').textContent = iniciais(user.nome);
-      document.getElementById('perfil-nome').textContent = user.nome || 'Sem nome';
-      document.getElementById('perfil-numero').textContent = '+' + (user.telefone || user.idWhatsApp?.split('@')[0] || '—');
+    function preencherPerfil(u) {
+      // Header
+      $('avatar-iniciais').textContent = iniciais(u.nome);
+      $('perfil-nome').textContent     = u.nome || 'Sem nome';
+      $('perfil-numero').textContent   = u.telefone ? '+' + u.telefone : '—';
 
-      document.getElementById('stat-level').textContent = user.level ?? 0;
-      document.getElementById('stat-xp').textContent = (user.xp ?? 0).toLocaleString('pt-BR');
-      document.getElementById('stat-gold').textContent = (user.gold ?? 0).toLocaleString('pt-BR');
-      document.getElementById('stat-rank').textContent = rankPos ? `#${rankPos}` : '—';
+      $('stat-level').textContent = u.level ?? 0;
+      $('stat-xp').textContent    = (u.xp ?? 0).toLocaleString('pt-BR');
+      $('stat-gold').textContent  = (u.gold ?? 0).toLocaleString('pt-BR');
+      // posicaoRanking já vem da API em /user/me
+      $('stat-rank').textContent  = u.posicaoRanking ? `#${u.posicaoRanking}` : '—';
 
-      const xpAtual = user.xp ?? 0;
-      const xpProx = xpParaProximoNivel(user.level ?? 0);
-      const pct = Math.min(100, Math.round((xpAtual / xpProx) * 100));
-      document.getElementById('xp-atual-txt').textContent = xpAtual.toLocaleString('pt-BR') + ' XP';
-      document.getElementById('xp-prox-txt').textContent = `Próx. nível: ${xpProx.toLocaleString('pt-BR')} XP`;
-      document.getElementById('barra-xp').style.width = pct + '%';
+      // Barra de progresso — usa xpParaProximo e xpProgresso vindos da API
+      const xpAtual = u.xp ?? 0;
+      const xpProx  = u.xpParaProximo ?? 1;
+      const pct     = u.xpProgresso ?? Math.min(100, Math.round((xpAtual / xpProx) * 100));
+      $('xp-atual-txt').textContent = xpAtual.toLocaleString('pt-BR') + ' XP';
+      $('xp-prox-txt').textContent  = `Próx. nível: ${xpProx.toLocaleString('pt-BR')} XP`;
+      $('barra-xp').style.width     = pct + '%';
 
-      renderChartXP(user.xpHistory || {});
-      renderChartAtividade(user.atividadeSemanal);
+      renderChartXP(u.xpHistory || {});
+      renderChartAtividade(u.atividadeSemanal);
 
-      document.getElementById('act-mensagens').textContent = (user.mensagens ?? 0).toLocaleString('pt-BR');
-      document.getElementById('act-quiz').textContent = (user.quizPoints ?? 0).toLocaleString('pt-BR');
+      $('act-mensagens').textContent = (u.mensagens  ?? 0).toLocaleString('pt-BR');
+      $('act-quiz').textContent      = (u.quizPoints ?? 0).toLocaleString('pt-BR');
+      $('act-pet').textContent       = u.pet?.nome
+        ? `${u.pet.nome} (nv ${u.pet.level ?? 1})`
+        : 'Nenhum';
 
-      const pet = user.pet;
-      document.getElementById('act-pet').textContent =
-        pet && pet.nome ? `${pet.nome} (nv ${pet.level ?? 1})` : 'Nenhum';
-
-      renderInventario(user.inventory);
+      renderInventario(u.inventory);
     }
 
     async function init() {
-      const params = new URLSearchParams(window.location.search);
+      const params     = new URLSearchParams(window.location.search);
       const tokenParam = params.get('token');
-      let jwt = sessionStorage.getItem('piroquinhas_jwt');
+      let jwt          = sessionStorage.getItem('piroquinhas_jwt');
 
       if (!tokenParam && !jwt) {
         mostrar('tela-instrucao');
@@ -276,42 +262,44 @@
       mostrar('tela-loading');
 
       try {
+        // 1. Trocar token temporário por JWT de sessão
         if (tokenParam) {
           const res = await fetch(`${API}/auth/token`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token: tokenParam })
           });
-          if (!res.ok) throw new Error('Token inválido ou expirado.');
           const data = await res.json();
-          jwt = data.jwt;
+          if (!res.ok) throw new Error(data.error || 'Token inválido ou expirado.');
+          // API retorna { jwt } depois da correção no api.js
+          jwt = data.jwt || data.sessionToken;
+          if (!jwt) throw new Error('Resposta inesperada da API.');
           sessionStorage.setItem('piroquinhas_jwt', jwt);
           history.replaceState(null, '', 'perfil.html');
         }
 
+        // 2. Buscar dados do usuário — posicaoRanking já vem aqui
         const meRes = await fetch(`${API}/user/me`, {
           headers: { 'Authorization': `Bearer ${jwt}` }
         });
-        if (!meRes.ok) throw new Error('Sessão expirada. Gere um novo link.');
-        const { user } = await meRes.json();
-
-        const rankRes = await fetch(`${API}/user/ranking`, {
-          headers: { 'Authorization': `Bearer ${jwt}` }
-        });
-        let rankPos = null;
-        if (rankRes.ok) {
-          const { ranking } = await rankRes.json();
-          const entrada = ranking?.find(r => r.idWhatsApp === user.idWhatsApp);
-          rankPos = entrada ? (ranking.indexOf(entrada) + 1) : null;
+        const meData = await meRes.json();
+        if (!meRes.ok) {
+          // JWT expirado — limpa sessão e pede novo link
+          if (meRes.status === 401) {
+            sessionStorage.removeItem('piroquinhas_jwt');
+            throw new Error('Sessão expirada. Digite !meupainel para um novo link.');
+          }
+          throw new Error(meData.error || 'Erro ao carregar perfil.');
         }
 
+        // /user/me retorna o objeto direto (não dentro de { user })
         esconder('tela-loading');
         mostrar('painel');
-        preencherPerfil(user, rankPos);
+        preencherPerfil(meData);
 
       } catch (err) {
         esconder('tela-loading');
-        document.getElementById('erro-msg').textContent = err.message || 'Erro desconhecido.';
+        $('erro-msg').textContent = err.message || 'Erro desconhecido.';
         mostrar('tela-erro');
       }
     }
