@@ -374,9 +374,9 @@
     const prog = computeLevelProgress(user.xp);
 
     document.getElementById('modal-level').textContent = user.level ?? prog.level;
-    document.getElementById('modal-xp').textContent    = fmtXP(user.xp);
-    document.getElementById('modal-msgs').textContent  = fmtNum(user.mensagens);
-    document.getElementById('modal-gold').textContent  = fmtNum(user.gold);
+    document.getElementById('modal-xp').textContent    = fmtXP(user.xp ?? 0);
+    document.getElementById('modal-msgs').textContent  = fmtNum(user.mensagens ?? 0);
+    document.getElementById('modal-gold').textContent  = fmtNum(user.gold ?? 0);
 
     document.getElementById('modal-xp-pct').textContent  = `${prog.pct}% para nível ${prog.level + 1}`;
     document.getElementById('modal-xp-next').textContent = `${fmtXP(prog.xpParaProximo)} XP`;
