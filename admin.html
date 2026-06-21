@@ -43,7 +43,12 @@
           <span class="nav-icon">⚠️</span> Warns / Bans
         </a>
       </nav>
-      <button id="btn-logout" class="btn-logout">Sair</button>
+      <div class="sidebar-footer">
+        <span class="sidebar-status" id="sidebar-status">
+          <span class="status-dot"></span> Conectado
+        </span>
+        <button id="btn-logout" class="btn-logout">Sair</button>
+      </div>
     </aside>
 
     <!-- OVERLAY MOBILE -->
@@ -73,6 +78,11 @@
           <button class="btn-icon" id="btn-refresh-grupos" title="Recarregar">↺</button>
         </div>
 
+        <p class="secao-hint">
+          Os nomes dos grupos vêm do WhatsApp e nem sempre estão disponíveis para a API — use o ícone
+          <span class="hint-icon">✎</span> para renomear manualmente um grupo aqui no painel.
+        </p>
+
         <input type="text" id="grupos-busca" class="busca-input" placeholder="Buscar grupo por nome ou ID..." />
 
         <div id="grupos-loading" class="estado-loading">
@@ -98,6 +108,8 @@
           <div class="spinner"></div> Carregando grupos...
         </div>
 
+        <div id="msgs-vazio" class="estado-vazio hidden">Nenhum grupo encontrado.</div>
+
         <div id="msgs-editor" class="msgs-editor hidden">
           <div class="field-group">
             <label>Grupo selecionado</label>
@@ -107,17 +119,27 @@
           <div class="field-group">
             <label for="msg-boas-vindas">Mensagem de Boas-Vindas</label>
             <p class="field-hint">Use <code>{nome}</code> para o nome do usuário e <code>{grupo}</code> para o nome do grupo.</p>
-            <textarea id="msg-boas-vindas" rows="5" placeholder="Bem-vindo(a) ao {grupo}, {nome}! 🎉"></textarea>
+            <textarea id="msg-boas-vindas" rows="5" maxlength="5000" placeholder="Bem-vindo(a) ao {grupo}, {nome}! 🎉"></textarea>
+            <span class="char-counter" id="contador-boas-vindas">0 / 5000</span>
           </div>
 
           <div class="field-group">
             <label for="msg-regras">Regras do Grupo</label>
-            <textarea id="msg-regras" rows="7" placeholder="1. Respeite todos os membros&#10;2. Sem spam&#10;3. ..."></textarea>
+            <textarea id="msg-regras" rows="7" maxlength="5000" placeholder="1. Respeite todos os membros&#10;2. Sem spam&#10;3. ..."></textarea>
+            <span class="char-counter" id="contador-regras">0 / 5000</span>
           </div>
 
           <div class="msgs-actions">
             <span id="msgs-feedback" class="msgs-feedback hidden"></span>
+            <button class="btn-ghost" id="btn-preview-msgs">Pré-visualizar</button>
             <button class="btn-primary" id="btn-salvar-msgs">Salvar Mensagens</button>
+          </div>
+
+          <div id="msgs-preview" class="msgs-preview hidden">
+            <div class="preview-titulo">Pré-visualização — Boas-Vindas</div>
+            <div class="preview-bolha" id="preview-boas-vindas"></div>
+            <div class="preview-titulo">Pré-visualização — Regras</div>
+            <div class="preview-bolha" id="preview-regras"></div>
           </div>
         </div>
       </section>
@@ -174,6 +196,24 @@
     </div>
   </div>
 
+  <!-- MODAL DE RENOMEAR GRUPO -->
+  <div id="modal-renomear-overlay" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h3>Renomear grupo</h3>
+      <p class="modal-jid-ref" id="renomear-jid-ref"></p>
+      <div class="field">
+        <label for="renomear-input">Nome de exibição</label>
+        <input type="text" id="renomear-input" placeholder="Ex: Galera do Trampo" maxlength="80" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="renomear-cancelar">Cancelar</button>
+        <button class="btn-primary modal-actions-btn-auto" id="renomear-salvar">Salvar nome</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
   <script>
     const API = 'https://whatsappbot2-s3dx.onrender.com/api';
 
@@ -192,6 +232,36 @@
 
     function adminHeaders() {
       return { 'x-admin-key': adminKey(), 'Content-Type': 'application/json' };
+    }
+
+    let toastTimer;
+    function toast(msg, tipo = 'ok') {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = `toast toast--${tipo}`;
+      void t.offsetWidth;
+      t.classList.add('toast--show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('toast--show'), 2800);
+    }
+
+    // nomes de grupo definidos manualmente no painel (fallback local enquanto
+    // o backend não envia o nome real do grupo do WhatsApp).
+    // Persistido também via API quando o endpoint existir; aqui guardamos uma
+    // cópia em localStorage para o nome nunca "voltar a ser feio" se a API
+    // ainda não tiver suporte ao campo.
+    function nomesCustomLocais() {
+      try { return JSON.parse(localStorage.getItem('piro_nomes_grupo') || '{}'); }
+      catch { return {}; }
+    }
+    function salvarNomeCustomLocal(jid, nome) {
+      const atual = nomesCustomLocais();
+      atual[jid] = nome;
+      localStorage.setItem('piro_nomes_grupo', JSON.stringify(atual));
+    }
+    function nomeExibicao(grupo) {
+      const custom = nomesCustomLocais()[grupo.idGrupo];
+      return custom || grupo.nomeCustom || grupo.nome || 'Grupo sem nome';
     }
 
     /* ===== LOGIN ===== */
@@ -256,6 +326,7 @@
       document.querySelector(`.nav-item[data-aba="${aba}"]`)?.classList.add('active');
       document.querySelector(`.aba[data-aba="${aba}"]`)?.classList.add('active');
       $('topbar-titulo').textContent = titulosAbas[aba] || '';
+      if (location.hash !== `#${aba}`) history.replaceState(null, '', `#${aba}`);
       fecharSidebar();
     }
 
@@ -266,7 +337,11 @@
       el.addEventListener('click', () => ativarAba(el.dataset.aba));
     });
 
-    /* ===== MODAL ===== */
+    // abre direto na aba indicada pela URL (#grupos / #mensagens / #warns)
+    const abaInicial = location.hash.replace('#', '');
+    if (['grupos', 'mensagens', 'warns'].includes(abaInicial)) ativarAba(abaInicial);
+
+    /* ===== MODAL DE CONFIRMAÇÃO ===== */
     let modalCallback = null;
 
     function abrirModal(titulo, msg, cb) {
@@ -281,9 +356,64 @@
       hide('modal-overlay');
       if (modalCallback) modalCallback();
     });
+    $('modal-overlay').addEventListener('click', e => { if (e.target.id === 'modal-overlay') hide('modal-overlay'); });
+
+    /* ===== MODAL DE RENOMEAR GRUPO ===== */
+    let renomearJidAtual = null;
+
+    function abrirModalRenomear(jid, nomeAtual) {
+      renomearJidAtual = jid;
+      $('renomear-jid-ref').textContent = jid;
+      $('renomear-input').value = nomeAtual === jid ? '' : nomeAtual;
+      show('modal-renomear-overlay');
+      setTimeout(() => $('renomear-input').focus(), 50);
+    }
+
+    function fecharModalRenomear() {
+      hide('modal-renomear-overlay');
+      renomearJidAtual = null;
+    }
+
+    $('renomear-cancelar').addEventListener('click', fecharModalRenomear);
+    $('modal-renomear-overlay').addEventListener('click', e => { if (e.target.id === 'modal-renomear-overlay') fecharModalRenomear(); });
+    $('renomear-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('renomear-salvar').click(); });
+
+    $('renomear-salvar').addEventListener('click', async () => {
+      if (!renomearJidAtual) return;
+      const novoNome = $('renomear-input').value.trim();
+      if (!novoNome) { toast('Digite um nome válido.', 'erro'); return; }
+
+      const jid = renomearJidAtual;
+      $('renomear-salvar').disabled = true;
+
+      // salva localmente sempre — funciona já de cara, independente do backend
+      salvarNomeCustomLocal(jid, novoNome);
+      const grupo = gruposCache.find(g => g.idGrupo === jid);
+      if (grupo) grupo.nomeCustom = novoNome;
+
+      // tenta também persistir no backend, se o endpoint existir
+      // (rota sugerida: PATCH /api/admin/grupo/:jid/nome — fica pronto para
+      // quando o backend tiver esse campo; se a rota não existir, o catch
+      // só ignora silenciosamente e o nome continua válido via localStorage)
+      try {
+        await fetch(`${API}/admin/grupo/${encodeURIComponent(jid)}/nome`, {
+          method: 'PATCH',
+          headers: adminHeaders(),
+          body: JSON.stringify({ nome: novoNome })
+        });
+      } catch { /* sem problema — fallback local já cobre */ }
+
+      renderGrupos(filtroGrupoAtivo ? gruposFiltradosAtual : gruposCache, filtroGrupoAtivo);
+      popularSelectMensagens(gruposCache);
+      fecharModalRenomear();
+      $('renomear-salvar').disabled = false;
+      toast('Nome do grupo atualizado!');
+    });
 
     /* ===== GRUPOS ===== */
     let gruposCache = [];
+    let filtroGrupoAtivo = false;
+    let gruposFiltradosAtual = [];
 
     async function carregarGrupos() {
       hide('grupos-erro');
@@ -291,6 +421,7 @@
       hide('grupos-vazio');
       show('grupos-loading');
       $('grupos-busca').value = '';
+      filtroGrupoAtivo = false;
 
       try {
         const res = await fetch(`${API}/grupos`, { headers: adminHeaders() });
@@ -321,13 +452,21 @@
 
       const lista = $('grupos-lista');
       lista.innerHTML = grupos.map(g => {
-        const nomeEsc = escapeHtml(g.nome || 'Grupo sem nome');
-        const jidEsc  = escapeHtml(g.idGrupo);
+        const nomeReal = nomeExibicao(g);
+        const nomeEsc  = escapeHtml(nomeReal);
+        const jidEsc   = escapeHtml(g.idGrupo);
+        const membrosTxt = g.membros != null ? `${g.membros} membro${g.membros === 1 ? '' : 's'}` : '';
+        const xpTxt = g.xpTotal != null ? `${Number(g.xpTotal).toLocaleString('pt-BR')} XP total` : '';
+
         return `
         <div class="grupo-card" data-jid="${jidEsc}">
           <div class="grupo-info">
-            <span class="grupo-nome">${nomeEsc}</span>
+            <div class="grupo-nome-linha">
+              <span class="grupo-nome">${nomeEsc}</span>
+              <button class="btn-renomear" data-jid="${jidEsc}" data-nome="${nomeEsc}" title="Renomear grupo">✎</button>
+            </div>
             <span class="grupo-jid">${jidEsc}</span>
+            ${(membrosTxt || xpTxt) ? `<span class="grupo-meta">${[membrosTxt, xpTxt].filter(Boolean).join(' · ')}</span>` : ''}
           </div>
           <div class="grupo-toggles">
             <label class="toggle-wrap">
@@ -360,6 +499,10 @@
         btn.addEventListener('click', () => alternarToggle(btn));
       });
 
+      lista.querySelectorAll('.btn-renomear').forEach(btn => {
+        btn.addEventListener('click', () => abrirModalRenomear(btn.dataset.jid, btn.dataset.nome));
+      });
+
       show('grupos-lista');
     }
 
@@ -381,10 +524,11 @@
         if (!res.ok) throw new Error();
         const grupo = gruposCache.find(g => g.idGrupo === jid);
         if (grupo) grupo.config = { ...grupo.config, [campo]: novoValor };
+        toast('Configuração salva.');
       } catch {
         btn.classList.toggle('on', !novoValor);
         btn.setAttribute('aria-pressed', String(!novoValor));
-        alert('Erro ao salvar configuração. Tente novamente.');
+        toast('Erro ao salvar configuração. Tente novamente.', 'erro');
       } finally {
         btn.disabled = false;
       }
@@ -395,22 +539,34 @@
 
     $('grupos-busca').addEventListener('input', () => {
       const termo = $('grupos-busca').value.trim().toLowerCase();
-      if (!termo) { renderGrupos(gruposCache); return; }
-      const filtrados = gruposCache.filter(g =>
-        (g.nome || '').toLowerCase().includes(termo) || g.idGrupo.toLowerCase().includes(termo)
+      if (!termo) {
+        filtroGrupoAtivo = false;
+        renderGrupos(gruposCache);
+        return;
+      }
+      filtroGrupoAtivo = true;
+      gruposFiltradosAtual = gruposCache.filter(g =>
+        nomeExibicao(g).toLowerCase().includes(termo) || g.idGrupo.toLowerCase().includes(termo)
       );
-      renderGrupos(filtrados, true);
+      renderGrupos(gruposFiltradosAtual, true);
     });
 
     /* ===== MENSAGENS ===== */
     function popularSelectMensagens(grupos) {
-      const sel = $('msgs-select-grupo');
-      sel.innerHTML = grupos.map(g =>
-        `<option value="${escapeHtml(g.idGrupo)}">${escapeHtml(g.nome || g.idGrupo)}</option>`
-      ).join('');
       hide('msgs-loading');
+      const sel = $('msgs-select-grupo');
 
-      if (!grupos.length) return;
+      if (!grupos.length) {
+        hide('msgs-editor');
+        show('msgs-vazio');
+        return;
+      }
+      hide('msgs-vazio');
+
+      sel.innerHTML = grupos.map(g =>
+        `<option value="${escapeHtml(g.idGrupo)}">${escapeHtml(nomeExibicao(g))}</option>`
+      ).join('');
+
       show('msgs-editor');
       preencherMensagens(grupos[0].idGrupo);
     }
@@ -419,9 +575,37 @@
       const grupo = gruposCache.find(g => g.idGrupo === jid);
       $('msg-boas-vindas').value = grupo?.mensagens?.boasVindas || '';
       $('msg-regras').value      = grupo?.mensagens?.regras || '';
+      atualizarContadores();
+      hide('msgs-preview');
     }
 
+    function atualizarContadores() {
+      $('contador-boas-vindas').textContent = `${$('msg-boas-vindas').value.length} / 5000`;
+      $('contador-regras').textContent      = `${$('msg-regras').value.length} / 5000`;
+    }
+
+    $('msg-boas-vindas').addEventListener('input', atualizarContadores);
+    $('msg-regras').addEventListener('input', atualizarContadores);
+
     $('msgs-select-grupo').addEventListener('change', e => preencherMensagens(e.target.value));
+
+    $('btn-preview-msgs').addEventListener('click', () => {
+      const jid = $('msgs-select-grupo').value;
+      const grupo = gruposCache.find(g => g.idGrupo === jid);
+      const nomeGrupo = grupo ? nomeExibicao(grupo) : 'Grupo';
+
+      const boasVindas = $('msg-boas-vindas').value
+        .replace(/\{nome\}/gi, 'João')
+        .replace(/\{grupo\}/gi, nomeGrupo);
+      const regras = $('msg-regras').value
+        .replace(/\{nome\}/gi, 'João')
+        .replace(/\{grupo\}/gi, nomeGrupo);
+
+      $('preview-boas-vindas').textContent = boasVindas || '(mensagem vazia)';
+      $('preview-regras').textContent = regras || '(mensagem vazia)';
+      $('preview-regras').style.whiteSpace = 'pre-wrap';
+      show('msgs-preview');
+    });
 
     $('btn-salvar-msgs').addEventListener('click', async () => {
       const jid = $('msgs-select-grupo').value;
@@ -446,10 +630,12 @@
         feedback.textContent = '✅ Salvo com sucesso!';
         feedback.className = 'msgs-feedback ok';
         show('msgs-feedback');
+        toast('Mensagens salvas com sucesso!');
       } catch {
         feedback.textContent = '❌ Erro ao salvar. Tente novamente.';
         feedback.className = 'msgs-feedback erro';
         show('msgs-feedback');
+        toast('Erro ao salvar mensagens.', 'erro');
       } finally {
         $('btn-salvar-msgs').disabled = false;
         setTimeout(() => hide('msgs-feedback'), 3500);
@@ -551,9 +737,10 @@
           headers: adminHeaders()
         });
         if (!res.ok) throw new Error();
+        toast('Warn removido.');
         carregarWarnUsers();
       } catch {
-        alert('Erro ao remover warn. Tente novamente.');
+        toast('Erro ao remover warn. Tente novamente.', 'erro');
       }
     }
 
@@ -565,9 +752,10 @@
           body: JSON.stringify({ warns: 0 })
         });
         if (!res.ok) throw new Error();
+        toast('Warns zerados.');
         carregarWarnUsers();
       } catch {
-        alert('Erro ao zerar warns. Tente novamente.');
+        toast('Erro ao zerar warns. Tente novamente.', 'erro');
       }
     }
 
@@ -579,9 +767,10 @@
           body: JSON.stringify({ banido: novoBanido })
         });
         if (!res.ok) throw new Error();
+        toast(novoBanido ? 'Usuário banido.' : 'Usuário desbanido.');
         carregarWarnUsers();
       } catch {
-        alert('Erro ao atualizar status de banimento. Tente novamente.');
+        toast('Erro ao atualizar status de banimento. Tente novamente.', 'erro');
       }
     }
 
@@ -597,6 +786,13 @@
         (u.idWhatsApp || '').toLowerCase().includes(termo)
       );
       renderWarnUsers(filtrados, true);
+    });
+
+    /* ===== ATALHO DE TECLADO: ESC fecha modais abertos ===== */
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      if (!$('modal-overlay').classList.contains('hidden')) hide('modal-overlay');
+      if (!$('modal-renomear-overlay').classList.contains('hidden')) fecharModalRenomear();
     });
 
     /* ===== AUTO-LOGIN SE JÁ TIVER CHAVE ===== */
