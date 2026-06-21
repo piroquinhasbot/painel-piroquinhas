@@ -53,18 +53,9 @@
   <h1 class="hero-title">Hall da Fama</h1>
   <p class="hero-sub">Os guerreiros mais ativos do grupo — atualizado em tempo real.</p>
   <div class="hero-stats">
-    <div class="stat-pill">
-      <strong id="stat-total">—</strong>
-      <span>jogadores</span>
-    </div>
-    <div class="stat-pill">
-      <strong id="stat-msgs">—</strong>
-      <span>mensagens</span>
-    </div>
-    <div class="stat-pill">
-      <strong id="stat-updated">—</strong>
-      <span>atualizado</span>
-    </div>
+    <div class="stat-pill"><strong id="stat-total">—</strong><span>jogadores</span></div>
+    <div class="stat-pill"><strong id="stat-msgs">—</strong><span>mensagens</span></div>
+    <div class="stat-pill"><strong id="stat-updated">—</strong><span>atualizado</span></div>
   </div>
 </section>
 
@@ -87,33 +78,25 @@
 
   <!-- ── GLOBAL ── -->
   <div class="tab-panel active" id="tab-global">
-
-    <!-- Pódio top 3 -->
-    <div class="podium" id="podium-global">
-      <!-- injetado pelo JS -->
-    </div>
-
+    <div class="podium" id="podium-global"></div>
     <div class="ranking-meta">
-      <p class="ranking-meta-label">Top <strong id="global-count">100</strong> jogadores globais</p>
+      <p class="ranking-meta-label">Top <strong id="global-count">—</strong> jogadores globais</p>
       <button class="refresh-btn" id="refresh-global">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.59"/></svg>
         Atualizar
       </button>
     </div>
-
     <div class="ranking-list" id="list-global">
-      <!-- skeletons -->
-      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:38px;height:38px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:60%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:40%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
-      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:38px;height:38px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:50%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:35%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
-      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:38px;height:38px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:55%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:30%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
-      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:38px;height:38px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:45%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:38%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
-      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:38px;height:38px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:65%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:42%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
+      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:40px;height:40px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:60%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:40%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
+      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:40px;height:40px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:50%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:35%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
+      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:40px;height:40px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:55%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:30%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
+      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:40px;height:40px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:45%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:38%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
+      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:40px;height:40px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:65%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:42%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
     </div>
   </div>
 
   <!-- ── POR GRUPO ── -->
   <div class="tab-panel" id="tab-grupo">
-
     <div class="group-filter">
       <label for="grupo-select">Grupo:</label>
       <div class="group-select-wrap">
@@ -122,10 +105,7 @@
         </select>
       </div>
     </div>
-
-    <!-- Pódio grupo -->
     <div class="podium" id="podium-grupo"></div>
-
     <div class="ranking-meta">
       <p class="ranking-meta-label">Top <strong id="grupo-count">—</strong> do grupo</p>
       <button class="refresh-btn" id="refresh-grupo">
@@ -133,7 +113,6 @@
         Atualizar
       </button>
     </div>
-
     <div class="ranking-list" id="list-grupo">
       <div class="state-box">
         <span class="glyph">$ select group --filter ranking</span>
@@ -145,6 +124,57 @@
 
 </main>
 
+<!-- ══════════ MODAL DE USUÁRIO ══════════ -->
+<div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal-card" id="modal-card">
+    <button class="modal-close" id="modal-close" title="Fechar">✕</button>
+
+    <div class="modal-header">
+      <div class="modal-avatar" id="modal-avatar"></div>
+      <div class="modal-user-info">
+        <div class="modal-name" id="modal-name">—</div>
+        <div class="modal-rank-badge" id="modal-rank-badge">— 🏆</div>
+      </div>
+    </div>
+
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <span class="modal-stat-label">Nível</span>
+        <span class="modal-stat-val" id="modal-level">—</span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">XP Total</span>
+        <span class="modal-stat-val purple" id="modal-xp">—</span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Mensagens</span>
+        <span class="modal-stat-val" id="modal-msgs">—</span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Gold</span>
+        <span class="modal-stat-val gold" id="modal-gold">—</span>
+      </div>
+    </div>
+
+    <div class="modal-xp-label">
+      <span id="modal-xp-pct">XP para o próximo nível</span>
+      <span id="modal-xp-next"></span>
+    </div>
+    <div class="modal-xp-bar-outer">
+      <div class="modal-xp-bar-inner" id="modal-xp-bar" style="width:0%"></div>
+    </div>
+
+    <div class="modal-actions">
+      <!-- link para o perfil completo — vai funcionar se o usuário tiver JWT -->
+      <a href="perfil.html" class="modal-btn modal-btn-primary" id="modal-perfil-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Ver Perfil
+      </a>
+      <button class="modal-btn modal-btn-secondary" id="modal-close-btn">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <footer>piroquinhas-bot · hall da fama · powered by Node.js + MongoDB</footer>
@@ -153,7 +183,7 @@
 <script>
   const API = 'https://whatsappbot2-s3dx.onrender.com/api';
 
-  // ── Utils ──────────────────────────────────────────────────────────────────
+  /* ── Utils ── */
   let toastTimer;
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -164,32 +194,36 @@
   }
 
   function fmtXP(n) {
-    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-    if (n >= 1000)    return (n / 1000).toFixed(1) + 'k';
+    if (n == null) return '—';
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+    if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'k';
     return String(n);
   }
 
   function fmtNum(n) {
-    return n?.toLocaleString('pt-BR') ?? '—';
+    return n != null ? n.toLocaleString('pt-BR') : '—';
   }
 
   function initials(nome) {
-    if (!nome) return '?';
-    const parts = nome.trim().split(' ');
+    if (!nome || typeof nome !== 'string') return '?';
+    const clean = nome.trim().replace(/[^\w\s]/gu, '').trim(); // remove emojis e símbolos
+    if (!clean) return nome.slice(0, 2).toUpperCase();
+    const parts = clean.split(/\s+/);
     return parts.length >= 2
-      ? (parts[0][0] + parts[1][0]).toUpperCase()
-      : nome.slice(0, 2).toUpperCase();
+      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      : clean.slice(0, 2).toUpperCase();
   }
 
   function timeAgo(date) {
+    if (!date) return 'agora';
     const diff = Math.floor((Date.now() - new Date(date)) / 1000);
-    if (diff < 60)   return 'agora';
-    if (diff < 3600) return `${Math.floor(diff / 60)}min atrás`;
+    if (diff < 60)    return 'agora';
+    if (diff < 3600)  return `${Math.floor(diff / 60)}min atrás`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h atrás`;
     return `${Math.floor(diff / 86400)}d atrás`;
   }
 
-  // ── Tabs ──────────────────────────────────────────────────────────────────
+  /* ── Tabs ── */
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -199,18 +233,61 @@
     });
   });
 
-  // ── Pódio ─────────────────────────────────────────────────────────────────
-  function renderPodium(top3, containerId) {
+  /* ══════════════════════════════════
+     MODAL
+  ══════════════════════════════════ */
+  const modalOverlay = document.getElementById('modal-overlay');
+
+  function openModal(user, pos) {
+    // Preenche dados
+    const nome = user.nome || 'Anônimo';
+    document.getElementById('modal-avatar').textContent = initials(nome);
+    document.getElementById('modal-name').textContent   = nome;
+    document.getElementById('modal-rank-badge').textContent = `#${pos} no ranking`;
+
+    document.getElementById('modal-level').textContent = user.level ?? '—';
+    document.getElementById('modal-xp').textContent    = fmtXP(user.xp);
+    document.getElementById('modal-msgs').textContent  = fmtNum(user.mensagens);
+    document.getElementById('modal-gold').textContent  = fmtNum(user.gold);
+
+    // Barra XP
+    const xpAtual = user.xp ?? 0;
+    const xpProx  = user.xpParaProximo ?? (xpAtual + 1);
+    const pct     = user.xpProgresso ?? Math.min(100, Math.round((xpAtual / xpProx) * 100));
+    document.getElementById('modal-xp-pct').textContent  = `${pct}% para nível ${(user.level ?? 0) + 1}`;
+    document.getElementById('modal-xp-next').textContent = `${fmtXP(xpProx)} XP`;
+
+    // anima barra após render
+    const bar = document.getElementById('modal-xp-bar');
+    bar.style.width = '0%';
+    requestAnimationFrame(() => setTimeout(() => { bar.style.width = pct + '%'; }, 80));
+
+    modalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  /* ══════════════════════════════════
+     PÓDIO
+  ══════════════════════════════════ */
+  function renderPodium(top3, containerId, allRanking) {
     const container = document.getElementById(containerId);
     if (!top3 || top3.length === 0) { container.innerHTML = ''; return; }
 
     const medals  = ['🥇', '🥈', '🥉'];
     const classes = ['first', 'second', 'third'];
-    const heights = [72, 52, 38];
-    const orders  = [2, 1, 3];
 
     container.innerHTML = top3.map((u, i) => `
-      <div class="podium-slot ${classes[i]}">
+      <div class="podium-slot ${classes[i]}" data-pos="${i + 1}" tabindex="0" role="button" aria-label="Ver perfil de ${u.nome || 'Anônimo'}">
         <div class="podium-avatar">
           <div class="podium-avatar-inner">${initials(u.nome)}</div>
           <span class="podium-medal">${medals[i]}</span>
@@ -220,33 +297,50 @@
         <div class="podium-bar">${i + 1}º</div>
       </div>
     `).join('');
+
+    // Clique nos slots do pódio
+    container.querySelectorAll('.podium-slot').forEach((el, i) => {
+      el.addEventListener('click', () => openModal(top3[i], i + 1));
+      el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(top3[i], i + 1); });
+    });
   }
 
-  // ── Lista de ranking ───────────────────────────────────────────────────────
-  function renderList(ranking, listId, maxXP) {
+  /* ══════════════════════════════════
+     LISTA DE RANKING (posições 4+)
+  ══════════════════════════════════ */
+  function renderList(ranking, listId, topXP) {
     const list = document.getElementById(listId);
     if (!ranking || ranking.length === 0) {
       list.innerHTML = `<div class="state-box">
         <span class="glyph">$ query ranking — 0 results</span>
         <h4>Nenhum resultado</h4>
-        <p>Ainda não há dados suficientes para exibir o ranking.</p>
+        <p>Ainda não há dados suficientes.</p>
       </div>`;
       return;
     }
 
-    const topXP = maxXP || ranking[0]?.xp || 1;
+    const maxXP = topXP || ranking[0]?.xp || 1;
 
-    list.innerHTML = ranking.slice(3).map((u, i) => {
-      const pos = i + 4;
-      const topClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : '';
-      const pct = Math.max(4, Math.floor((u.xp / topXP) * 100));
+    // Mostra a partir do 4º lugar (índice 3); pódio cuida do top 3
+    const items = ranking.slice(3);
+
+    list.innerHTML = items.map((u, i) => {
+      const pos      = i + 4;
+      const posClass = pos <= 3 ? `top${pos}` : '';
+      const pct      = Math.max(4, Math.floor(((u.xp ?? 0) / maxXP) * 100));
+      const nome     = u.nome || 'Anônimo';
 
       return `
-        <div class="rank-row ${topClass}" style="animation-delay:${i * 25}ms">
+        <div class="rank-row ${posClass}"
+             style="animation-delay:${i * 20}ms"
+             data-index="${i}"
+             tabindex="0"
+             role="button"
+             aria-label="Ver detalhes de ${nome}, posição ${pos}">
           <span class="rank-pos">${pos}</span>
-          <div class="rank-avatar">${initials(u.nome)}</div>
+          <div class="rank-avatar">${initials(nome)}</div>
           <div class="rank-info">
-            <div class="rank-name">${u.nome || 'Anônimo'}</div>
+            <div class="rank-name">${nome}</div>
             <div class="rank-sub">${fmtNum(u.mensagens)} msgs</div>
             <div class="rank-bar-wrap">
               <div class="rank-bar" style="width:${pct}%"></div>
@@ -254,13 +348,24 @@
           </div>
           <div class="rank-right">
             <div class="rank-xp">${fmtXP(u.xp)} XP</div>
-            <div class="rank-level">Nível ${u.level}</div>
+            <div class="rank-level">Nível ${u.level ?? '—'}</div>
           </div>
+          <span class="rank-arrow">›</span>
         </div>`;
     }).join('');
+
+    // Evento de clique — abre modal com dados do usuário
+    list.querySelectorAll('.rank-row').forEach((el, i) => {
+      const user = items[i];
+      const pos  = i + 4;
+      el.addEventListener('click', () => openModal(user, pos));
+      el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(user, pos); });
+    });
   }
 
-  // ── Fetch ranking global ───────────────────────────────────────────────────
+  /* ══════════════════════════════════
+     FETCH — RANKING GLOBAL
+  ══════════════════════════════════ */
   async function loadGlobalRanking() {
     const btn = document.getElementById('refresh-global');
     btn.classList.add('spinning');
@@ -268,22 +373,17 @@
     try {
       const res  = await fetch(`${API}/user/ranking`);
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || 'Erro na API');
 
       const { ranking, total, atualizadoEm } = data;
 
-      // Stats
       const totalMsgs = ranking.reduce((s, u) => s + (u.mensagens || 0), 0);
       document.getElementById('stat-total').textContent   = fmtNum(total);
       document.getElementById('stat-msgs').textContent    = fmtXP(totalMsgs);
       document.getElementById('stat-updated').textContent = timeAgo(atualizadoEm);
       document.getElementById('global-count').textContent = total;
 
-      // Pódio top 3
-      renderPodium(ranking.slice(0, 3), 'podium-global');
-
-      // Lista a partir do 4º
+      renderPodium(ranking.slice(0, 3), 'podium-global', ranking);
       renderList(ranking, 'list-global', ranking[0]?.xp);
 
     } catch (err) {
@@ -300,19 +400,19 @@
     }
   }
 
-  // ── Fetch grupos disponíveis ───────────────────────────────────────────────
+  /* ══════════════════════════════════
+     FETCH — GRUPOS
+  ══════════════════════════════════ */
   async function loadGrupos() {
     try {
       const res  = await fetch(`${API}/grupos`);
       const data = await res.json();
-
-      const sel = document.getElementById('grupo-select');
+      const sel  = document.getElementById('grupo-select');
 
       if (!res.ok || !data.grupos?.length) {
         sel.innerHTML = '<option value="">Nenhum grupo disponível</option>';
         return;
       }
-
       sel.innerHTML = '<option value="">Selecione um grupo…</option>' +
         data.grupos.map(g => `<option value="${g.jid}">${g.nome || g.jid}</option>`).join('');
 
@@ -322,7 +422,9 @@
     }
   }
 
-  // ── Fetch ranking por grupo ────────────────────────────────────────────────
+  /* ══════════════════════════════════
+     FETCH — RANKING POR GRUPO
+  ══════════════════════════════════ */
   async function loadGrupoRanking(jid) {
     if (!jid) return;
 
@@ -331,21 +433,29 @@
     const pod  = document.getElementById('podium-grupo');
 
     btn.classList.add('spinning');
-    list.innerHTML = `
-      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:38px;height:38px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:60%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:40%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
-      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:38px;height:38px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:50%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:35%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>
-      <div class="skeleton-row"><div class="skeleton" style="width:28px;height:18px"></div><div class="skeleton" style="width:38px;height:38px;border-radius:50%"></div><div style="flex:1"><div class="skeleton" style="width:55%;height:14px;margin-bottom:5px"></div><div class="skeleton" style="width:30%;height:11px"></div></div><div class="skeleton" style="width:60px;height:18px"></div></div>`;
+
+    // skeletons enquanto carrega
+    pod.innerHTML = '';
+    list.innerHTML = [1,2,3,4,5].map(() => `
+      <div class="skeleton-row">
+        <div class="skeleton" style="width:28px;height:18px"></div>
+        <div class="skeleton" style="width:40px;height:40px;border-radius:50%"></div>
+        <div style="flex:1">
+          <div class="skeleton" style="width:55%;height:14px;margin-bottom:5px"></div>
+          <div class="skeleton" style="width:35%;height:11px"></div>
+        </div>
+        <div class="skeleton" style="width:60px;height:18px"></div>
+      </div>`).join('');
 
     try {
       const res  = await fetch(`${API}/user/ranking/grupo?jid=${encodeURIComponent(jid)}`);
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || 'Erro na API');
 
       const { ranking, total } = data;
-      document.getElementById('grupo-count').textContent = total;
+      document.getElementById('grupo-count').textContent = total ?? ranking.length;
 
-      renderPodium(ranking.slice(0, 3), 'podium-grupo');
+      renderPodium(ranking.slice(0, 3), 'podium-grupo', ranking);
       renderList(ranking, 'list-grupo', ranking[0]?.xp);
 
     } catch (err) {
@@ -362,23 +472,21 @@
     }
   }
 
-  // ── Eventos ───────────────────────────────────────────────────────────────
+  /* ── Eventos ── */
   document.getElementById('refresh-global').addEventListener('click', loadGlobalRanking);
 
   document.getElementById('refresh-grupo').addEventListener('click', () => {
     const jid = document.getElementById('grupo-select').value;
-    if (jid) loadGrupoRanking(jid);
-    else showToast('Selecione um grupo primeiro');
+    jid ? loadGrupoRanking(jid) : showToast('Selecione um grupo primeiro');
   });
 
   document.getElementById('grupo-select').addEventListener('change', e => {
     loadGrupoRanking(e.target.value);
   });
 
-  // ── Init ──────────────────────────────────────────────────────────────────
+  /* ── Init ── */
   loadGlobalRanking();
   loadGrupos();
 </script>
-
 </body>
 </html>
