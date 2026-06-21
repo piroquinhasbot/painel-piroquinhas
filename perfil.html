@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Meu Perfil — Piroquinhas Bot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="perfil.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
   <nav class="navbar">
-    <a href="index.html" class="nav-logo">🔥 Piroquinhas</a>
+    <a href="index.html" class="nav-logo">Piroquinhas</a>
     <div class="nav-links">
       <a href="index.html">Ranking</a>
       <a href="comandos.html">Comandos</a>
@@ -22,7 +25,7 @@
   <!-- TELA DE INSTRUÇÃO -->
   <div id="tela-instrucao" class="instrucao-wrap hidden">
     <div class="instrucao-card">
-      <div class="instrucao-icon">🔐</div>
+      <span class="instrucao-icon">🔐</span>
       <h2>Acesso restrito</h2>
       <p>Para ver seu perfil, envie o comando abaixo no grupo:</p>
       <div class="comando-destaque">!meupainel</div>
@@ -33,7 +36,7 @@
   <!-- LOADING -->
   <div id="tela-loading" class="loading-wrap hidden">
     <div class="spinner"></div>
-    <p>Carregando seu perfil...</p>
+    <p>Carregando seu perfil…</p>
   </div>
 
   <!-- ERRO -->
@@ -42,13 +45,14 @@
       <div class="erro-icon">⚠️</div>
       <h2 id="erro-msg">Algo deu errado</h2>
       <p>Gere um novo link com <strong>!meupainel</strong> no grupo.</p>
-      <a href="index.html" class="btn-secondary">Voltar ao ranking</a>
+      <a href="index.html" class="btn-secondary">← Voltar ao ranking</a>
     </div>
   </div>
 
   <!-- PAINEL PRINCIPAL -->
   <main id="painel" class="hidden">
 
+    <!-- HEADER DO PERFIL -->
     <section class="perfil-header">
       <div class="perfil-header-inner">
         <div class="avatar" id="avatar-iniciais"></div>
@@ -77,6 +81,7 @@
       </div>
     </section>
 
+    <!-- XP & PROGRESSO -->
     <section class="secao">
       <h2 class="secao-titulo">⚡ XP &amp; Progresso</h2>
       <div class="progresso-wrap">
@@ -85,7 +90,7 @@
           <span id="xp-prox-txt">Próx. nível: 0 XP</span>
         </div>
         <div class="barra-outer">
-          <div class="barra-inner" id="barra-xp" style="width: 0%"></div>
+          <div class="barra-inner" id="barra-xp" style="width:0%"></div>
         </div>
       </div>
       <div class="chart-box">
@@ -93,6 +98,7 @@
       </div>
     </section>
 
+    <!-- ATIVIDADE SEMANAL -->
     <section class="secao">
       <h2 class="secao-titulo">📊 Atividade Semanal</h2>
       <div class="chart-box chart-box--sm">
@@ -114,6 +120,7 @@
       </div>
     </section>
 
+    <!-- INVENTÁRIO -->
     <section class="secao">
       <h2 class="secao-titulo">🎒 Inventário</h2>
       <div id="inventario-grid" class="inventario-grid"></div>
@@ -125,23 +132,36 @@
   </main>
 
   <footer class="footer">
-    <p>Piroquinhas Bot © 2025 &mdash; feito com 🔥</p>
+    Piroquinhas Bot &copy; 2025 &mdash; feito com 🔥
   </footer>
 
   <script>
+    /* ===== CONFIGURAÇÃO ===== */
     const API = 'https://whatsappbot2-s3dx.onrender.com/api';
 
-    const $ = id => document.getElementById(id);
-    const mostrar = id => $(id).classList.remove('hidden');
-    const esconder = id => $(id).classList.add('hidden');
+    /* ===== HELPERS ===== */
+    const $  = id => document.getElementById(id);
+    const show = id => $(id).classList.remove('hidden');
+    const hide = id => $(id).classList.add('hidden');
 
     function iniciais(nome) {
       if (!nome) return '??';
       return nome.trim().split(' ').slice(0, 2).map(p => p[0].toUpperCase()).join('');
     }
 
+    function fmtNum(n) {
+      return (n ?? 0).toLocaleString('pt-BR');
+    }
+
+    /* ===== CHARTS ===== */
+    const CHART_DEFAULTS = {
+      font: { family: "'Inter', sans-serif", size: 11 },
+      grid: '#1a1b2e',
+      tick: '#5a5f72',
+    };
+
     function renderChartXP(xpHistory) {
-      const hoje = new Date();
+      const hoje  = new Date();
       const labels = [], dados = [];
       for (let i = 29; i >= 0; i--) {
         const d = new Date(hoje);
@@ -150,6 +170,7 @@
         labels.push(chave.slice(5));
         dados.push(xpHistory[chave] || 0);
       }
+
       new Chart($('chart-xp').getContext('2d'), {
         type: 'line',
         data: {
@@ -158,133 +179,198 @@
             label: 'XP ganho',
             data: dados,
             borderColor: '#b855ff',
-            backgroundColor: 'rgba(184,85,255,0.12)',
+            backgroundColor: ctx => {
+              const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 220);
+              g.addColorStop(0,   'rgba(184,85,255,0.22)');
+              g.addColorStop(1,   'rgba(184,85,255,0)');
+              return g;
+            },
             pointBackgroundColor: '#b855ff',
-            pointRadius: 3,
-            tension: 0.4,
+            pointBorderColor: '#07080d',
+            pointBorderWidth: 2,
+            pointRadius: 3.5,
+            pointHoverRadius: 6,
+            tension: 0.45,
             fill: true,
+            borderWidth: 2,
           }]
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false } },
+          animation: { duration: 900, easing: 'easeOutQuart' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#13141f',
+              borderColor: '#b855ff',
+              borderWidth: 1,
+              titleColor: '#e8eaf0',
+              bodyColor: '#b855ff',
+              padding: 10,
+              callbacks: {
+                label: ctx => ` ${fmtNum(ctx.raw)} XP`
+              }
+            }
+          },
           scales: {
-            x: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: '#1e1f2e' } },
-            y: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: '#1e1f2e' }, beginAtZero: true }
+            x: {
+              ticks: { color: CHART_DEFAULTS.tick, font: CHART_DEFAULTS.font, maxTicksLimit: 8 },
+              grid: { color: CHART_DEFAULTS.grid },
+            },
+            y: {
+              ticks: { color: CHART_DEFAULTS.tick, font: CHART_DEFAULTS.font },
+              grid: { color: CHART_DEFAULTS.grid },
+              beginAtZero: true,
+            }
           }
         }
       });
     }
 
     function renderChartAtividade(atividadeSemanal) {
-      const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const dias  = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
       const dados = Array.isArray(atividadeSemanal) ? atividadeSemanal : Array(7).fill(0);
+
       new Chart($('chart-atividade').getContext('2d'), {
         type: 'bar',
         data: {
           labels: dias,
           datasets: [{
-            label: 'Msgs',
+            label: 'Mensagens',
             data: dados,
-            backgroundColor: 'rgba(0,255,176,0.2)',
+            backgroundColor: ctx => {
+              const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 160);
+              g.addColorStop(0, 'rgba(0,255,176,0.35)');
+              g.addColorStop(1, 'rgba(0,255,176,0.05)');
+              return g;
+            },
             borderColor: '#00ffb0',
             borderWidth: 2,
-            borderRadius: 6,
+            borderRadius: 8,
+            borderSkipped: false,
           }]
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false } },
+          animation: { duration: 900, easing: 'easeOutQuart' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#13141f',
+              borderColor: '#00ffb0',
+              borderWidth: 1,
+              titleColor: '#e8eaf0',
+              bodyColor: '#00ffb0',
+              padding: 10,
+              callbacks: {
+                label: ctx => ` ${fmtNum(ctx.raw)} msgs`
+              }
+            }
+          },
           scales: {
-            x: { ticks: { color: '#888' }, grid: { color: '#1e1f2e' } },
-            y: { ticks: { color: '#888' }, grid: { color: '#1e1f2e' }, beginAtZero: true }
+            x: {
+              ticks: { color: CHART_DEFAULTS.tick, font: CHART_DEFAULTS.font },
+              grid: { display: false },
+            },
+            y: {
+              ticks: { color: CHART_DEFAULTS.tick, font: CHART_DEFAULTS.font },
+              grid: { color: CHART_DEFAULTS.grid },
+              beginAtZero: true,
+            }
           }
         }
       });
     }
 
+    /* ===== INVENTÁRIO ===== */
     function renderInventario(inventory) {
       const entries = inventory ? Object.entries(inventory) : [];
       if (entries.length === 0) {
-        mostrar('inventario-vazio');
+        show('inventario-vazio');
         return;
       }
       $('inventario-grid').innerHTML = entries.map(([nome, qtd]) => `
         <div class="inv-item">
           <span class="inv-nome">${nome}</span>
-          <span class="inv-qtd">x${qtd}</span>
+          <span class="inv-qtd">×${qtd}</span>
         </div>
       `).join('');
     }
 
+    /* ===== PREENCHER PERFIL ===== */
     function preencherPerfil(u) {
-      // Header
       $('avatar-iniciais').textContent = iniciais(u.nome);
       $('perfil-nome').textContent     = u.nome || 'Sem nome';
       $('perfil-numero').textContent   = u.telefone ? '+' + u.telefone : '—';
 
       $('stat-level').textContent = u.level ?? 0;
-      $('stat-xp').textContent    = (u.xp ?? 0).toLocaleString('pt-BR');
-      $('stat-gold').textContent  = (u.gold ?? 0).toLocaleString('pt-BR');
-      // posicaoRanking já vem da API em /user/me
+      $('stat-xp').textContent    = fmtNum(u.xp);
+      $('stat-gold').textContent  = fmtNum(u.gold);
       $('stat-rank').textContent  = u.posicaoRanking ? `#${u.posicaoRanking}` : '—';
 
-      // Barra de progresso — usa xpParaProximo e xpProgresso vindos da API
+      // Barra de progresso
       const xpAtual = u.xp ?? 0;
       const xpProx  = u.xpParaProximo ?? 1;
       const pct     = u.xpProgresso ?? Math.min(100, Math.round((xpAtual / xpProx) * 100));
-      $('xp-atual-txt').textContent = xpAtual.toLocaleString('pt-BR') + ' XP';
-      $('xp-prox-txt').textContent  = `Próx. nível: ${xpProx.toLocaleString('pt-BR')} XP`;
-      $('barra-xp').style.width     = pct + '%';
+
+      $('xp-atual-txt').textContent = fmtNum(xpAtual) + ' XP';
+      $('xp-prox-txt').textContent  = `Próx. nível: ${fmtNum(xpProx)} XP`;
+
+      // anima a barra com pequeno delay
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          $('barra-xp').style.width = pct + '%';
+        }, 150);
+      });
 
       renderChartXP(u.xpHistory || {});
       renderChartAtividade(u.atividadeSemanal);
 
-      $('act-mensagens').textContent = (u.mensagens  ?? 0).toLocaleString('pt-BR');
-      $('act-quiz').textContent      = (u.quizPoints ?? 0).toLocaleString('pt-BR');
+      $('act-mensagens').textContent = fmtNum(u.mensagens);
+      $('act-quiz').textContent      = fmtNum(u.quizPoints);
       $('act-pet').textContent       = u.pet?.nome
-        ? `${u.pet.nome} (nv ${u.pet.level ?? 1})`
+        ? `${u.pet.nome} nv${u.pet.level ?? 1}`
         : 'Nenhum';
 
       renderInventario(u.inventory);
     }
 
+    /* ===== INIT ===== */
     async function init() {
       const params     = new URLSearchParams(window.location.search);
       const tokenParam = params.get('token');
       let jwt          = sessionStorage.getItem('piroquinhas_jwt');
 
       if (!tokenParam && !jwt) {
-        mostrar('tela-instrucao');
+        show('tela-instrucao');
         return;
       }
 
-      mostrar('tela-loading');
+      show('tela-loading');
 
       try {
-        // 1. Trocar token temporário por JWT de sessão
+        // Trocar token temporário por JWT de sessão
         if (tokenParam) {
-          const res = await fetch(`${API}/auth/token`, {
+          const res  = await fetch(`${API}/auth/token`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: tokenParam })
+            body: JSON.stringify({ token: tokenParam }),
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || 'Token inválido ou expirado.');
-          // API retorna { jwt } depois da correção no api.js
           jwt = data.jwt || data.sessionToken;
           if (!jwt) throw new Error('Resposta inesperada da API.');
           sessionStorage.setItem('piroquinhas_jwt', jwt);
           history.replaceState(null, '', 'perfil.html');
         }
 
-        // 2. Buscar dados do usuário — posicaoRanking já vem aqui
-        const meRes = await fetch(`${API}/user/me`, {
-          headers: { 'Authorization': `Bearer ${jwt}` }
+        // Buscar dados do usuário
+        const meRes  = await fetch(`${API}/user/me`, {
+          headers: { 'Authorization': `Bearer ${jwt}` },
         });
         const meData = await meRes.json();
+
         if (!meRes.ok) {
-          // JWT expirado — limpa sessão e pede novo link
           if (meRes.status === 401) {
             sessionStorage.removeItem('piroquinhas_jwt');
             throw new Error('Sessão expirada. Digite !meupainel para um novo link.');
@@ -292,15 +378,14 @@
           throw new Error(meData.error || 'Erro ao carregar perfil.');
         }
 
-        // /user/me retorna o objeto direto (não dentro de { user })
-        esconder('tela-loading');
-        mostrar('painel');
+        hide('tela-loading');
+        show('painel');
         preencherPerfil(meData);
 
       } catch (err) {
-        esconder('tela-loading');
+        hide('tela-loading');
         $('erro-msg').textContent = err.message || 'Erro desconhecido.';
-        mostrar('tela-erro');
+        show('tela-erro');
       }
     }
 
