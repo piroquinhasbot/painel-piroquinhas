@@ -79,9 +79,9 @@
           <p class="perfil-bio hidden" id="perfil-bio"></p>
         </div>
         <div class="perfil-stats-topo">
-          <div class="stat-pill">
+          <div class="stat-pill" style="align-items:flex-start;">
             <span class="stat-label">Nível</span>
-            <span class="stat-val" id="stat-level">—</span>
+            <span class="stat-val" id="stat-level" style="display:flex;flex-direction:column;"></span>
           </div>
           <div class="stat-pill">
             <span class="stat-label">XP Total</span>
@@ -138,6 +138,15 @@
       </div>
     </section>
 
+    <!-- GRUPOS -->
+    <section class="secao" id="secao-grupos">
+      <h2 class="secao-titulo">🏘️ Meus Grupos</h2>
+      <div id="grupos-grid" class="grupos-grid"></div>
+      <div id="grupos-vazio" class="inventario-vazio hidden">
+        <p>😶 Você ainda não participa de nenhum grupo registrado.</p>
+      </div>
+    </section>
+
     <!-- RELACIONAMENTO -->
     <section class="secao" id="secao-relacionamento">
       <h2 class="secao-titulo">💑 Relacionamento</h2>
@@ -181,6 +190,20 @@
       return partes.length >= 2
         ? (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
         : limpo.slice(0, 2).toUpperCase();
+    }
+
+    function corAvatar(nome) {
+      const paleta = [
+        { bg: 'rgba(184,85,255,0.12)',  border: '#b855ff', text: '#b855ff', glow: 'rgba(184,85,255,0.35)' },
+        { bg: 'rgba(0,255,176,0.10)',   border: '#00ffb0', text: '#00ffb0', glow: 'rgba(0,255,176,0.30)'  },
+        { bg: 'rgba(255,208,96,0.10)',  border: '#ffd060', text: '#ffd060', glow: 'rgba(255,208,96,0.30)' },
+        { bg: 'rgba(96,165,255,0.12)',  border: '#60a5ff', text: '#60a5ff', glow: 'rgba(96,165,255,0.30)' },
+        { bg: 'rgba(255,100,130,0.11)', border: '#ff6482', text: '#ff6482', glow: 'rgba(255,100,130,0.30)'},
+        { bg: 'rgba(80,220,160,0.10)',  border: '#50dca0', text: '#50dca0', glow: 'rgba(80,220,160,0.30)' },
+      ];
+      const str = nome || '?';
+      const idx = [...str].reduce((acc, c) => acc + c.charCodeAt(0), 0) % paleta.length;
+      return paleta[idx];
     }
 
     function fmtNum(n) {
@@ -390,9 +413,54 @@
     /* ════════════════════════════════════════
        PREENCHER PERFIL
     ════════════════════════════════════════ */
+    function renderGrupos(grupos) {
+      const grid  = $('grupos-grid');
+      const vazio = $('grupos-vazio');
+
+      if (!grupos || grupos.length === 0) {
+        show('grupos-vazio');
+        return;
+      }
+
+      hide('grupos-vazio');
+
+      grid.innerHTML = grupos.map(g => {
+        const tier = tierLevel(g.level);
+        return `
+          <div class="grupo-card">
+            <div class="grupo-card-nome" title="${g.nome || g.jid}">
+              ${g.nome || g.jid.split('@')[0]}
+            </div>
+            <div class="grupo-card-stats">
+              <div class="grupo-stat">
+                <span class="grupo-stat-label">XP</span>
+                <span class="grupo-stat-val neon-roxo">${fmtNum(g.xp)}</span>
+              </div>
+              <div class="grupo-stat">
+                <span class="grupo-stat-label">Gold</span>
+                <span class="grupo-stat-val neon-gold">${fmtNum(g.gold)}</span>
+              </div>
+              <div class="grupo-stat">
+                <span class="grupo-stat-label">Nível</span>
+                <span class="grupo-stat-val">${g.level} <span style="font-size:0.7rem;opacity:0.7;">${tier.emoji}</span></span>
+              </div>
+              <div class="grupo-stat">
+                <span class="grupo-stat-label">Msgs</span>
+                <span class="grupo-stat-val">${fmtNum(g.mensagens)}</span>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
     function preencherPerfil(u) {
       // Header
-      $('avatar-iniciais').textContent = iniciais(u.nome);
+      const ini = iniciais(u.nome);
+      const cor = corAvatar(u.nome);
+      const el  = $('avatar-iniciais');
+      el.textContent = ini;
+      el.style.background  = cor.bg;
+      el.style.color       = cor.text;
+      el.style.boxShadow   = `0 0 0 2px ${cor.border}, 0 0 22px ${cor.glow}`;
       $('perfil-nome').textContent     = u.nome || 'Sem nome';
       $('perfil-numero').textContent   = u.telefone ? '+' + u.telefone : '—';
 
@@ -401,8 +469,13 @@
         show('perfil-bio');
       }
 
-      // Stats topo
-      $('stat-level').textContent = u.level ?? '—';
+      // Stats topo — nível com badge de tier
+      const tier = tierLevel(u.level);
+      $('stat-level').innerHTML = `
+        ${u.level ?? '—'}
+        <span class="level-badge ${tier.classe}" style="margin-top:0.3rem;">
+          ${tier.emoji} ${tier.label}
+        </span>`;
       $('stat-xp').textContent    = fmtNum(u.xp);
       $('stat-gold').textContent  = fmtNum(u.gold);
       $('stat-rank').textContent  = u.posicaoRanking ? `#${u.posicaoRanking}` : '—';
@@ -428,11 +501,21 @@
         ? `${u.pet.nome} nv${u.pet.level ?? 1}`
         : 'Nenhum';
 
+      // Grupos
+      renderGrupos(u.grupos);
+
       // Relacionamento
       renderRelacionamento(u);
 
       // Inventário
       renderInventario(u.inventory);
+    }
+    function tierLevel(level) {
+      const n = level || 1;
+      if (n <= 10) return { classe: 'tier-gray', emoji: '⚔️',  label: 'Novato'   };
+      if (n <= 30) return { classe: 'tier-roxo', emoji: '🔮',  label: 'Veterano' };
+      if (n <= 60) return { classe: 'tier-gold', emoji: '👑',  label: 'Élite'    };
+      return              { classe: 'tier-mint', emoji: '💎',  label: 'Lendário' };
     }
 
     /* ════════════════════════════════════════
