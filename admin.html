@@ -16,7 +16,7 @@
       <p class="login-sub">Piroquinhas Bot</p>
       <div class="field">
         <label for="admin-key">Chave de Admin</label>
-        <input type="password" id="admin-key" placeholder="••••••••••••" autocomplete="off" />
+        <input type="password" id="admin-key" placeholder="••••••••••••" autocomplete="current-password" />
       </div>
       <p id="login-erro" class="login-erro hidden">Chave inválida. Tente novamente.</p>
       <button id="btn-login" class="btn-primary">Entrar</button>
@@ -69,9 +69,11 @@
       <!-- ===== ABA: GRUPOS ===== -->
       <section id="aba-grupos" class="aba-conteudo">
         <div class="secao-header">
-          <h2>Gerenciador de Grupos</h2>
+          <h2>Gerenciador de Grupos <span class="contagem-badge" id="grupos-contagem"></span></h2>
           <button class="btn-icon" id="btn-refresh-grupos" title="Recarregar">↺</button>
         </div>
+
+        <input type="text" id="grupos-busca" class="busca-input" placeholder="Buscar grupo por nome ou ID..." />
 
         <div id="grupos-loading" class="estado-loading">
           <div class="spinner"></div> Carregando grupos...
@@ -80,6 +82,8 @@
         <div id="grupos-erro" class="estado-erro hidden">
           Erro ao carregar grupos. <button class="link-btn" id="btn-retry-grupos">Tentar novamente</button>
         </div>
+
+        <div id="grupos-vazio" class="estado-vazio hidden"></div>
 
         <div id="grupos-lista" class="grupos-lista hidden"></div>
       </section>
@@ -91,7 +95,7 @@
         </div>
 
         <div id="msgs-loading" class="estado-loading">
-          <div class="spinner"></div> Selecione um grupo...
+          <div class="spinner"></div> Carregando grupos...
         </div>
 
         <div id="msgs-editor" class="msgs-editor hidden">
@@ -121,9 +125,11 @@
       <!-- ===== ABA: WARNS ===== -->
       <section id="aba-warns" class="aba-conteudo hidden">
         <div class="secao-header">
-          <h2>Controle de Warns / Bans</h2>
+          <h2>Controle de Warns / Bans <span class="contagem-badge" id="warns-contagem"></span></h2>
           <button class="btn-icon" id="btn-refresh-warns" title="Recarregar">↺</button>
         </div>
+
+        <input type="text" id="warns-busca" class="busca-input" placeholder="Buscar por nome ou número..." />
 
         <div id="warns-loading" class="estado-loading">
           <div class="spinner"></div> Carregando usuários...
@@ -175,6 +181,12 @@
     const $ = id => document.getElementById(id);
     const show = id => $(id).classList.remove('hidden');
     const hide = id => $(id).classList.add('hidden');
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
 
     function adminKey() { return sessionStorage.getItem('piro_admin_key'); }
 
@@ -276,7 +288,9 @@
     async function carregarGrupos() {
       hide('grupos-erro');
       hide('grupos-lista');
+      hide('grupos-vazio');
       show('grupos-loading');
+      $('grupos-busca').value = '';
 
       try {
         const res = await fetch(`${API}/grupos`, { headers: adminHeaders() });
@@ -291,44 +305,56 @@
       }
     }
 
-    function renderGrupos(grupos) {
+    function renderGrupos(grupos, comFiltro = false) {
       hide('grupos-loading');
-      const lista = $('grupos-lista');
+      $('grupos-contagem').textContent = gruposCache.length ? `(${grupos.length})` : '';
 
       if (!grupos.length) {
-        lista.innerHTML = '<p class="estado-vazio">Nenhum grupo encontrado.</p>';
-        show('grupos-lista');
+        $('grupos-vazio').textContent = comFiltro
+          ? '🔍 Nenhum grupo encontrado para essa busca.'
+          : 'Nenhum grupo encontrado.';
+        hide('grupos-lista');
+        show('grupos-vazio');
         return;
       }
+      hide('grupos-vazio');
 
-      lista.innerHTML = grupos.map(g => `
-        <div class="grupo-card" data-jid="${g.idGrupo}">
+      const lista = $('grupos-lista');
+      lista.innerHTML = grupos.map(g => {
+        const nomeEsc = escapeHtml(g.nome || 'Grupo sem nome');
+        const jidEsc  = escapeHtml(g.idGrupo);
+        return `
+        <div class="grupo-card" data-jid="${jidEsc}">
           <div class="grupo-info">
-            <span class="grupo-nome">${g.nome || 'Grupo sem nome'}</span>
-            <span class="grupo-jid">${g.idGrupo}</span>
+            <span class="grupo-nome">${nomeEsc}</span>
+            <span class="grupo-jid">${jidEsc}</span>
           </div>
           <div class="grupo-toggles">
             <label class="toggle-wrap">
               <span class="toggle-label">Sistema de XP</span>
               <button class="toggle ${g.config?.xpAtivo !== false ? 'on' : ''}"
-                data-jid="${g.idGrupo}" data-campo="xpAtivo"
+                data-jid="${jidEsc}" data-campo="xpAtivo"
+                aria-pressed="${g.config?.xpAtivo !== false}"
                 aria-label="Toggle XP"></button>
             </label>
             <label class="toggle-wrap">
               <span class="toggle-label">Anti-Link</span>
               <button class="toggle ${g.config?.antiLink ? 'on' : ''}"
-                data-jid="${g.idGrupo}" data-campo="antiLink"
+                data-jid="${jidEsc}" data-campo="antiLink"
+                aria-pressed="${!!g.config?.antiLink}"
                 aria-label="Toggle Anti-Link"></button>
             </label>
             <label class="toggle-wrap">
               <span class="toggle-label">Boas-Vindas</span>
               <button class="toggle ${g.config?.boasVindas !== false ? 'on' : ''}"
-                data-jid="${g.idGrupo}" data-campo="boasVindas"
+                data-jid="${jidEsc}" data-campo="boasVindas"
+                aria-pressed="${g.config?.boasVindas !== false}"
                 aria-label="Toggle Boas-Vindas"></button>
             </label>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       lista.querySelectorAll('.toggle').forEach(btn => {
         btn.addEventListener('click', () => alternarToggle(btn));
@@ -344,6 +370,7 @@
 
       btn.disabled = true;
       btn.classList.toggle('on', novoValor);
+      btn.setAttribute('aria-pressed', String(novoValor));
 
       try {
         const res = await fetch(`${API}/admin/grupo/${encodeURIComponent(jid)}/config`, {
@@ -352,8 +379,11 @@
           body: JSON.stringify({ [campo]: novoValor })
         });
         if (!res.ok) throw new Error();
+        const grupo = gruposCache.find(g => g.idGrupo === jid);
+        if (grupo) grupo.config = { ...grupo.config, [campo]: novoValor };
       } catch {
         btn.classList.toggle('on', !novoValor);
+        btn.setAttribute('aria-pressed', String(!novoValor));
         alert('Erro ao salvar configuração. Tente novamente.');
       } finally {
         btn.disabled = false;
@@ -363,15 +393,35 @@
     $('btn-refresh-grupos').addEventListener('click', carregarGrupos);
     $('btn-retry-grupos').addEventListener('click', carregarGrupos);
 
+    $('grupos-busca').addEventListener('input', () => {
+      const termo = $('grupos-busca').value.trim().toLowerCase();
+      if (!termo) { renderGrupos(gruposCache); return; }
+      const filtrados = gruposCache.filter(g =>
+        (g.nome || '').toLowerCase().includes(termo) || g.idGrupo.toLowerCase().includes(termo)
+      );
+      renderGrupos(filtrados, true);
+    });
+
     /* ===== MENSAGENS ===== */
     function popularSelectMensagens(grupos) {
       const sel = $('msgs-select-grupo');
       sel.innerHTML = grupos.map(g =>
-        `<option value="${g.idGrupo}">${g.nome || g.idGrupo}</option>`
+        `<option value="${escapeHtml(g.idGrupo)}">${escapeHtml(g.nome || g.idGrupo)}</option>`
       ).join('');
       hide('msgs-loading');
+
+      if (!grupos.length) return;
       show('msgs-editor');
+      preencherMensagens(grupos[0].idGrupo);
     }
+
+    function preencherMensagens(jid) {
+      const grupo = gruposCache.find(g => g.idGrupo === jid);
+      $('msg-boas-vindas').value = grupo?.mensagens?.boasVindas || '';
+      $('msg-regras').value      = grupo?.mensagens?.regras || '';
+    }
+
+    $('msgs-select-grupo').addEventListener('change', e => preencherMensagens(e.target.value));
 
     $('btn-salvar-msgs').addEventListener('click', async () => {
       const jid = $('msgs-select-grupo').value;
@@ -389,6 +439,10 @@
           body: JSON.stringify({ boasVindas, regras })
         });
         if (!res.ok) throw new Error();
+
+        const grupo = gruposCache.find(g => g.idGrupo === jid);
+        if (grupo) grupo.mensagens = { boasVindas, regras };
+
         feedback.textContent = '✅ Salvo com sucesso!';
         feedback.className = 'msgs-feedback ok';
         show('msgs-feedback');
@@ -403,65 +457,92 @@
     });
 
     /* ===== WARNS / BANS ===== */
+    let warnsCache = [];
+
     async function carregarWarnUsers() {
       hide('warns-tabela-wrap');
       hide('warns-vazio');
       hide('warns-erro');
       show('warns-loading');
+      $('warns-busca').value = '';
 
       try {
         const res = await fetch(`${API}/admin/usuarios`, { headers: adminHeaders() });
         if (!res.ok) throw new Error();
         const { usuarios } = await res.json();
-        renderWarnUsers(usuarios || []);
+        warnsCache = usuarios || [];
+        renderWarnUsers(warnsCache);
       } catch {
         hide('warns-loading');
         show('warns-erro');
       }
     }
 
-    function renderWarnUsers(usuarios) {
+    function renderWarnUsers(usuarios, comFiltro = false) {
       hide('warns-loading');
+      $('warns-contagem').textContent = warnsCache.length ? `(${usuarios.length})` : '';
 
       if (!usuarios.length) {
+        $('warns-vazio').textContent = comFiltro
+          ? '🔍 Nenhum usuário encontrado para essa busca.'
+          : '✅ Nenhum usuário com warns ou banido no momento.';
+        hide('warns-tabela-wrap');
         show('warns-vazio');
         return;
       }
+      hide('warns-vazio');
 
       const tbody = $('warns-tbody');
       tbody.innerHTML = usuarios.map(u => {
-        const banido = u.banido ? '<span class="badge-ban">Banido</span>' : '<span class="badge-ok">Ativo</span>';
-        const warns = u.warns ?? 0;
-        const maxWarns = u.maxWarns ?? 3;
+        const banido    = u.banido ? '<span class="badge-ban">Banido</span>' : '<span class="badge-ok">Ativo</span>';
+        const warns     = u.warns ?? 0;
+        const maxWarns  = u.maxWarns ?? 3;
+        const idEsc     = escapeHtml(u.idWhatsApp);
+        const nomeEsc   = escapeHtml(u.nome || u.idWhatsApp || '—');
+        const numeroEsc = escapeHtml(u.telefone || u.idWhatsApp?.split('@')[0] || '—');
+
         return `
           <tr>
-            <td><span class="user-nome">${u.nome || '—'}</span></td>
-            <td><span class="user-num">+${(u.telefone || u.idWhatsApp?.split('@')[0] || '—')}</span></td>
+            <td><span class="user-nome">${escapeHtml(u.nome || '—')}</span></td>
+            <td><span class="user-num">+${numeroEsc}</span></td>
             <td>
               <span class="warns-count ${warns >= maxWarns ? 'full' : ''}">${warns}/${maxWarns}</span>
             </td>
             <td>${banido}</td>
-            <td>
-              <button class="btn-remover-warn" data-id="${u.idWhatsApp}" data-nome="${u.nome || u.idWhatsApp}">
-                Remover warn
+            <td class="acoes-cell">
+              <button class="btn-acao" data-action="remover-warn" data-id="${idEsc}" data-nome="${nomeEsc}">−1 warn</button>
+              <button class="btn-acao" data-action="zerar-warns" data-id="${idEsc}" data-nome="${nomeEsc}">Zerar</button>
+              <button class="btn-acao ${u.banido ? 'btn-acao--unban' : 'btn-acao--ban'}"
+                data-action="toggle-ban" data-id="${idEsc}" data-nome="${nomeEsc}" data-banido="${!!u.banido}">
+                ${u.banido ? 'Desbanir' : 'Banir'}
               </button>
             </td>
           </tr>
         `;
       }).join('');
 
-      tbody.querySelectorAll('.btn-remover-warn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          abrirModal(
-            'Remover warn',
-            `Remover 1 warn de ${btn.dataset.nome}?`,
-            () => removerWarn(btn.dataset.id)
-          );
-        });
-      });
-
       show('warns-tabela-wrap');
     }
+
+    // Listener único e delegado — sobrevive a re-renders da tbody
+    $('warns-tbody').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const { action, id, nome } = btn.dataset;
+
+      if (action === 'remover-warn') {
+        abrirModal('Remover warn', `Remover 1 warn de ${nome}?`, () => removerWarn(id));
+      } else if (action === 'zerar-warns') {
+        abrirModal('Zerar warns', `Zerar todos os warns de ${nome}?`, () => zerarWarns(id));
+      } else if (action === 'toggle-ban') {
+        const banidoAtual = btn.dataset.banido === 'true';
+        const titulo = banidoAtual ? 'Desbanir usuário' : 'Banir usuário';
+        const texto  = banidoAtual
+          ? `Tem certeza que deseja desbanir ${nome}?`
+          : `Tem certeza que deseja banir ${nome}?`;
+        abrirModal(titulo, texto, () => alternarBan(id, !banidoAtual));
+      }
+    });
 
     async function removerWarn(idWhatsApp) {
       try {
@@ -476,8 +557,47 @@
       }
     }
 
+    async function zerarWarns(idWhatsApp) {
+      try {
+        const res = await fetch(`${API}/admin/warn/${encodeURIComponent(idWhatsApp)}`, {
+          method: 'PUT',
+          headers: adminHeaders(),
+          body: JSON.stringify({ warns: 0 })
+        });
+        if (!res.ok) throw new Error();
+        carregarWarnUsers();
+      } catch {
+        alert('Erro ao zerar warns. Tente novamente.');
+      }
+    }
+
+    async function alternarBan(idWhatsApp, novoBanido) {
+      try {
+        const res = await fetch(`${API}/admin/usuario/${encodeURIComponent(idWhatsApp)}/ban`, {
+          method: 'PATCH',
+          headers: adminHeaders(),
+          body: JSON.stringify({ banido: novoBanido })
+        });
+        if (!res.ok) throw new Error();
+        carregarWarnUsers();
+      } catch {
+        alert('Erro ao atualizar status de banimento. Tente novamente.');
+      }
+    }
+
     $('btn-refresh-warns').addEventListener('click', carregarWarnUsers);
     $('btn-retry-warns').addEventListener('click', carregarWarnUsers);
+
+    $('warns-busca').addEventListener('input', () => {
+      const termo = $('warns-busca').value.trim().toLowerCase();
+      if (!termo) { renderWarnUsers(warnsCache); return; }
+      const filtrados = warnsCache.filter(u =>
+        (u.nome || '').toLowerCase().includes(termo) ||
+        (u.telefone || '').toLowerCase().includes(termo) ||
+        (u.idWhatsApp || '').toLowerCase().includes(termo)
+      );
+      renderWarnUsers(filtrados, true);
+    });
 
     /* ===== AUTO-LOGIN SE JÁ TIVER CHAVE ===== */
     if (adminKey()) {
