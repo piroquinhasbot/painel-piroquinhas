@@ -236,7 +236,7 @@ function fmtNum(n) {
 }
 
 function getJwt() {
-  return localStorage.getItem('piro_jwt') || null;
+  return sessionStorage.getItem('piro_jwt') || null;
 }
 
 const SIMBOLOS = [
@@ -322,8 +322,6 @@ function atualizarSessao(lucroLiq, aposta) {
 ══════════════════════════════════════════════════════ */
 function checkAuth() {
   const jwt = getJwt();
-  console.log('[checkAuth] piro_jwt:', jwt ? 'ENCONTRADO ✅' : 'NÃO ENCONTRADO ❌');
-  console.log('[checkAuth] localStorage keys:', Object.keys(localStorage));
 
   if (!jwt) {
     $('login-gate').style.display   = 'block';
@@ -619,8 +617,8 @@ async function girar() {
   const jwt    = getJwt();
   const aposta = parseInt($('aposta-input').value, 10);
 
-  if (!aposta || aposta <= 0) {
-    showToast('Digite o valor da aposta!');
+  if (!aposta || aposta < 10) {
+    showToast('Aposta mínima: 10 gold!');
     return;
   }
   if (aposta > saldoAtual) {
@@ -661,7 +659,15 @@ async function girar() {
 
     if (!res.ok) {
       await animPromise;
-      showToast(apiData?.error || 'Erro ao girar!', 'lose');
+      if (res.status === 401) {
+        sessionStorage.removeItem('piro_jwt');
+        showToast('Sessão expirada. Faça login novamente.', 'lose');
+        setTimeout(() => { window.location.href = 'perfil.html'; }, 2000);
+      } else if (res.status === 429) {
+        showToast(apiData?.error || 'Muitos giros! Aguarde um momento.', 'lose');
+      } else {
+        showToast(apiData?.error || 'Erro ao girar!', 'lose');
+      }
       spinning = false;
       btnSpin.disabled  = false;
       btnSpin.textContent = '🎰 Girar';
@@ -789,7 +795,7 @@ $('aposta-input')?.addEventListener('keydown', e => {
       });
       const data = await res.json();
       if (res.ok && data.jwt) {
-        localStorage.setItem('piro_jwt', data.jwt);
+        sessionStorage.setItem('piro_jwt', data.jwt);
         history.replaceState(null, '', 'cassino.html');
       }
     } catch { /* token inválido — checkAuth vai rejeitar abaixo */ }
