@@ -161,6 +161,22 @@
         </button>
       </div>
 
+      <!-- Contador de sessão -->
+      <div class="session-stats" id="session-stats" style="display:none">
+        <div class="session-stat" id="stat-rodadas">
+          <span>Rodadas</span>
+          <strong id="stat-rodadas-val">0</strong>
+        </div>
+        <div class="session-stat pos" id="stat-ganhos">
+          <span>Ganhos</span>
+          <strong id="stat-ganhos-val">0 gold</strong>
+        </div>
+        <div class="session-stat neg" id="stat-perdas">
+          <span>Perdas</span>
+          <strong id="stat-perdas-val">0 gold</strong>
+        </div>
+      </div>
+
       <!-- Chips de aposta rápida -->
       <div class="quick-bets">
         <button class="quick-bet" data-val="50">50</button>
@@ -169,6 +185,7 @@
         <button class="quick-bet" data-val="1000">1k</button>
         <button class="quick-bet" data-val="5000">5k</button>
         <button class="quick-bet" data-val="max">MAX</button>
+        <button class="quick-bet repeat-bet" id="btn-repeat" data-val="repeat" style="display:none">🔁 Repetir</button>
       </div>
     </div>
 
@@ -222,33 +239,40 @@ function getJwt() {
   return localStorage.getItem('piro_jwt') || null;
 }
 
-/* ══════════════════════════════════════════════════════
-   SLOTS — SÍMBOLOS E PAYTABLE
-══════════════════════════════════════════════════════ */
-const SIMBOLOS = [
-  { emoji: '💎', nome: 'Diamante', peso: 2,  tres: 50, dois: 5   },
-  { emoji: '7️⃣',  nome: 'Sete',    peso: 5,  tres: 25, dois: 3   },
-  { emoji: '🔔', nome: 'Sino',    peso: 10, tres: 15, dois: 2   },
-  { emoji: '🍇', nome: 'Uva',     peso: 15, tres: 10, dois: 1.5 },
-  { emoji: '🍉', nome: 'Melancia',peso: 18, tres: 8,  dois: 1.5 },
-  { emoji: '🍋', nome: 'Limão',   peso: 22, tres: 6,  dois: 1.2 },
-  { emoji: '🍒', nome: 'Cereja',  peso: 28, tres: 4,  dois: 1.2 },
-];
+const RARIDADE = {
+  '💎': { tres: { label: 'lendário', cls: 'rarity-lendario' }, dois: { label: 'raro',   cls: 'rarity-raro'     } },
+  '7️⃣':  { tres: { label: 'jackpot', cls: 'rarity-jackpot'  }, dois: { label: 'raro',   cls: 'rarity-raro'     } },
+  '🔔': { tres: { label: 'jackpot', cls: 'rarity-jackpot'  }, dois: { label: 'incomum',cls: 'rarity-raro'     } },
+  '🍇': { tres: { label: 'raro',   cls: 'rarity-raro'     }, dois: { label: 'comum',  cls: 'rarity-comum'    } },
+  '🍉': { tres: { label: 'raro',   cls: 'rarity-raro'     }, dois: { label: 'comum',  cls: 'rarity-comum'    } },
+  '🍋': { tres: { label: 'comum',  cls: 'rarity-comum'    }, dois: { label: 'comum',  cls: 'rarity-comum'    } },
+  '🍒': { tres: { label: 'comum',  cls: 'rarity-comum'    }, dois: { label: 'comum',  cls: 'rarity-comum'    } },
+};
 
-/* ── Paytable ── */
 function buildPaytable() {
   const wrap = $('paytable-rows');
   if (!wrap) return;
-  wrap.innerHTML = SIMBOLOS.map(s => `
-    <div class="paytable-row">
-      <span class="paytable-symbols">${s.emoji}${s.emoji}${s.emoji}</span>
-      <span class="paytable-mult"><strong>${s.tres}x</strong></span>
-    </div>
-    <div class="paytable-row">
-      <span class="paytable-symbols">${s.emoji}${s.emoji}✦</span>
-      <span class="paytable-mult"><strong>${s.dois}x</strong></span>
-    </div>
-  `).join('');
+  wrap.innerHTML = SIMBOLOS.map(s => {
+    const rTres = RARIDADE[s.emoji]?.tres ?? { label: 'comum', cls: 'rarity-comum' };
+    const rDois = RARIDADE[s.emoji]?.dois ?? { label: 'comum', cls: 'rarity-comum' };
+    const isJackpot = s.tres >= 15;
+    return `
+      <div class="paytable-row${isJackpot ? ' jackpot-row' : ''}">
+        <span class="paytable-symbols">${s.emoji}${s.emoji}${s.emoji}</span>
+        <span class="paytable-mult">
+          <span class="rarity-badge ${rTres.cls}">${rTres.label}</span>
+          <strong>${s.tres}x</strong>
+        </span>
+      </div>
+      <div class="paytable-row">
+        <span class="paytable-symbols">${s.emoji}${s.emoji}✦</span>
+        <span class="paytable-mult">
+          <span class="rarity-badge ${rDois.cls}">${rDois.label}</span>
+          <strong>${s.dois}x</strong>
+        </span>
+      </div>
+    `;
+  }).join('');
 }
 
 /* ══════════════════════════════════════════════════════
@@ -258,6 +282,30 @@ let saldoAtual   = 0;
 let grupoAtual   = null;
 let spinning     = false;
 let sessionHistory = [];
+
+let ultimaAposta  = null;
+let sessaoRodadas = 0;
+let sessaoGanhos  = 0;
+let sessaoPerdas  = 0;
+
+function atualizarSessao(lucroLiq, aposta) {
+  sessaoRodadas++;
+  if (lucroLiq > 0) sessaoGanhos += lucroLiq;
+  else              sessaoPerdas += aposta;
+
+  $('session-stats').style.display = 'grid';
+  $('stat-rodadas-val').textContent = sessaoRodadas;
+  $('stat-ganhos-val').textContent  = fmtNum(sessaoGanhos) + ' gold';
+  $('stat-perdas-val').textContent  = fmtNum(sessaoPerdas) + ' gold';
+
+  ultimaAposta = aposta;
+  const btnRepeat = $('btn-repeat');
+  if (btnRepeat) {
+    btnRepeat.style.display = 'inline-flex';
+    btnRepeat.dataset.val   = 'repeat';
+    btnRepeat.textContent   = `🔁 ${fmtNum(aposta)}`;
+  }
+}
 
 /* ══════════════════════════════════════════════════════
    AUTH
@@ -324,6 +372,11 @@ function onGrupoChange() {
   const btnSpin    = $('btn-spin');
 
   if (grupoAtual) {
+    sessaoRodadas = 0; sessaoGanhos = 0; sessaoPerdas = 0; ultimaAposta = null;
+    $('session-stats').style.display = 'none';
+    const btnRepeat = $('btn-repeat');
+    if (btnRepeat) btnRepeat.style.display = 'none';
+
     saldoChip.style.display   = 'flex';
     slotMachine.style.display = 'block';
     paytable.style.display    = 'block';
@@ -380,15 +433,15 @@ function animateReel(reelId, finalEmoji, duration) {
 /* Para os 3 rolos em sequência com delay entre eles */
 async function animateAllReels(r1, r2, r3) {
   await Promise.all([
-    animateReel('reel-0', r1, 800),
+    animateReel('reel-0', r1, 900),
     new Promise(resolve => setTimeout(async () => {
-      await animateReel('reel-1', r2, 800);
+      await animateReel('reel-1', r2, 900);
       resolve();
-    }, 400)),
+    }, 500)),
     new Promise(resolve => setTimeout(async () => {
-      await animateReel('reel-2', r3, 800);
+      await animateReel('reel-2', r3, 900);
       resolve();
-    }, 800)),
+    }, 1100)),
   ]);
 }
 
@@ -458,6 +511,22 @@ function mostrarResultado(data) {
   /* Histórico */
   addHistory(r1, r2, r3, lucroLiq);
 
+  /* Som */
+  const tipoSom = isJackpot ? 'jackpot' : isWin ? 'moeda' : 'derrota';
+  tocarSom(tipoSom);
+
+  /* Shake na máquina em vitória */
+  if (isWin) {
+    const sm = $('slot-machine');
+    sm.classList.remove('shake');
+    void sm.offsetWidth;
+    sm.classList.add('shake');
+    setTimeout(() => sm.classList.remove('shake'), 500);
+  }
+
+  /* Atualiza contador de sessão */
+  atualizarSessao(lucroLiq, aposta);
+
   /* Confete no jackpot */
   if (isJackpot) dispararConfete();
 }
@@ -485,6 +554,55 @@ function addHistory(r1, r2, r3, lucroLiq) {
 /* ══════════════════════════════════════════════════════
    GIRAR
 ══════════════════════════════════════════════════════ */
+
+let _audioCtx = null;
+function getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _audioCtx;
+}
+
+function tocarSom(tipo) {
+  try {
+    const ctx = getAudioCtx();
+    if (tipo === 'moeda') {
+      const notas = [523, 659, 784, 1047];
+      notas.forEach((freq, i) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        const t = ctx.currentTime + i * 0.08;
+        gain.gain.setValueAtTime(0.18, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+        osc.start(t); osc.stop(t + 0.18);
+      });
+    } else if (tipo === 'jackpot') {
+      const notas = [523, 659, 784, 1047, 1319, 1047, 1319];
+      notas.forEach((freq, i) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'triangle';
+        const t = ctx.currentTime + i * 0.1;
+        gain.gain.setValueAtTime(0.22, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        osc.start(t); osc.stop(t + 0.25);
+      });
+    } else {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 150;
+      osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(); osc.stop(ctx.currentTime + 0.3);
+    }
+  } catch {}
+}
+
 async function girar() {
   if (spinning || !grupoAtual) return;
 
@@ -626,14 +744,12 @@ $('btn-spin')?.addEventListener('click', girar);
 /* Quick bets */
 document.querySelectorAll('.quick-bet').forEach(btn => {
   btn.addEventListener('click', () => {
-    const val = btn.dataset.val;
+    const val   = btn.dataset.val;
     const input = $('aposta-input');
     if (!input) return;
-    if (val === 'max') {
-      input.value = saldoAtual;
-    } else {
-      input.value = Math.min(parseInt(val), saldoAtual);
-    }
+    if (val === 'max')                          input.value = saldoAtual;
+    else if (val === 'repeat' && ultimaAposta)  input.value = Math.min(ultimaAposta, saldoAtual);
+    else                                        input.value = Math.min(parseInt(val), saldoAtual);
   });
 });
 
