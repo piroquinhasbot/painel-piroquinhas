@@ -32,6 +32,12 @@
         </a>
       </li>
       <li>
+        <a href="cassino.html" id="nav-cassino" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span>Cassino</span>
+        </a>
+      </li>
+      <li>
         <a href="admin.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
           <span>Admin</span>
@@ -69,6 +75,15 @@
     <div class="stat-pill"><strong id="stat-msgs">—</strong><span>mensagens</span></div>
     <div class="stat-pill"><strong id="stat-updated">—</strong><span>atualizado</span></div>
   </div>
+
+  <a href="cassino.html" class="cassino-card" id="cassino-card" style="display:none">
+    <span class="cassino-card-icon">🎰</span>
+    <div class="cassino-card-text">
+      <strong>Cassino</strong>
+      <span>Aposte seu gold nos slots</span>
+    </div>
+    <span class="cassino-card-arrow">›</span>
+  </a>
 
   <button class="live-badge" id="live-badge" type="button" title="Ativar atualização automática a cada 30s">
     <span class="live-dot"></span>
@@ -877,6 +892,14 @@
   /* ── Init ── */
   loadGlobalRanking();
   loadGrupos();
+
+  // Mostra nav-cassino e card do cassino se estiver logado
+  if (localStorage.getItem('piro_jwt')) {
+    const navCassino = document.getElementById('nav-cassino');
+    const cassinoCard = document.getElementById('cassino-card');
+    if (navCassino) navCassino.style.display = 'flex';
+    if (cassinoCard) cassinoCard.style.display = 'flex';
+  }
 </script>
 </body>
 </html>
