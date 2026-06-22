@@ -567,7 +567,7 @@
     async function init() {
   const params     = new URLSearchParams(window.location.search);
   const tokenParam = params.get('token');
-  let   jwtSalvo   = localStorage.getItem('piro_jwt');
+  let   jwtSalvo   = sessionStorage.getItem('piro_jwt');
 
   // Sem token na URL e sem JWT salvo → mostra instrução
   if (!tokenParam && !jwtSalvo) {
@@ -578,7 +578,12 @@
   show('tela-loading');
 
   try {
-    // ── Passo 1: trocar token temporário por JWT de sessão ──
+    // ── Passo 1: limpa o token da URL imediatamente (antes de qualquer fetch)
+    if (tokenParam) {
+      history.replaceState(null, '', 'perfil.html');
+    }
+
+    // ── Passo 2: trocar token temporário por JWT de sessão ──
     if (tokenParam) {
       const res  = await fetch(`${API}/auth/token`, {
         method: 'POST',
@@ -592,7 +597,7 @@
       jwtSalvo = data.jwt;
       if (!jwtSalvo) throw new Error('Resposta inesperada da API.');
 
-      localStorage.setItem('piro_jwt', jwtSalvo);
+      sessionStorage.setItem('piro_jwt', jwtSalvo);
 
       // Remove o token da URL sem recarregar a página
       history.replaceState(null, '', 'perfil.html');
@@ -606,7 +611,7 @@
 
     if (!meRes.ok) {
       if (meRes.status === 401) {
-        localStorage.removeItem('piro_jwt');
+        sessionStorage.removeItem('piro_jwt');
         throw new Error('Sua sessão expirou. Digite !meupainel no grupo para um novo link.');
       }
       throw new Error(meData.error || 'Erro ao carregar perfil.');
