@@ -1128,11 +1128,11 @@
           `Isso vai zerar TODO o gold de ${membro} em "${nomeGrupoPorJid(jid)}". Não pode ser desfeito!`,
           async () => {
             try {
-              const res = await fetch(`${API}/admin/usuario/${encodeURIComponent(jidMembro)}/gold/reset-grupo`, {
-                method: 'DELETE',
-                headers: adminHeaders(),
-                body: JSON.stringify({ idGrupo: jid })
-              });
+              const res = await fetch(`${API}/admin/usuario/gold/reset-grupo`, {
+  method: 'POST',
+  headers: adminHeaders(),
+  body: JSON.stringify({ idWhatsApp: jidMembro, idGrupo: jid })
+});
               if (!res.ok) throw new Error();
               toast('✅ Gold do membro zerado.');
               if (membroInput) membroInput.value = '';
