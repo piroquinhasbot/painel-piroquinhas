@@ -424,7 +424,11 @@
   if (gruposEl && gruposListEl && user.idWhatsApp) {
     gruposEl.style.display = 'none';
     gruposListEl.innerHTML = '';
-    fetch(`${API}/user/grupos/${encodeURIComponent(user.idWhatsApp)}`)
+    const jwt = sessionStorage.getItem('piro_jwt');
+    if (!jwt) return;
+    fetch(`${API}/user/grupos/${encodeURIComponent(user.idWhatsApp)}`, {
+      headers: { 'Authorization': `Bearer ${jwt}` }
+    })
       .then(r => r.json())
       .then(data => {
         if (!data.grupos?.length) return;
@@ -922,7 +926,7 @@
   loadGrupos();
 
   // Mostra nav-cassino e card do cassino se estiver logado
-  if (localStorage.getItem('piro_jwt')) {
+  if (sessionStorage.getItem('piro_jwt')) {
     const navCassino = document.getElementById('nav-cassino');
     const cassinoCard = document.getElementById('cassino-card');
     if (navCassino) navCassino.style.display = 'flex';
