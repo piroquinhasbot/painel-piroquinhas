@@ -396,7 +396,9 @@
        INVENTÁRIO
     ════════════════════════════════════════ */
     function renderInventario(inventory) {
-      const entries = inventory ? Object.entries(inventory) : [];
+      const entries = inventory
+        ? Object.entries(inventory).filter(([, qtd]) => Number(qtd) > 0)
+        : [];
 
       if (entries.length === 0) {
         show('inventario-vazio');
