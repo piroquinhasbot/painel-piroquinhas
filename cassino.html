@@ -239,14 +239,24 @@ function getJwt() {
   return localStorage.getItem('piro_jwt') || null;
 }
 
+const SIMBOLOS = [
+  { emoji: '💎', tres: 50, dois: 5   },
+  { emoji: '7️⃣',  tres: 25, dois: 3   },
+  { emoji: '🔔', tres: 15, dois: 2   },
+  { emoji: '🍇', tres: 10, dois: 1.5 },
+  { emoji: '🍉', tres: 8,  dois: 1.5 },
+  { emoji: '🍋', tres: 6,  dois: 1.2 },
+  { emoji: '🍒', tres: 4,  dois: 1.2 },
+];
+
 const RARIDADE = {
-  '💎': { tres: { label: 'lendário', cls: 'rarity-lendario' }, dois: { label: 'raro',   cls: 'rarity-raro'     } },
-  '7️⃣':  { tres: { label: 'jackpot', cls: 'rarity-jackpot'  }, dois: { label: 'raro',   cls: 'rarity-raro'     } },
-  '🔔': { tres: { label: 'jackpot', cls: 'rarity-jackpot'  }, dois: { label: 'incomum',cls: 'rarity-raro'     } },
-  '🍇': { tres: { label: 'raro',   cls: 'rarity-raro'     }, dois: { label: 'comum',  cls: 'rarity-comum'    } },
-  '🍉': { tres: { label: 'raro',   cls: 'rarity-raro'     }, dois: { label: 'comum',  cls: 'rarity-comum'    } },
-  '🍋': { tres: { label: 'comum',  cls: 'rarity-comum'    }, dois: { label: 'comum',  cls: 'rarity-comum'    } },
-  '🍒': { tres: { label: 'comum',  cls: 'rarity-comum'    }, dois: { label: 'comum',  cls: 'rarity-comum'    } },
+  '💎': { tres: { label: 'lendário', cls: 'rarity-lendario' }, dois: { label: 'épico',  cls: 'rarity-epico'  } },
+  '7️⃣':  { tres: { label: 'épico',   cls: 'rarity-epico'   }, dois: { label: 'raro',   cls: 'rarity-raro'   } },
+  '🔔': { tres: { label: 'raro',    cls: 'rarity-raro'    }, dois: { label: 'raro',   cls: 'rarity-raro'   } },
+  '🍇': { tres: { label: 'incomum', cls: 'rarity-incomum' }, dois: { label: 'comum',  cls: 'rarity-comum'  } },
+  '🍉': { tres: { label: 'incomum', cls: 'rarity-incomum' }, dois: { label: 'comum',  cls: 'rarity-comum'  } },
+  '🍋': { tres: { label: 'comum',   cls: 'rarity-comum'   }, dois: { label: 'comum',  cls: 'rarity-comum'  } },
+  '🍒': { tres: { label: 'comum',   cls: 'rarity-comum'   }, dois: { label: 'comum',  cls: 'rarity-comum'  } },
 };
 
 function buildPaytable() {
