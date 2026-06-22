@@ -228,14 +228,19 @@
       <div class="modal-xp-bar-inner" id="modal-xp-bar" style="width:0%"></div>
     </div>
 
+    <div class="modal-grupos" id="modal-grupos" style="display:none">
+      <div class="modal-grupos-title">Grupos</div>
+      <div class="modal-grupos-list" id="modal-grupos-list"></div>
+    </div>
+
     <div class="modal-actions">
       <a href="perfil.html" class="modal-btn modal-btn-primary" id="modal-perfil-link">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         Ver Perfil
       </a>
-      <button class="modal-btn modal-btn-secondary" id="modal-copy-btn" title="Copiar resumo">
+      <button class="modal-btn modal-btn-secondary" id="modal-copy-btn" title="Copiar ID do usuário">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        Copiar
+        Copiar ID
       </button>
       <button class="modal-btn modal-btn-secondary" id="modal-close-btn">Fechar</button>
     </div>
@@ -411,8 +416,29 @@
     }
 
     modalOverlay?.classList.add('open');
-    document.body.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+
+  // Busca grupos do usuário
+  const gruposEl = $('modal-grupos');
+  const gruposListEl = $('modal-grupos-list');
+  if (gruposEl && gruposListEl && user.idWhatsApp) {
+    gruposEl.style.display = 'none';
+    gruposListEl.innerHTML = '';
+    fetch(`${API}/user/grupos/${encodeURIComponent(user.idWhatsApp)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.grupos?.length) return;
+        gruposEl.style.display = 'block';
+        gruposListEl.innerHTML = data.grupos.map(g => `
+          <div class="modal-grupo-item">
+            <span class="modal-grupo-nome">${escapeHtml(g.nome)}</span>
+            <span class="modal-grupo-gold">${fmtNum(g.gold)} 💰</span>
+          </div>
+        `).join('');
+      })
+      .catch(() => {});
   }
+}
 
   function closeModal() {
     modalOverlay?.classList.remove('open');
@@ -427,10 +453,12 @@
   $('modal-copy-btn')?.addEventListener('click', async () => {
     if (!currentModalUser) return;
     const u = currentModalUser;
-    const texto = `🏆 ${u.nome || 'Anônimo'} — Nível ${u.level ?? '?'} · ${fmtXP(u.xp)} XP · ${fmtNum(u.gold)} Gold — Piroquinhas Bot`;
+    const idRaw = u.idWhatsApp || '';
+    const telefone = idRaw.replace('@s.whatsapp.net', '').replace('@lid', '');
+    const copiavel = idRaw.includes('@lid') ? idRaw : telefone;
     try {
-      await navigator.clipboard.writeText(texto);
-      showToast('Resumo copiado!');
+      await navigator.clipboard.writeText(copiavel);
+      showToast('ID copiado: ' + copiavel);
     } catch {
       showToast('Não foi possível copiar.');
     }
