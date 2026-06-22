@@ -1023,7 +1023,10 @@
     /* ===== GOLD PAINEL (por grupo) ===== */
     const goldPainelAberto = new Set();
 
-    function idSafe(jid) { return jid.replace(/[^a-z0-9]/gi,'_'); }
+    function idSafe(jid) {
+  if (!jid || typeof jid !== 'string') return 'jid_invalido';
+  return jid.replace(/[^a-z0-9]/gi,'_').slice(0, 100);
+}
 
     async function toggleGoldPainel(jid) {
       const safe   = idSafe(jid);
