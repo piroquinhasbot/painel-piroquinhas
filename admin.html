@@ -984,8 +984,9 @@
                   <input type="number" class="gold-qty-input" id="gold-qty-${jidEsc.replace(/[^a-z0-9]/gi,'_')}" min="1" placeholder="100" />
                 </div>
                 <button class="btn-gold-dar"   data-jid="${jidEsc}" data-op="dar">+ Dar</button>
-                <button class="btn-gold-rem"   data-jid="${jidEsc}" data-op="remover">− Remover</button>
-                <button class="btn-gold-reset" data-jid="${jidEsc}" data-op="reset-grupo">🗑 Zerar grupo</button>
+<button class="btn-gold-rem"   data-jid="${jidEsc}" data-op="remover">− Remover</button>
+<button class="btn-gold-reset" data-jid="${jidEsc}" data-op="reset-membro" style="background:var(--verm-dim);border-color:rgba(255,59,110,.3);color:var(--vermelho);">🗑 Zerar membro</button>
+<button class="btn-gold-reset" data-jid="${jidEsc}" data-op="reset-grupo">🗑 Zerar grupo</button>
               </div>
             </div>
           </div>
@@ -1111,6 +1112,33 @@
               await carregarGoldRanking(jid);
             } catch {
               toast('Erro ao zerar gold do grupo.', 'erro');
+            }
+          }
+        );
+        return;
+      }
+
+      if (op === 'reset-membro') {
+        const membroInput = $(`gold-membro-${safe}`);
+        const membro = membroInput?.value.trim();
+        if (!membro) { toast('Digite o número ou JID do membro.', 'erro'); return; }
+        const jidMembro = membro.includes('@') ? membro : `${membro}@s.whatsapp.net`;
+        abrirModal(
+          'Zerar Gold do Membro',
+          `Isso vai zerar TODO o gold de ${membro} em "${nomeGrupoPorJid(jid)}". Não pode ser desfeito!`,
+          async () => {
+            try {
+              const res = await fetch(`${API}/admin/usuario/${encodeURIComponent(jidMembro)}/gold/reset-grupo`, {
+                method: 'DELETE',
+                headers: adminHeaders(),
+                body: JSON.stringify({ idGrupo: jid })
+              });
+              if (!res.ok) throw new Error();
+              toast('✅ Gold do membro zerado.');
+              if (membroInput) membroInput.value = '';
+              await carregarGoldRanking(jid);
+            } catch {
+              toast('Erro ao zerar gold do membro.', 'erro');
             }
           }
         );
