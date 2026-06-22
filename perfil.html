@@ -244,7 +244,10 @@
         const d    = new Date(hoje);
         d.setDate(d.getDate() - i);
         const chave = d.toISOString().slice(0, 10);
-        labels.push(chave.slice(5)); // "MM-DD"
+        // Formata como "12 jun" em vez de "06-12"
+        const [ano, mes, dia] = chave.split('-').map(Number);
+        const nomesMes = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+        labels.push(`${dia} ${nomesMes[mes - 1]}`);
         dados.push(xpHistory[chave] ?? 0);
       }
 
@@ -374,7 +377,8 @@
 
       const tipoEmoji = u.casadoTipo === 'casamento' ? '💍' : '💕';
       const tipoLabel = u.casadoTipo === 'casamento' ? 'Casado(a) com' : 'Namorando';
-      const parceiro  = u.casadoCom.split('@')[0];
+      // Se for @lid, tenta pegar o PN mapeado; senão exibe o número puro
+      const parceiro = u.casadoCom.split('@')[0];
       const desde     = fmtData(u.casadoDesde);
 
       container.innerHTML = `
