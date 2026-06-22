@@ -248,7 +248,8 @@
         const [ano, mes, dia] = chave.split('-').map(Number);
         const nomesMes = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
         labels.push(`${dia} ${nomesMes[mes - 1]}`);
-        dados.push(xpHistory[chave] ?? 0);
+        const val = xpHistory[chave] ?? 0;
+        dados.push(val >= 1 ? Math.round(val) : 0);
       }
 
       chartXP = new Chart($('chart-xp').getContext('2d'), {
