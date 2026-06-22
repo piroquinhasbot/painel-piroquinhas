@@ -798,6 +798,39 @@ main {
   transition: width .8s cubic-bezier(.16,1,.3,1);
 }
 
+.modal-grupos {
+  margin-bottom: 16px;
+}
+.modal-grupos-title {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+}
+.modal-grupos-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.modal-grupo-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+}
+.modal-grupo-nome {
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 60%;
+}
+.modal-grupo-gold {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+}
+
 .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .modal-btn {
   flex: 1;
