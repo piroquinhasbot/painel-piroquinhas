@@ -382,15 +382,16 @@
 
       const tipoEmoji = u.casadoTipo === 'casamento' ? '💍' : '💕';
       const tipoLabel = u.casadoTipo === 'casamento' ? 'Casado(a) com' : 'Namorando';
-      // Se for @lid, tenta pegar o PN mapeado; senão exibe o número puro
-      const parceiro = u.casadoCom.split('@')[0];
-      const desde     = fmtData(u.casadoDesde);
+      
+      // ✨ ATUALIZADO: Mostra o nome real da pessoa amada se o bot já conhecer ela!
+      const parceiro = u.nomeParceiro ? u.nomeParceiro : '+' + u.casadoCom.split('@')[0];
+      const desde    = fmtData(u.casadoDesde);
 
       container.innerHTML = `
         <div class="rel-card">
           <span class="rel-heart">${tipoEmoji}</span>
           <div class="rel-info">
-            <div class="rel-nome">+${parceiro}</div>
+            <div class="rel-nome">${parceiro}</div>
             <div class="rel-tipo">${tipoLabel}</div>
             ${desde ? `<div class="rel-desde">Desde ${desde}</div>` : ''}
           </div>
