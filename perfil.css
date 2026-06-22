@@ -1,627 +1,634 @@
-/* ===== @import SEMPRE PRIMEIRO ===== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
-
-/* ===== RESET & BASE ===== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:        #07080d;
-  --surface:   #0f1018;
-  --surface2:  #13141f;
-  --surface3:  #1a1b2e;
-  --border:    rgba(255,255,255,0.07);
-  --border-hi: rgba(255,255,255,0.13);
-
-  --roxo:      #b855ff;
-  --roxo-lo:   rgba(184,85,255,0.08);
-  --roxo-dim:  rgba(184,85,255,0.18);
-  --roxo-glow: rgba(184,85,255,0.35);
-
-  --mint:      #00ffb0;
-  --mint-lo:   rgba(0,255,176,0.07);
-  --mint-dim:  rgba(0,255,176,0.15);
-  --mint-glow: rgba(0,255,176,0.3);
-
-  --gold:      #ffd060;
-  --gold-lo:   rgba(255,208,96,0.1);
-  --gold-glow: rgba(255,208,96,0.3);
-
-  --red:       #ff3b6e;
-  --red-lo:    rgba(255,59,110,0.1);
-
-  --text:      #e8eaf0;
-  --text-2:    #b0b3c4;
-  --muted:     #5a5f72;
-
-  --radius:    14px;
-  --radius-sm: 9px;
-  --radius-xs: 6px;
-
-  --font: 'Inter', system-ui, -apple-system, sans-serif;
-  --mono: 'JetBrains Mono', 'Courier New', monospace;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 15px;
-  line-height: 1.6;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-body > * { position: relative; z-index: 1; }
-
-.hidden { display: none !important; }
-
-/* ===== NAVBAR ===== */
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1.75rem;
-  height: 60px;
-  background: rgba(7,8,13,0.88);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-.nav-logo {
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--text);
-  text-decoration: none;
-  letter-spacing: 0.01em;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.nav-logo::before {
-  content: '';
-  display: inline-block;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--roxo);
-  box-shadow: 0 0 10px var(--roxo-glow);
-  animation: pulse-dot 2.4s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { box-shadow: 0 0 6px var(--roxo-glow); }
-  50%       { box-shadow: 0 0 18px var(--roxo-glow), 0 0 32px var(--roxo-dim); }
-}
-
-.nav-links { display: flex; gap: 0.25rem; }
-
-.nav-links a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-xs);
-  transition: color 0.2s, background 0.2s;
-}
-
-.nav-links a:hover  { color: var(--text-2); background: rgba(255,255,255,0.05); }
-.nav-links a.active { color: var(--roxo); background: var(--roxo-lo); }
-
-@media (max-width: 480px) {
-  .navbar { padding: 0 1rem; }
-  .nav-links a { font-size: 0.78rem; padding: 0.3rem 0.5rem; }
-}
-
-/* ===== TELA DE INSTRUÇÃO ===== */
-.instrucao-wrap {
-  min-height: calc(100vh - 60px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.instrucao-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 3rem 2.5rem;
-  text-align: center;
-  max-width: 420px;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.instrucao-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 70%; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--roxo), transparent);
-}
-
-.instrucao-icon {
-  font-size: 2.75rem;
-  margin-bottom: 1.25rem;
-  display: block;
-  animation: float-icon 3s ease-in-out infinite;
-}
-
-@keyframes float-icon {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
-}
-
-.instrucao-card h2 {
-  font-size: 1.25rem; font-weight: 700;
-  margin-bottom: 0.6rem; color: var(--text);
-}
-
-.instrucao-card p {
-  color: var(--muted); margin-bottom: 1.25rem; font-size: 0.92rem;
-}
-
-.comando-destaque {
-  display: inline-block;
-  background: var(--roxo-lo);
-  border: 1px solid rgba(184,85,255,0.4);
-  color: var(--roxo);
-  font-family: var(--mono);
-  font-size: 1.2rem; font-weight: 700;
-  padding: 0.65rem 1.5rem;
-  border-radius: var(--radius-sm);
-  margin: 0.5rem 0 1.25rem;
-  letter-spacing: 0.06em;
-  box-shadow: 0 0 20px var(--roxo-dim), inset 0 1px 0 rgba(255,255,255,0.05);
-  user-select: all; cursor: text;
-}
-
-.instrucao-sub { font-size: 0.82rem !important; color: var(--muted) !important; margin-bottom: 0 !important; }
-
-/* ===== LOADING ===== */
-.loading-wrap {
-  min-height: calc(100vh - 60px);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 1.25rem; color: var(--muted); font-size: 0.9rem;
-}
-
-.spinner {
-  width: 38px; height: 38px;
-  border: 2.5px solid var(--surface3);
-  border-top-color: var(--roxo);
-  border-right-color: var(--mint);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ===== ERRO ===== */
-.erro-wrap {
-  min-height: calc(100vh - 60px);
-  display: flex; align-items: center; justify-content: center; padding: 2rem;
-}
-
-.erro-card {
-  background: var(--surface);
-  border: 1px solid rgba(255,59,110,0.25);
-  border-radius: var(--radius);
-  padding: 2.75rem 2rem;
-  text-align: center; max-width: 400px; width: 100%;
-}
-
-.erro-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-
-.erro-card h2 { color: var(--red); font-size: 1.05rem; font-weight: 600; margin-bottom: 0.6rem; }
-.erro-card p  { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
-
-.btn-secondary {
-  display: inline-block;
-  padding: 0.5rem 1.2rem;
-  border: 1px solid var(--border-hi);
-  border-radius: var(--radius-sm);
-  color: var(--text-2); text-decoration: none;
-  font-size: 0.88rem; font-weight: 500;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
-}
-
-.btn-secondary:hover { border-color: var(--roxo); color: var(--roxo); background: var(--roxo-lo); }
-
-/* ===== PAINEL PRINCIPAL ===== */
-#painel {
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 0 1.25rem 4rem;
-  animation: fade-in 0.5s ease both;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== HERO DO PERFIL ===== */
-.perfil-header {
-  padding: 2.5rem 0 2rem;
-  margin-bottom: 2.5rem;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
-
-.perfil-header::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 160px;
-  background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(184,85,255,0.1) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.perfil-header-inner {
-  display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; position: relative;
-}
-
-/* ===== AVATAR ===== */
-.avatar {
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 1.3rem; font-weight: 700;
-  flex-shrink: 0; letter-spacing: 0.02em; position: relative;
-  /* cor injetada via JS no style inline */
-}
-
-.perfil-info { flex: 1; min-width: 160px; }
-
-.perfil-info h1 {
-  font-size: 1.5rem; font-weight: 800; color: var(--text);
-  line-height: 1.2; letter-spacing: -0.01em;
-}
-
-.perfil-numero { color: var(--muted); font-size: 0.85rem; font-family: var(--mono); margin-top: 0.3rem; }
-
-.perfil-bio {
-  font-size: 0.85rem; color: var(--text-2); margin-top: 0.4rem;
-  font-style: italic; opacity: 0.85;
-}
-
-/* ===== STAT PILLS ===== */
-.perfil-stats-topo { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-
-.stat-pill {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 0.6rem 1rem;
-  display: flex; flex-direction: column; align-items: center;
-  min-width: 76px; gap: 0.15rem;
-  transition: border-color 0.2s, background 0.2s;
-}
-
-.stat-pill:hover { border-color: var(--border-hi); background: var(--surface2); }
-
-.stat-label {
-  font-size: 0.68rem; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
-}
-
-.stat-val {
-  font-size: 1.05rem; font-weight: 800; color: var(--text);
-  font-family: var(--mono); line-height: 1.2;
-}
-
-.neon-roxo { color: var(--roxo); text-shadow: 0 0 12px var(--roxo-glow); }
-.neon-mint  { color: var(--mint); text-shadow: 0 0 12px var(--mint-glow); }
-.neon-gold  { color: var(--gold); text-shadow: 0 0 12px var(--gold-glow); }
-
-/* ===== SEÇÕES ===== */
-.secao { margin-bottom: 2.75rem; animation: fade-in 0.5s ease both; }
-
-.secao-titulo {
-  font-size: 0.78rem; font-weight: 700; color: var(--muted);
-  margin-bottom: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase;
-  display: flex; align-items: center; gap: 0.6rem;
-}
-
-.secao-titulo::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-/* ===== PROGRESSO XP ===== */
-.progresso-wrap { margin-bottom: 1.5rem; }
-
-.progresso-info {
-  display: flex; justify-content: space-between;
-  font-size: 0.82rem; margin-bottom: 0.6rem;
-}
-
-.progresso-info span:first-child { color: var(--roxo); font-family: var(--mono); font-weight: 700; }
-.progresso-info span:last-child  { color: var(--muted); }
-
-.barra-outer {
-  width: 100%; height: 7px;
-  background: var(--surface3);
-  border-radius: 999px; overflow: hidden;
-}
-
-.barra-inner {
-  height: 100%;
-  background: linear-gradient(90deg, var(--roxo), var(--mint));
-  border-radius: 999px;
-  transition: width 1.2s cubic-bezier(.16,1,.3,1);
-  box-shadow: 0 0 12px var(--roxo-dim); position: relative;
-}
-
-.barra-inner::after {
-  content: '';
-  position: absolute; right: 0; top: 0; bottom: 0; width: 24px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25));
-  border-radius: 999px; animation: shimmer-bar 2s ease-in-out infinite;
-}
-
-@keyframes shimmer-bar { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
-
-/* ===== CHART BOX ===== */
-.chart-box {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.25rem 1.5rem;
-  position: relative; overflow: hidden;
-}
-
-.chart-box::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--roxo-dim), transparent);
-}
-
-.chart-box--sm canvas { max-height: 180px; }
-
-/* ===== CARDS ATIVIDADE ===== */
-.cards-atividade {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem; margin-top: 0.85rem;
-}
-
-.act-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.1rem 1.2rem;
-  display: flex; flex-direction: column; gap: 0.4rem;
-  transition: border-color 0.2s, transform 0.2s, background 0.2s;
-  position: relative; overflow: hidden;
-}
-
-.act-card:hover { border-color: var(--border-hi); transform: translateY(-2px); background: var(--surface2); }
-
-.act-card::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--roxo), var(--mint));
-  transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
-}
-
-.act-card:hover::after { transform: scaleX(1); }
-
-.act-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-.act-val   { font-size: 1.4rem; font-weight: 800; color: var(--text); font-family: var(--mono); line-height: 1.2; }
-
-/* ===== RELACIONAMENTO ===== */
-.rel-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.25rem 1.5rem;
-  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-}
-
-.rel-heart {
-  font-size: 2rem;
-  animation: heartbeat 1.6s ease-in-out infinite;
-}
-
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  14%       { transform: scale(1.15); }
-  28%       { transform: scale(1); }
-  42%       { transform: scale(1.1); }
-  56%       { transform: scale(1); }
-}
-
-.rel-info { flex: 1; min-width: 0; }
-.rel-nome { font-size: 1rem; font-weight: 700; color: var(--text); }
-.rel-tipo { font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem; }
-.rel-desde { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
-
-.rel-vazio {
-  background: var(--surface); border: 1px dashed rgba(255,255,255,0.08);
-  border-radius: var(--radius); padding: 1.5rem;
-  text-align: center; color: var(--muted); font-size: 0.88rem;
-}
-
-/* ===== INVENTÁRIO ===== */
-.inventario-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 0.75rem;
-}
-
-.inv-item {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1rem 1.1rem;
-  display: flex; flex-direction: column; gap: 0.4rem;
-  transition: border-color 0.2s, transform 0.2s, background 0.2s;
-  cursor: default;
-}
-
-.inv-item:hover {
-  border-color: var(--roxo-dim); transform: translateY(-2px);
-  background: var(--surface2); box-shadow: 0 8px 24px rgba(184,85,255,0.08);
-}
-
-.inv-nome { font-size: 0.85rem; color: var(--text-2); font-weight: 500; text-transform: capitalize; }
-.inv-qtd  { font-size: 1.1rem; font-weight: 800; color: var(--mint); font-family: var(--mono); text-shadow: 0 0 10px var(--mint-glow); }
-
-.inventario-vazio {
-  background: var(--surface); border: 1px dashed rgba(255,255,255,0.1);
-  border-radius: var(--radius); padding: 3rem 2rem;
-  text-align: center; color: var(--muted); font-size: 0.88rem; line-height: 2;
-}
-
-/* ===== FOOTER ===== */
-.footer {
-  text-align: center; padding: 1.75rem;
-  border-top: 1px solid var(--border);
-  color: var(--muted); font-size: 0.8rem; letter-spacing: 0.02em;
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 600px) {
-  .perfil-header-inner { flex-direction: column; align-items: flex-start; }
-  .perfil-stats-topo   { width: 100%; }
-  .stat-pill           { flex: 1; min-width: 60px; }
-  .cards-atividade     { grid-template-columns: 1fr; }
-  .act-val             { font-size: 1.2rem; }
-  .rel-card            { flex-direction: column; align-items: flex-start; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
-
-/* ===== SKELETON LOADING ===== */
-.skeleton {
-  background: var(--surface2);
-  border-radius: var(--radius-sm);
-  position: relative;
-  overflow: hidden;
-}
-
-.skeleton::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
-  animation: skeleton-sweep 1.6s ease-in-out infinite;
-}
-
-@keyframes skeleton-sweep {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.skeleton-avatar  { width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0; }
-.skeleton-line    { height: 14px; margin-bottom: 8px; }
-.skeleton-line.lg { height: 22px; width: 55%; }
-.skeleton-line.sm { height: 11px; width: 40%; }
-.skeleton-pill    { height: 62px; flex: 1; min-width: 76px; border-radius: var(--radius-sm); }
-.skeleton-chart   { height: 180px; border-radius: var(--radius); }
-.skeleton-card    { height: 90px; border-radius: var(--radius); }
-
-/* ===== BADGE DE NÍVEL ===== */
-.level-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  border: 1px solid;
-  margin-top: 0.4rem;
-}
-
-.level-badge.tier-gray   { background: rgba(180,180,200,0.10); color: #a0a3b4; border-color: rgba(160,163,180,0.35); }
-.level-badge.tier-roxo   { background: var(--roxo-lo);         color: var(--roxo); border-color: rgba(184,85,255,0.4); box-shadow: 0 0 10px rgba(184,85,255,0.15); }
-.level-badge.tier-gold   { background: var(--gold-lo);         color: var(--gold); border-color: rgba(255,208,96,0.4); box-shadow: 0 0 10px rgba(255,208,96,0.15); }
-.level-badge.tier-mint   { background: var(--mint-lo);         color: var(--mint); border-color: rgba(0,255,176,0.4);  box-shadow: 0 0 10px rgba(0,255,176,0.15);  }
-
-/* ===== GRUPOS DO USUÁRIO ===== */
-.grupos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
-}
-
-.grupo-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.1rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: border-color 0.2s, transform 0.2s, background 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-
-.grupo-card:hover {
-  border-color: var(--border-hi);
-  transform: translateY(-2px);
-  background: var(--surface2);
-}
-
-.grupo-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--roxo), var(--mint));
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.grupo-card:hover::before { opacity: 1; }
-
-.grupo-card-nome {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.grupo-card-stats {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.grupo-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  flex: 1;
-  min-width: 60px;
-}
-
-.grupo-stat-label {
-  font-size: 0.66rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  font-weight: 600;
-}
-
-.grupo-stat-val {
-  font-size: 0.95rem;
-  font-weight: 800;
-  font-family: var(--mono);
-  color: var(--text);
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Perfil — Piroquinhas Bot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="perfil.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-brand-mark">P</div>
+        <span class="nav-brand-name">Piroquinhas Bot</span>
+      </a>
+      <ul class="nav-links">
+        <li>
+          <a href="index.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span>Ranking</span>
+          </a>
+        </li>
+        <li>
+          <a href="perfil.html" class="active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Meu Perfil</span>
+          </a>
+        </li>
+        <li>
+          <a href="cassino.html" id="nav-cassino" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            <span>Cassino</span>
+          </a>
+        </li>
+        <li>
+          <a href="admin.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
+            <span>Admin</span>
+          </a>
+        </li>
+        <li>
+          <a href="comandos.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span>Comandos</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── TELA DE INSTRUÇÃO ── -->
+  <div id="tela-instrucao" class="instrucao-wrap hidden">
+    <div class="instrucao-card">
+      <span class="instrucao-icon">🔐</span>
+      <h2>Acesso restrito</h2>
+      <p>Para ver seu perfil, envie o comando abaixo no grupo:</p>
+      <div class="comando-destaque">!meupainel</div>
+      <p class="instrucao-sub">Você receberá um link no privado com acesso ao seu painel.</p>
+    </div>
+  </div>
+
+  <!-- ── LOADING (skeleton) ── -->
+  <div id="tela-loading" class="hidden" style="max-width:880px;margin:0 auto;padding:2rem 1.25rem;">
+    <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border);">
+      <div class="skeleton skeleton-avatar"></div>
+      <div style="flex:1;">
+        <div class="skeleton skeleton-line lg" style="margin-bottom:10px;"></div>
+        <div class="skeleton skeleton-line sm"></div>
+      </div>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+        <div class="skeleton skeleton-pill"></div>
+        <div class="skeleton skeleton-pill"></div>
+        <div class="skeleton skeleton-pill"></div>
+        <div class="skeleton skeleton-pill"></div>
+      </div>
+    </div>
+    <div class="skeleton skeleton-chart" style="margin-bottom:1rem;"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:2rem;">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+    <div class="skeleton skeleton-chart"></div>
+  </div>
+
+  <!-- ── ERRO ── -->
+  <div id="tela-erro" class="erro-wrap hidden">
+    <div class="erro-card">
+      <div class="erro-icon">⚠️</div>
+      <h2 id="erro-msg">Algo deu errado</h2>
+      <p>Gere um novo link com <strong>!meupainel</strong> no grupo.</p>
+      <a href="index.html" class="btn-secondary">← Voltar ao ranking</a>
+    </div>
+  </div>
+
+  <!-- ── PAINEL PRINCIPAL ── -->
+  <main id="painel" class="hidden">
+
+    <!-- HEADER -->
+    <section class="perfil-header">
+      <div class="perfil-header-inner">
+        <div class="avatar" id="avatar-iniciais"></div>
+        <div class="perfil-info">
+          <h1 id="perfil-nome">—</h1>
+          <p class="perfil-numero" id="perfil-numero">—</p>
+          <p class="perfil-bio hidden" id="perfil-bio"></p>
+        </div>
+        <div class="perfil-stats-topo">
+          <div class="stat-pill" style="align-items:flex-start;">
+            <span class="stat-label">Nível</span>
+            <span class="stat-val" id="stat-level" style="display:flex;flex-direction:column;"></span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">XP Total</span>
+            <span class="stat-val neon-roxo" id="stat-xp">—</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Gold</span>
+            <span class="stat-val neon-gold" id="stat-gold">—</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Ranking</span>
+            <span class="stat-val" id="stat-rank">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- XP & PROGRESSO -->
+    <section class="secao">
+      <h2 class="secao-titulo">⚡ XP &amp; Progresso</h2>
+      <div class="progresso-wrap">
+        <div class="progresso-info">
+          <span id="xp-atual-txt">0 XP</span>
+          <span id="xp-prox-txt">Próx. nível: 0 XP</span>
+        </div>
+        <div class="barra-outer">
+          <div class="barra-inner" id="barra-xp" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="chart-box">
+        <canvas id="chart-xp"></canvas>
+      </div>
+    </section>
+
+    <!-- ATIVIDADE SEMANAL -->
+    <section class="secao">
+      <h2 class="secao-titulo">📊 Atividade Semanal</h2>
+      <div class="chart-box chart-box--sm">
+        <canvas id="chart-atividade"></canvas>
+      </div>
+      <div class="cards-atividade">
+        <div class="act-card">
+          <span class="act-label">💬 Mensagens</span>
+          <span class="act-val" id="act-mensagens">—</span>
+        </div>
+        <div class="act-card">
+          <span class="act-label">🧠 Quiz Points</span>
+          <span class="act-val neon-roxo" id="act-quiz">—</span>
+        </div>
+        <div class="act-card">
+          <span class="act-label">🐾 Pet</span>
+          <span class="act-val neon-mint" id="act-pet">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRUPOS -->
+    <section class="secao" id="secao-grupos">
+      <h2 class="secao-titulo">🏘️ Meus Grupos</h2>
+      <div id="grupos-grid" class="grupos-grid"></div>
+      <div id="grupos-vazio" class="inventario-vazio hidden">
+        <p>😶 Você ainda não participa de nenhum grupo registrado.</p>
+      </div>
+    </section>
+
+    <!-- RELACIONAMENTO -->
+    <section class="secao" id="secao-relacionamento">
+      <h2 class="secao-titulo">💑 Relacionamento</h2>
+      <div id="rel-conteudo"></div>
+    </section>
+
+    <!-- INVENTÁRIO -->
+    <section class="secao">
+      <h2 class="secao-titulo">🎒 Inventário</h2>
+      <div id="inventario-grid" class="inventario-grid"></div>
+      <div id="inventario-vazio" class="inventario-vazio hidden">
+        <p>🪣 Nada por aqui ainda.<br/>Participe do grupo para ganhar itens!</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    Piroquinhas Bot &copy; 2025 &mdash; feito com 🔥
+  </footer>
+
+  <script>
+    /* ════════════════════════════════════════
+       CONFIG
+    ════════════════════════════════════════ */
+    const API = 'https://whatsappbot2-s3dx.onrender.com/api';
+
+    /* ════════════════════════════════════════
+       HELPERS
+    ════════════════════════════════════════ */
+    const $    = id => document.getElementById(id);
+    const show = id => $(id).classList.remove('hidden');
+    const hide = id => $(id).classList.add('hidden');
+
+    function iniciais(nome) {
+      if (!nome || typeof nome !== 'string') return '??';
+      const limpo = nome.trim().replace(/[^\p{L}\s]/gu, '').trim();
+      if (!limpo) return nome.slice(0, 2).toUpperCase();
+      const partes = limpo.split(/\s+/);
+      return partes.length >= 2
+        ? (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
+        : limpo.slice(0, 2).toUpperCase();
+    }
+
+    function corAvatar(nome) {
+      const paleta = [
+        { bg: 'rgba(184,85,255,0.12)',  border: '#b855ff', text: '#b855ff', glow: 'rgba(184,85,255,0.35)' },
+        { bg: 'rgba(0,255,176,0.10)',   border: '#00ffb0', text: '#00ffb0', glow: 'rgba(0,255,176,0.30)'  },
+        { bg: 'rgba(255,208,96,0.10)',  border: '#ffd060', text: '#ffd060', glow: 'rgba(255,208,96,0.30)' },
+        { bg: 'rgba(96,165,255,0.12)',  border: '#60a5ff', text: '#60a5ff', glow: 'rgba(96,165,255,0.30)' },
+        { bg: 'rgba(255,100,130,0.11)', border: '#ff6482', text: '#ff6482', glow: 'rgba(255,100,130,0.30)'},
+        { bg: 'rgba(80,220,160,0.10)',  border: '#50dca0', text: '#50dca0', glow: 'rgba(80,220,160,0.30)' },
+      ];
+      const str = nome || '?';
+      const idx = [...str].reduce((acc, c) => acc + c.charCodeAt(0), 0) % paleta.length;
+      return paleta[idx];
+    }
+
+    function fmtNum(n) {
+      if (n == null) return '0';
+      if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'k';
+      return n.toLocaleString('pt-BR');
+    }
+
+    // "vara_basica" → "Vara Básica"  |  "fishrod_gold" → "Fishrod Gold"
+    function fmtItemNome(chave) {
+      return chave
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    function fmtData(iso) {
+      if (!iso) return null;
+      return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    /* ════════════════════════════════════════
+       CHART — instâncias guardadas para destroy
+    ════════════════════════════════════════ */
+    let chartXP        = null;
+    let chartAtividade = null;
+
+    const CHART_FONT = { family: "'Inter', sans-serif", size: 11 };
+    const CHART_GRID = '#1a1b2e';
+    const CHART_TICK = '#5a5f72';
+
+    function renderChartXP(xpHistory) {
+      // Destrói instância anterior se existir (evita erro "canvas already in use")
+      if (chartXP) { chartXP.destroy(); chartXP = null; }
+
+      const hoje   = new Date();
+      const labels = [];
+      const dados  = [];
+
+      for (let i = 29; i >= 0; i--) {
+        const d    = new Date(hoje);
+        d.setDate(d.getDate() - i);
+        const chave = d.toISOString().slice(0, 10);
+        // Formata como "12 jun" em vez de "06-12"
+        const [ano, mes, dia] = chave.split('-').map(Number);
+        const nomesMes = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+        labels.push(`${dia} ${nomesMes[mes - 1]}`);
+        const val = xpHistory[chave] ?? 0;
+        dados.push(val >= 1 ? Math.round(val) : 0);
+      }
+
+      chartXP = new Chart($('chart-xp').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'XP ganho',
+            data: dados,
+            borderColor: '#b855ff',
+            backgroundColor: ctx => {
+              const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 220);
+              g.addColorStop(0, 'rgba(184,85,255,0.22)');
+              g.addColorStop(1, 'rgba(184,85,255,0)');
+              return g;
+            },
+            pointBackgroundColor: '#b855ff',
+            pointBorderColor: '#07080d',
+            pointBorderWidth: 2,
+            pointRadius: 3.5,
+            pointHoverRadius: 6,
+            tension: 0.45,
+            fill: true,
+            borderWidth: 2,
+          }],
+        },
+        options: {
+          responsive: true,
+          animation: { duration: 900, easing: 'easeOutQuart' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#13141f',
+              borderColor: '#b855ff',
+              borderWidth: 1,
+              titleColor: '#e8eaf0',
+              bodyColor: '#b855ff',
+              padding: 10,
+              callbacks: { label: ctx => ` ${fmtNum(ctx.raw)} XP` },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: CHART_TICK, font: CHART_FONT, maxTicksLimit: 8 },
+              grid:  { color: CHART_GRID },
+            },
+            y: {
+              ticks: { color: CHART_TICK, font: CHART_FONT },
+              grid:  { color: CHART_GRID },
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    }
+
+    function renderChartAtividade(atividadeSemanal) {
+      if (chartAtividade) { chartAtividade.destroy(); chartAtividade = null; }
+
+      const dias  = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const dados = Array.isArray(atividadeSemanal) ? atividadeSemanal : Array(7).fill(0);
+
+      chartAtividade = new Chart($('chart-atividade').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: dias,
+          datasets: [{
+            label: 'Mensagens',
+            data: dados,
+            backgroundColor: ctx => {
+              const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 160);
+              g.addColorStop(0, 'rgba(0,255,176,0.35)');
+              g.addColorStop(1, 'rgba(0,255,176,0.05)');
+              return g;
+            },
+            borderColor: '#00ffb0',
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+          }],
+        },
+        options: {
+          responsive: true,
+          animation: { duration: 900, easing: 'easeOutQuart' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#13141f',
+              borderColor: '#00ffb0',
+              borderWidth: 1,
+              titleColor: '#e8eaf0',
+              bodyColor: '#00ffb0',
+              padding: 10,
+              callbacks: { label: ctx => ` ${fmtNum(ctx.raw)} msgs` },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: CHART_TICK, font: CHART_FONT },
+              grid:  { display: false },
+            },
+            y: {
+              ticks: { color: CHART_TICK, font: CHART_FONT },
+              grid:  { color: CHART_GRID },
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    }
+
+    /* ════════════════════════════════════════
+       RELACIONAMENTO
+    ════════════════════════════════════════ */
+    function renderRelacionamento(u) {
+      const container = $('rel-conteudo');
+
+      if (!u.casadoCom) {
+        container.innerHTML = `
+          <div class="rel-vazio">
+            💔 Você ainda não tem um relacionamento no bot.<br/>
+            Use <strong>!casar</strong> ou <strong>!namorar</strong> no grupo!
+          </div>`;
+        return;
+      }
+
+      const tipoEmoji = u.casadoTipo === 'casamento' ? '💍' : '💕';
+      const tipoLabel = u.casadoTipo === 'casamento' ? 'Casado(a) com' : 'Namorando';
+      
+      // ✨ ATUALIZADO: Mostra o nome real da pessoa amada se o bot já conhecer ela!
+      const parceiro = u.nomeParceiro ? u.nomeParceiro : '+' + u.casadoCom.split('@')[0];
+      const desde    = fmtData(u.casadoDesde);
+
+      container.innerHTML = `
+        <div class="rel-card">
+          <span class="rel-heart">${tipoEmoji}</span>
+          <div class="rel-info">
+            <div class="rel-nome">${parceiro}</div>
+            <div class="rel-tipo">${tipoLabel}</div>
+            ${desde ? `<div class="rel-desde">Desde ${desde}</div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    /* ════════════════════════════════════════
+       INVENTÁRIO
+    ════════════════════════════════════════ */
+    function renderInventario(inventory) {
+      const entries = inventory
+        ? Object.entries(inventory).filter(([, qtd]) => Number(qtd) > 0)
+        : [];
+
+      if (entries.length === 0) {
+        show('inventario-vazio');
+        return;
+      }
+
+      hide('inventario-vazio');
+      $('inventario-grid').innerHTML = entries
+        .sort((a, b) => b[1] - a[1]) // ordena por quantidade desc
+        .map(([chave, qtd]) => `
+          <div class="inv-item">
+            <span class="inv-nome">${fmtItemNome(chave)}</span>
+            <span class="inv-qtd">×${fmtNum(qtd)}</span>
+          </div>
+        `).join('');
+    }
+
+    /* ════════════════════════════════════════
+       PREENCHER PERFIL
+    ════════════════════════════════════════ */
+    function renderGrupos(grupos) {
+      const grid  = $('grupos-grid');
+      const vazio = $('grupos-vazio');
+
+      if (!grupos || grupos.length === 0) {
+        show('grupos-vazio');
+        return;
+      }
+
+      hide('grupos-vazio');
+
+      grid.innerHTML = grupos.map(g => {
+        const tier = tierLevel(g.level);
+        return `
+          <div class="grupo-card">
+            <div class="grupo-card-nome" title="${g.nome || g.jid}">
+              ${g.nome || g.jid.split('@')[0]}
+            </div>
+            <div class="grupo-card-stats">
+              <div class="grupo-stat">
+                <span class="grupo-stat-label">XP</span>
+                <span class="grupo-stat-val neon-roxo">${fmtNum(g.xp)}</span>
+              </div>
+              <div class="grupo-stat">
+                <span class="grupo-stat-label">Gold</span>
+                <span class="grupo-stat-val neon-gold">${fmtNum(g.gold)}</span>
+              </div>
+              <div class="grupo-stat">
+                <span class="grupo-stat-label">Nível</span>
+                <span class="grupo-stat-val">${g.level} <span style="font-size:0.7rem;opacity:0.7;">${tier.emoji}</span></span>
+              </div>
+              <div class="grupo-stat">
+                <span class="grupo-stat-label">Msgs</span>
+                <span class="grupo-stat-val">${fmtNum(g.mensagens)}</span>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+    function preencherPerfil(u) {
+      // Header
+      const ini = iniciais(u.nome);
+      const cor = corAvatar(u.nome);
+      const el  = $('avatar-iniciais');
+      el.textContent = ini;
+      el.style.background  = cor.bg;
+      el.style.color       = cor.text;
+      el.style.boxShadow   = `0 0 0 2px ${cor.border}, 0 0 22px ${cor.glow}`;
+      $('perfil-nome').textContent     = u.nome || 'Sem nome';
+      $('perfil-numero').textContent   = u.telefone ? '+' + u.telefone : '—';
+
+      if (u.bio) {
+        $('perfil-bio').textContent = u.bio;
+        show('perfil-bio');
+      }
+
+      // Stats topo — nível com badge de tier
+      const tier = tierLevel(u.level);
+      $('stat-level').innerHTML = `
+        ${u.level ?? '—'}
+        <span class="level-badge ${tier.classe}" style="margin-top:0.3rem;">
+          ${tier.emoji} ${tier.label}
+        </span>`;
+      $('stat-xp').textContent    = fmtNum(u.xp);
+      $('stat-gold').textContent  = fmtNum(u.gold);
+      $('stat-rank').textContent  = u.posicaoRanking ? `#${u.posicaoRanking}` : '—';
+
+      // Barra de XP — usa xpProgresso já calculado pela API
+      // que considera apenas o XP dentro do nível atual (não o XP total)
+      const pct = u.xpProgresso ?? 0;
+      $('xp-atual-txt').textContent = fmtNum(u.xp) + ' XP';
+      $('xp-prox-txt').textContent  = `Próx. nível: ${fmtNum(u.xpParaProximo)} XP`;
+
+      requestAnimationFrame(() => {
+        setTimeout(() => { $('barra-xp').style.width = pct + '%'; }, 150);
+      });
+
+      // Gráficos
+      renderChartXP(u.xpHistory || {});
+      renderChartAtividade(u.atividadeSemanal);
+
+      // Cards de atividade
+      $('act-mensagens').textContent = fmtNum(u.mensagens);
+      $('act-quiz').textContent      = fmtNum(u.quizPoints);
+      $('act-pet').textContent       = u.pet?.nome
+        ? `${u.pet.nome} nv${u.pet.level ?? 1}`
+        : 'Nenhum';
+
+      // Grupos
+      renderGrupos(u.grupos);
+
+      // Relacionamento
+      renderRelacionamento(u);
+
+      // Inventário
+      renderInventario(u.inventory);
+    }
+    function tierLevel(level) {
+      const n = level || 1;
+      if (n <= 10) return { classe: 'tier-gray', emoji: '⚔️',  label: 'Novato'   };
+      if (n <= 30) return { classe: 'tier-roxo', emoji: '🔮',  label: 'Veterano' };
+      if (n <= 60) return { classe: 'tier-gold', emoji: '👑',  label: 'Élite'    };
+      return              { classe: 'tier-mint', emoji: '💎',  label: 'Lendário' };
+    }
+
+    /* ════════════════════════════════════════
+       INIT — fluxo de autenticação
+    ════════════════════════════════════════ */
+    async function init() {
+  const params     = new URLSearchParams(window.location.search);
+  const tokenParam = params.get('token');
+  let   jwtSalvo   = localStorage.getItem('piro_jwt');
+
+  // Sem token na URL e sem JWT salvo → mostra instrução
+  if (!tokenParam && !jwtSalvo) {
+    show('tela-instrucao');
+    return;
+  }
+
+  show('tela-loading');
+
+  try {
+    // ── Passo 1: trocar token temporário por JWT de sessão ──
+    if (tokenParam) {
+      const res  = await fetch(`${API}/auth/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: tokenParam }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Token inválido ou expirado.');
+
+      jwtSalvo = data.jwt;
+      if (!jwtSalvo) throw new Error('Resposta inesperada da API.');
+
+      localStorage.setItem('piro_jwt', jwtSalvo);
+
+      // Remove o token da URL sem recarregar a página
+      history.replaceState(null, '', 'perfil.html');
+    }
+
+    // ── Passo 2: buscar dados do usuário ──
+    const meRes  = await fetch(`${API}/user/me`, {
+      headers: { 'Authorization': `Bearer ${jwtSalvo}` },
+    });
+    const meData = await meRes.json();
+
+    if (!meRes.ok) {
+      if (meRes.status === 401) {
+        localStorage.removeItem('piro_jwt');
+        throw new Error('Sua sessão expirou. Digite !meupainel no grupo para um novo link.');
+      }
+      throw new Error(meData.error || 'Erro ao carregar perfil.');
+    }
+
+    // ── Passo 3: renderizar ──
+    hide('tela-loading');
+    show('painel');
+    preencherPerfil(meData);
+
+    // Mostra link do Cassino na nav agora que está logado
+    const navCassino = document.getElementById('nav-cassino');
+    if (navCassino) navCassino.style.display = 'flex';
+
+  } catch (err) {
+    hide('tela-loading');
+    $('erro-msg').textContent = err.message || 'Erro desconhecido.';
+    show('tela-erro');
+  }
+}
+
+init();
+  </script>
+</body>
+</html>
