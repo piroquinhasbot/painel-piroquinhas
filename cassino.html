@@ -264,12 +264,15 @@ let sessionHistory = [];
 ══════════════════════════════════════════════════════ */
 function checkAuth() {
   const jwt = getJwt();
+  console.log('[checkAuth] piro_jwt:', jwt ? 'ENCONTRADO ✅' : 'NÃO ENCONTRADO ❌');
+  console.log('[checkAuth] localStorage keys:', Object.keys(localStorage));
+
   if (!jwt) {
-    $('login-gate').style.display  = 'block';
+    $('login-gate').style.display   = 'block';
     $('cassino-area').style.display = 'none';
     return false;
   }
-  $('login-gate').style.display  = 'none';
+  $('login-gate').style.display   = 'none';
   $('cassino-area').style.display = 'block';
   return true;
 }
