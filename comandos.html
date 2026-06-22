@@ -3,373 +3,801 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Central de Comandos — Piroquinhas Bot</title>
+  <title>Cassino — Piroquinhas Bot</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="comandos.css" />
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="cassino.css" />
 </head>
+
 <body>
 
-<!-- ══════════ HEADER ══════════ -->
-<header class="top">
-  <div class="top-row">
-    <div class="brand">
-      <div class="brand-mark">P</div>
-      <div class="brand-text">
-        <strong>Piroquinhas Bot</strong>
-        <span>v2.4 · Node.js + Baileys</span>
-      </div>
-    </div>
-    <nav class="suite-nav">
-      <a href="#" class="current">Comandos</a>
-      <a href="#">Suporte</a>
-    </nav>
+<!-- ══════════ NAV ══════════ -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-brand-mark">P</div>
+      <span class="nav-brand-name">Piroquinhas Bot</span>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <a href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Ranking</span>
+        </a>
+      </li>
+      <li>
+        <a href="perfil.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Meu Perfil</span>
+        </a>
+      </li>
+      <li>
+        <a href="cassino.html" class="active" id="nav-cassino">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span>Cassino</span>
+        </a>
+      </li>
+      <li>
+        <a href="admin.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
+          <span>Admin</span>
+        </a>
+      </li>
+      <li>
+        <a href="comandos.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <span>Comandos</span>
+        </a>
+      </li>
+    </ul>
   </div>
+</nav>
 
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="comandos">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-      Comandos
-    </button>
-    <button class="tab-btn" data-tab="suporte">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Suporte & Sugestões
-    </button>
-  </div>
-</header>
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <p class="hero-eyebrow">Piroquinhas Bot · Cassino</p>
+  <h1 class="hero-title">Cassino 🎰</h1>
+  <p class="hero-sub">Aposte seu gold e tente a sorte nos slots — resultados salvos no grupo.</p>
+</section>
 
 <!-- ══════════ MAIN ══════════ -->
-<main>
+<div class="cassino-wrap">
 
-  <!-- ── ABA COMANDOS ── -->
-  <div class="tab-panel active" id="tab-comandos">
-    <p class="page-title">Central de Comandos</p>
-    <p class="page-sub">Use a busca ou filtre por categoria pra achar o que precisa.</p>
-
-    <div class="search-bar">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="search-input" placeholder="Buscar comando ou descrição…" autocomplete="off" spellcheck="false" />
-      <button class="search-clear" id="search-clear" title="Limpar">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-
-    <div class="category-scroll">
-      <button class="chip active" data-cat="todos">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Todos
-      </button>
-      <button class="chip" data-cat="admin">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
-        Admin
-      </button>
-      <button class="chip" data-cat="diversao">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-        Diversão
-      </button>
-      <button class="chip" data-cat="utilidades">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        Utilidades
-      </button>
-    </div>
-
-    <p class="results-meta" id="results-meta">Mostrando <strong id="results-count">0</strong> comandos</p>
-
-    <div class="cmd-grid" id="cmd-grid">
-      <!-- Cards injetados pelo JS -->
-    </div>
-
-    <div class="empty-state" id="empty-state" style="display:none">
-      <span class="glyph">$ grep -r "" ./commands — 0 results</span>
-      <h4>Nenhum comando encontrado</h4>
-      <p>Tente outra palavra-chave ou limpe o filtro de categoria.</p>
-    </div>
+  <!-- LOGIN GATE (visível quando não logado) -->
+  <div class="login-gate" id="login-gate">
+    <span class="glyph">$ auth --required</span>
+    <h3>Faça login para jogar</h3>
+    <p>Use <strong>!meupainel</strong> no WhatsApp para receber seu link de acesso.</p>
+    <a href="perfil.html" class="btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Ir para Login
+    </a>
   </div>
 
-  <!-- ── ABA SUPORTE ── -->
-  <div class="tab-panel" id="tab-suporte">
-    <p class="page-title">Suporte & Sugestões</p>
-    <p class="page-sub">Manda sua dúvida, bug ou ideia — os admins vão ver.</p>
+  <!-- ÁREA DO CASSINO (visível quando logado) -->
+  <div id="cassino-area" style="display:none">
 
-    <div class="support-card">
-      <div class="glow-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <!-- Seletor de grupo + saldo -->
+    <div class="group-selector-card">
+      <label for="grupo-select">Jogar no grupo</label>
+      <div class="group-select-wrap">
+        <select id="grupo-select">
+          <option value="">Carregando seus grupos…</option>
+        </select>
       </div>
-      <h3 style="font-family:var(--font-display);font-size:17px;margin:0 0 18px;font-weight:700;">Falar com os Admins</h3>
-
-      <div class="field" id="field-numero">
-        <label>Seu número do WhatsApp <span class="req">*</span></label>
-        <input type="tel" id="inp-numero" placeholder="Ex: 65999998888" maxlength="20" />
-        <span class="field-error">Número inválido. Use apenas dígitos (8–15).</span>
+      <div class="saldo-chip" id="saldo-chip" style="display:none">
+        <span>💰 Saldo disponível</span>
+        <strong id="saldo-val">— gold</strong>
       </div>
+    </div>
 
-      <div class="field" id="field-tipo">
-        <label>Tipo de solicitação <span class="req">*</span></label>
-        <div class="select-wrap">
-          <select id="inp-tipo">
-            <option value="">Selecione…</option>
-            <option value="sugestao">Sugestão de Comando</option>
-            <option value="bug">Reportar Erro / Bug</option>
-            <option value="outros">Outros</option>
-          </select>
+    <!-- Slot Machine -->
+    <div class="slot-machine" id="slot-machine" style="display:none">
+      <div class="slot-title">🎰 Cassino Piroquinhas</div>
+
+      <!-- Rolos -->
+      <div class="reels-wrap" id="reels-wrap">
+        <div class="reels" id="reels">
+          <div class="reel" id="reel-0">
+            <div class="reel-inner" id="reel-inner-0">
+              <div class="reel-symbol">🎲</div>
+            </div>
+          </div>
+          <div class="reel" id="reel-1">
+            <div class="reel-inner" id="reel-inner-1">
+              <div class="reel-symbol">🎲</div>
+            </div>
+          </div>
+          <div class="reel" id="reel-2">
+            <div class="reel-inner" id="reel-inner-2">
+              <div class="reel-symbol">🎲</div>
+            </div>
+          </div>
         </div>
-        <span class="field-error">Selecione o tipo de solicitação.</span>
+        <div class="result-line"></div>
       </div>
 
-      <div class="field" id="field-msg">
-        <label>Mensagem <span class="req">*</span></label>
-        <textarea id="inp-msg" placeholder="Descreva com detalhes…"></textarea>
-        <span class="field-hint">Mínimo de 10 caracteres.</span>
-        <span class="field-error">Mensagem muito curta (mín. 10 caracteres).</span>
+      <!-- Status -->
+      <div class="slot-status" id="slot-status">Escolha um grupo e aposte para jogar</div>
+
+      <!-- Resultado -->
+      <div class="slot-result" id="slot-result">
+        <div class="slot-result-title" id="result-title"></div>
+        <div class="slot-result-grid">
+          <div class="slot-result-item">
+            <span>Aposta</span>
+            <strong id="result-aposta">—</strong>
+          </div>
+          <div class="slot-result-item gold-val">
+            <span>Multiplicador</span>
+            <strong id="result-mult">—</strong>
+          </div>
+          <div class="slot-result-item mint-val" id="result-premio-wrap">
+            <span>Prêmio</span>
+            <strong id="result-premio">—</strong>
+          </div>
+          <div class="slot-result-item gold-val">
+            <span>Novo Saldo</span>
+            <strong id="result-saldo">—</strong>
+          </div>
+        </div>
       </div>
 
-      <button class="btn-submit" id="btn-submit">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        Enviar para os Admins
-      </button>
+      <!-- Input de aposta -->
+      <div class="aposta-row">
+        <div class="aposta-input-wrap">
+          <input
+            type="number"
+            id="aposta-input"
+            placeholder="Valor da aposta…"
+            min="1"
+            max="100000"
+          />
+        </div>
+        <button class="btn-spin" id="btn-spin" disabled>
+          🎰 Girar
+        </button>
+      </div>
 
-      <div class="support-feedback" id="support-feedback"></div>
+      <!-- Contador de sessão -->
+      <div class="session-stats" id="session-stats" style="display:none">
+        <div class="session-stat" id="stat-rodadas">
+          <span>Rodadas</span>
+          <strong id="stat-rodadas-val">0</strong>
+        </div>
+        <div class="session-stat pos" id="stat-ganhos">
+          <span>Ganhos</span>
+          <strong id="stat-ganhos-val">0 gold</strong>
+        </div>
+        <div class="session-stat neg" id="stat-perdas">
+          <span>Perdas</span>
+          <strong id="stat-perdas-val">0 gold</strong>
+        </div>
+      </div>
+
+      <!-- Chips de aposta rápida -->
+      <div class="quick-bets">
+        <button class="quick-bet" data-val="50">50</button>
+        <button class="quick-bet" data-val="100">100</button>
+        <button class="quick-bet" data-val="500">500</button>
+        <button class="quick-bet" data-val="1000">1k</button>
+        <button class="quick-bet" data-val="5000">5k</button>
+        <button class="quick-bet" data-val="max">MAX</button>
+        <button class="quick-bet repeat-bet" id="btn-repeat" data-val="repeat" style="display:none">🔁 Repetir</button>
+      </div>
     </div>
-  </div>
 
-</main>
+    <!-- Tabela de prêmios -->
+    <div class="paytable-card" id="paytable" style="display:none">
+      <div class="paytable-title">Tabela de Prêmios</div>
+      <div id="paytable-rows"></div>
+    </div>
 
+    <!-- Histórico da sessão -->
+    <div class="history-card" id="history-card" style="display:none">
+      <div class="history-title">Histórico da Sessão</div>
+      <div class="history-list" id="history-list">
+        <div class="history-empty">Nenhuma rodada ainda.</div>
+      </div>
+    </div>
+
+  </div><!-- /cassino-area -->
+
+</div><!-- /cassino-wrap -->
+
+<canvas id="confete-canvas"></canvas>
 <div id="toast"></div>
 
-<footer>piroquinhas-bot · central de comandos · feito com Node.js + Baileys</footer>
+<footer>piroquinhas-bot · cassino · powered by Node.js + MongoDB</footer>
 
-<!-- ══════════ FIREBASE v9+ (Modular via CDN compat) ══════════ -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script>
+const API = 'https://whatsappbot2-s3dx.onrender.com/api';
 
-  const firebaseConfig = {
-    apiKey:            "AIzaSyExample-substitua-pela-sua-chave",
-    authDomain:        "botwhatsapp-74647.firebaseapp.com",
-    projectId:         "botwhatsapp-74647",
-    storageBucket:     "botwhatsapp-74647.appspot.com",
-    messagingSenderId: "000000000000",
-    appId:             "1:000000000000:web:000000000000000000000000"
-  };
+/* ══════════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════════ */
+function $(id) { return document.getElementById(id); }
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
+let toastTimer;
+function showToast(msg, tipo = 'normal') {
+  const t = $('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.borderColor = tipo === 'win' ? 'var(--mint)' : tipo === 'lose' ? 'var(--red)' : 'var(--purple)';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
 
-  /* ─── Dados dos comandos ─── */
-  const COMMANDS = [
-    // ADMIN
-    { cmd:"!ban",        cat:"admin",      desc:"Bane um membro do grupo (reply ou menção).",             ex:"!ban @usuario" },
-    { cmd:"!unban",      cat:"admin",      desc:"Remove o ban de um membro.",                            ex:"!unban @usuario" },
-    { cmd:"!mute",       cat:"admin",      desc:"Silencia um membro por tempo definido.",                ex:"!mute @usuario 10m" },
-    { cmd:"!unmute",     cat:"admin",      desc:"Remove o silenciamento de um membro.",                  ex:"!unmute @usuario" },
-    { cmd:"!kick",       cat:"admin",      desc:"Remove um membro do grupo sem banir.",                  ex:"!kick @usuario" },
-    { cmd:"!fechar",     cat:"admin",      desc:"Fecha o grupo — só admins podem enviar mensagens.",     ex:"!fechar" },
-    { cmd:"!abrir",      cat:"admin",      desc:"Abre o grupo para todos enviarem mensagens.",           ex:"!abrir" },
-    { cmd:"!antilink",   cat:"admin",      desc:"Ativa/desativa remoção automática de links.",           ex:"!antilink on" },
-    { cmd:"!setprefix",  cat:"admin",      desc:"Altera o prefixo de comandos do bot.",                  ex:"!setprefix /" },
-    { cmd:"!addadmin",   cat:"admin",      desc:"Promove membro a admin do bot no grupo.",               ex:"!addadmin @usuario" },
+function fmtNum(n) {
+  return n != null ? Number(n).toLocaleString('pt-BR') : '—';
+}
 
-    // DIVERSÃO
-    { cmd:"!ranklevel",  cat:"diversao",   desc:"Exibe o ranking de XP/nível do grupo.",                 ex:"!ranklevel" },
-    { cmd:"!perfil",     cat:"diversao",   desc:"Mostra seu perfil: nível, XP, gold e conquistas.",      ex:"!perfil" },
-    { cmd:"!quiz",       cat:"diversao",   desc:"Inicia uma rodada de quiz com perguntas aleatórias.",   ex:"!quiz" },
-    { cmd:"!pesca",      cat:"diversao",   desc:"Vai pescar e tenta pegar um peixe raro.",               ex:"!pesca" },
-    { cmd:"!pet",        cat:"diversao",   desc:"Exibe informações do seu pet atual.",                   ex:"!pet" },
-    { cmd:"!adotarpet",  cat:"diversao",   desc:"Adota um novo pet (custo em gold).",                    ex:"!adotarpet cachorro" },
-    { cmd:"!casamento",  cat:"diversao",   desc:"Pede alguém em casamento no grupo.",                    ex:"!casamento @usuario" },
-    { cmd:"!divorcio",   cat:"diversao",   desc:"Encerra o relacionamento atual do bot.",                ex:"!divorcio" },
-    { cmd:"!daily",      cat:"diversao",   desc:"Coleta sua recompensa diária de gold e XP.",            ex:"!daily" },
-    { cmd:"!roleta",     cat:"diversao",   desc:"Aposta gold na roleta russa do bot.",                   ex:"!roleta 100" },
-    { cmd:"!duelo",      cat:"diversao",   desc:"Desafia outro membro para um duelo de XP.",             ex:"!duelo @usuario 200" },
-    { cmd:"!som",        cat:"diversao",   desc:"Baixa e manda um áudio do YouTube no grupo.",           ex:"!som https://youtu.be/..." },
+function getJwt() {
+  return localStorage.getItem('piro_jwt') || null;
+}
 
-    // UTILIDADES
-    { cmd:"!sticker",    cat:"utilidades", desc:"Converte imagem/vídeo em figurinha (reply).",           ex:"!sticker [reply na mídia]" },
-    { cmd:"!toimg",      cat:"utilidades", desc:"Converte figurinha em imagem PNG.",                     ex:"!toimg [reply na figurinha]" },
-    { cmd:"!resumo",     cat:"utilidades", desc:"Resume as últimas mensagens do grupo com IA.",          ex:"!resumo 50" },
-    { cmd:"!clima",      cat:"utilidades", desc:"Mostra a previsão do tempo de uma cidade.",             ex:"!clima Cuiabá" },
-    { cmd:"!traduzir",   cat:"utilidades", desc:"Traduz um texto para o idioma escolhido.",              ex:"!traduzir en Olá mundo" },
-    { cmd:"!encurtar",   cat:"utilidades", desc:"Encurta uma URL longa.",                               ex:"!encurtar https://exemplo.com/link-enorme" },
-    { cmd:"!moeda",      cat:"utilidades", desc:"Converte valores entre moedas em tempo real.",          ex:"!moeda 100 USD BRL" },
-    { cmd:"!letra",      cat:"utilidades", desc:"Busca a letra de uma música.",                         ex:"!letra Emicida AmarElo" },
-    { cmd:"!info",       cat:"utilidades", desc:"Mostra informações do grupo (membros, admins, desc.).", ex:"!info" },
-    { cmd:"!ping",       cat:"utilidades", desc:"Verifica se o bot está online e exibe latência.",       ex:"!ping" },
-  ];
+const SIMBOLOS = [
+  { emoji: '💎', tres: 50, dois: 5   },
+  { emoji: '7️⃣',  tres: 25, dois: 3   },
+  { emoji: '🔔', tres: 15, dois: 2   },
+  { emoji: '🍇', tres: 10, dois: 1.5 },
+  { emoji: '🍉', tres: 8,  dois: 1.5 },
+  { emoji: '🍋', tres: 6,  dois: 1.2 },
+  { emoji: '🍒', tres: 4,  dois: 1.2 },
+];
 
-  /* ─── Estado ─── */
-  let activeCategory = "todos";
-  let searchQuery    = "";
+const RARIDADE = {
+  '💎': { tres: { label: 'lendário', cls: 'rarity-lendario' }, dois: { label: 'épico',  cls: 'rarity-epico'  } },
+  '7️⃣':  { tres: { label: 'épico',   cls: 'rarity-epico'   }, dois: { label: 'raro',   cls: 'rarity-raro'   } },
+  '🔔': { tres: { label: 'raro',    cls: 'rarity-raro'    }, dois: { label: 'raro',   cls: 'rarity-raro'   } },
+  '🍇': { tres: { label: 'incomum', cls: 'rarity-incomum' }, dois: { label: 'comum',  cls: 'rarity-comum'  } },
+  '🍉': { tres: { label: 'incomum', cls: 'rarity-incomum' }, dois: { label: 'comum',  cls: 'rarity-comum'  } },
+  '🍋': { tres: { label: 'comum',   cls: 'rarity-comum'   }, dois: { label: 'comum',  cls: 'rarity-comum'  } },
+  '🍒': { tres: { label: 'comum',   cls: 'rarity-comum'   }, dois: { label: 'comum',  cls: 'rarity-comum'  } },
+};
 
-  /* ─── Refs ─── */
-  const grid       = document.getElementById("cmd-grid");
-  const emptyState = document.getElementById("empty-state");
-  const countEl    = document.getElementById("results-count");
-  const searchInp  = document.getElementById("search-input");
-  const clearBtn   = document.getElementById("search-clear");
-  const toastEl    = document.getElementById("toast");
+function buildPaytable() {
+  const wrap = $('paytable-rows');
+  if (!wrap) return;
+  wrap.innerHTML = SIMBOLOS.map(s => {
+    const rTres = RARIDADE[s.emoji]?.tres ?? { label: 'comum', cls: 'rarity-comum' };
+    const rDois = RARIDADE[s.emoji]?.dois ?? { label: 'comum', cls: 'rarity-comum' };
+    const isJackpot = s.tres >= 15;
+    return `
+      <div class="paytable-row${isJackpot ? ' jackpot-row' : ''}">
+        <span class="paytable-symbols">${s.emoji}${s.emoji}${s.emoji}</span>
+        <span class="paytable-mult">
+          <span class="rarity-badge ${rTres.cls}">${rTres.label}</span>
+          <strong>${s.tres}x</strong>
+        </span>
+      </div>
+      <div class="paytable-row">
+        <span class="paytable-symbols">${s.emoji}${s.emoji}✦</span>
+        <span class="paytable-mult">
+          <span class="rarity-badge ${rDois.cls}">${rDois.label}</span>
+          <strong>${s.dois}x</strong>
+        </span>
+      </div>
+    `;
+  }).join('');
+}
 
-  /* ─── Render ─── */
-  function render() {
-    const q = searchQuery.toLowerCase().trim();
+/* ══════════════════════════════════════════════════════
+   ESTADO
+══════════════════════════════════════════════════════ */
+let saldoAtual   = 0;
+let grupoAtual   = null;
+let spinning     = false;
+let sessionHistory = [];
 
-    const filtered = COMMANDS.filter(c => {
-      const catOk = activeCategory === "todos" || c.cat === activeCategory;
-      const txtOk = !q || c.cmd.includes(q) || c.desc.toLowerCase().includes(q) || c.ex.toLowerCase().includes(q);
-      return catOk && txtOk;
+let ultimaAposta  = null;
+let sessaoRodadas = 0;
+let sessaoGanhos  = 0;
+let sessaoPerdas  = 0;
+
+function atualizarSessao(lucroLiq, aposta) {
+  sessaoRodadas++;
+  if (lucroLiq > 0) sessaoGanhos += lucroLiq;
+  else              sessaoPerdas += aposta;
+
+  $('session-stats').style.display = 'grid';
+  $('stat-rodadas-val').textContent = sessaoRodadas;
+  $('stat-ganhos-val').textContent  = fmtNum(sessaoGanhos) + ' gold';
+  $('stat-perdas-val').textContent  = fmtNum(sessaoPerdas) + ' gold';
+
+  ultimaAposta = aposta;
+  const btnRepeat = $('btn-repeat');
+  if (btnRepeat) {
+    btnRepeat.style.display = 'inline-flex';
+    btnRepeat.dataset.val   = 'repeat';
+    btnRepeat.textContent   = `🔁 ${fmtNum(aposta)}`;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════════════ */
+function checkAuth() {
+  const jwt = getJwt();
+  console.log('[checkAuth] piro_jwt:', jwt ? 'ENCONTRADO ✅' : 'NÃO ENCONTRADO ❌');
+  console.log('[checkAuth] localStorage keys:', Object.keys(localStorage));
+
+  if (!jwt) {
+    $('login-gate').style.display   = 'block';
+    $('cassino-area').style.display = 'none';
+    return false;
+  }
+  $('login-gate').style.display   = 'none';
+  $('cassino-area').style.display = 'block';
+  return true;
+}
+
+/* ══════════════════════════════════════════════════════
+   CARREGAR GRUPOS DO USUÁRIO
+══════════════════════════════════════════════════════ */
+async function carregarGrupos() {
+  const jwt = getJwt();
+  const sel = $('grupo-select');
+  if (!sel) return;
+
+  try {
+    const res  = await fetch(`${API}/user/grupos`, {
+      headers: { Authorization: `Bearer ${jwt}` },
     });
+    const data = await res.json();
 
-    countEl.textContent = filtered.length;
-
-    if (filtered.length === 0) {
-      grid.innerHTML = "";
-      emptyState.style.display = "block";
+    if (!res.ok || !data.grupos?.length) {
+      sel.innerHTML = '<option value="">Nenhum grupo encontrado</option>';
       return;
     }
-    emptyState.style.display = "none";
 
-    grid.innerHTML = filtered.map((c, i) => {
-      const catLabel = { admin:"⚙️ Admin", diversao:"🎉 Diversão", utilidades:"📊 Utilidades" }[c.cat];
-      return `
-        <div class="cmd-card" data-cat="${c.cat}" style="animation-delay:${i * 35}ms">
-          <div class="cmd-card-top">
-            <span class="cmd-name">${c.cmd}</span>
-            <span class="cmd-cat-tag">${catLabel}</span>
-          </div>
-          <p class="cmd-desc">${c.desc}</p>
-          <div class="cmd-example"><b>Exemplo:</b> ${c.ex}</div>
-          <button class="btn-copy" data-cmd="${c.cmd}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copiar Comando
-          </button>
-        </div>`;
-    }).join("");
+    sel.innerHTML =
+      '<option value="">Selecione um grupo…</option>' +
+      data.grupos
+        .sort((a, b) => (b.gold ?? 0) - (a.gold ?? 0))
+        .map(g => `<option value="${g.jid}" data-gold="${g.gold ?? 0}">${g.nome} — ${fmtNum(g.gold ?? 0)} 💰</option>`)
+        .join('');
 
-    /* Copy buttons */
-    grid.querySelectorAll(".btn-copy").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const text = btn.dataset.cmd;
-        navigator.clipboard.writeText(text).then(() => {
-          btn.classList.add("copied");
-          btn.textContent = "✓ Copiado!";
-          showToast(`${text} copiado ✓`);
-          setTimeout(() => {
-            btn.classList.remove("copied");
-            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar Comando`;
-          }, 2000);
-        }).catch(() => {
-          showToast("Não foi possível copiar 😕");
-        });
+  } catch {
+    sel.innerHTML = '<option value="">Erro ao carregar grupos</option>';
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   SELECIONAR GRUPO
+══════════════════════════════════════════════════════ */
+function onGrupoChange() {
+  const sel    = $('grupo-select');
+  const opt    = sel.options[sel.selectedIndex];
+  grupoAtual   = sel.value || null;
+  saldoAtual   = grupoAtual ? parseInt(opt.dataset.gold || '0', 10) : 0;
+
+  const saldoChip  = $('saldo-chip');
+  const slotMachine = $('slot-machine');
+  const paytable   = $('paytable');
+  const histCard   = $('history-card');
+  const btnSpin    = $('btn-spin');
+
+  if (grupoAtual) {
+    sessaoRodadas = 0; sessaoGanhos = 0; sessaoPerdas = 0; ultimaAposta = null;
+    $('session-stats').style.display = 'none';
+    const btnRepeat = $('btn-repeat');
+    if (btnRepeat) btnRepeat.style.display = 'none';
+
+    saldoChip.style.display   = 'flex';
+    slotMachine.style.display = 'block';
+    paytable.style.display    = 'block';
+    histCard.style.display    = 'block';
+    $('saldo-val').textContent = fmtNum(saldoAtual) + ' gold';
+    btnSpin.disabled = false;
+    $('slot-status').textContent = 'Defina sua aposta e gire!';
+    $('slot-status').className   = 'slot-status';
+  } else {
+    saldoChip.style.display   = 'none';
+    slotMachine.style.display = 'none';
+    paytable.style.display    = 'none';
+    histCard.style.display    = 'none';
+    btnSpin.disabled = true;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   ANIMAÇÃO DOS ROLOS
+══════════════════════════════════════════════════════ */
+const SPIN_SYMBOLS = ['💎','7️⃣','🔔','🍇','🍉','🍋','🍒','🎰','⭐','🃏'];
+
+function randomSymbol() {
+  return SPIN_SYMBOLS[Math.floor(Math.random() * SPIN_SYMBOLS.length)];
+}
+
+/* Gira um rolo visualmente durante `duration` ms, depois para em `finalEmoji` */
+function animateReel(reelId, finalEmoji, duration) {
+  return new Promise(resolve => {
+    const reel      = $(reelId);
+    const inner = $('reel-inner-' + reelId.split('-').pop());
+    if (!reel || !inner) { resolve(); return; }
+
+    reel.classList.add('spinning');
+    reel.classList.remove('stopped-win', 'stopped-lose');
+
+    const intervalMs = 80;
+    const steps      = Math.floor(duration / intervalMs);
+    let   count      = 0;
+
+    const tick = setInterval(() => {
+      inner.innerHTML = `<div class="reel-symbol">${randomSymbol()}</div>`;
+      count++;
+      if (count >= steps) {
+        clearInterval(tick);
+        inner.innerHTML = `<div class="reel-symbol">${finalEmoji}</div>`;
+        reel.classList.remove('spinning');
+        resolve();
+      }
+    }, intervalMs);
+  });
+}
+
+/* Para os 3 rolos em sequência com delay entre eles */
+async function animateAllReels(r1, r2, r3) {
+  await Promise.all([
+    animateReel('reel-0', r1, 900),
+    new Promise(resolve => setTimeout(async () => {
+      await animateReel('reel-1', r2, 900);
+      resolve();
+    }, 500)),
+    new Promise(resolve => setTimeout(async () => {
+      await animateReel('reel-2', r3, 900);
+      resolve();
+    }, 1100)),
+  ]);
+}
+
+/* ══════════════════════════════════════════════════════
+   MOSTRAR RESULTADO
+══════════════════════════════════════════════════════ */
+function mostrarResultado(data) {
+  const [r1, r2, r3] = data.resultado;
+  const { tipo, mult, premio, lucroLiq, aposta, saldoFinal } = data;
+
+  /* Cor e texto do título */
+  const isJackpot = tipo === 'jackpot_lendario' || tipo === 'jackpot';
+  const isWin     = lucroLiq > 0;
+
+  const titleEl = $('result-title');
+  titleEl.className = 'slot-result-title ' + (isJackpot ? 'jackpot' : isWin ? 'win' : 'lose');
+
+  const labels = {
+    jackpot_lendario: `🌟 JACKPOT LENDÁRIO! ${mult}x`,
+    jackpot:          `🎉 JACKPOT! ${mult}x`,
+    tres_iguais:      `✨ TRÊS IGUAIS! ${mult}x`,
+    dois_iguais:      `💫 PAR! ${mult}x`,
+    derrota:          `❌ Perdeu! O cassino agradece 🏦`,
+  };
+  titleEl.textContent = labels[tipo] || '—';
+
+  $('result-aposta').textContent  = fmtNum(aposta) + ' gold';
+  $('result-mult').textContent    = mult > 0 ? mult + 'x' : '—';
+  $('result-premio').textContent  = premio > 0 ? '+' + fmtNum(premio) + ' gold' : '—';
+  $('result-saldo').textContent   = fmtNum(saldoFinal) + ' gold';
+
+  /* Cor do prêmio */
+  const premioWrap = $('result-premio-wrap');
+  premioWrap.className = 'slot-result-item ' + (premio > 0 ? 'mint-val' : 'red-val');
+
+  $('slot-result').classList.add('show');
+
+  /* Status */
+  const statusEl = $('slot-status');
+  statusEl.textContent = isWin
+    ? `+${fmtNum(lucroLiq)} gold 🎉`
+    : `-${fmtNum(aposta)} gold 😢`;
+  statusEl.className = 'slot-status ' + (isWin ? 'win' : 'lose');
+
+  /* Rolos — cor de borda */
+  for (let i = 0; i < 3; i++) {
+    const r = $('reel-' + i);
+    r.classList.toggle('stopped-win',  isWin);
+    r.classList.toggle('stopped-lose', !isWin);
+  }
+
+  /* Linha de resultado */
+  $('reels-wrap').classList.toggle('show-line', isWin);
+
+  /* Atualiza saldo exibido */
+  saldoAtual = saldoFinal;
+  $('saldo-val').textContent = fmtNum(saldoFinal) + ' gold';
+
+  /* Atualiza option do select */
+  const sel = $('grupo-select');
+  if (sel.selectedIndex >= 0) {
+    sel.options[sel.selectedIndex].dataset.gold = saldoFinal;
+    sel.options[sel.selectedIndex].text =
+      sel.options[sel.selectedIndex].text.replace(/— [\d.,]+ 💰/, `— ${fmtNum(saldoFinal)} 💰`);
+  }
+
+  /* Histórico */
+  addHistory(r1, r2, r3, lucroLiq);
+
+  /* Som */
+  const tipoSom = isJackpot ? 'jackpot' : isWin ? 'moeda' : 'derrota';
+  tocarSom(tipoSom);
+
+  /* Shake na máquina em vitória */
+  if (isWin) {
+    const sm = $('slot-machine');
+    sm.classList.remove('shake');
+    void sm.offsetWidth;
+    sm.classList.add('shake');
+    setTimeout(() => sm.classList.remove('shake'), 500);
+  }
+
+  /* Atualiza contador de sessão */
+  atualizarSessao(lucroLiq, aposta);
+
+  /* Confete no jackpot */
+  if (isJackpot) dispararConfete();
+}
+
+/* ══════════════════════════════════════════════════════
+   HISTÓRICO DA SESSÃO
+══════════════════════════════════════════════════════ */
+function addHistory(r1, r2, r3, lucroLiq) {
+  sessionHistory.unshift({ r1, r2, r3, lucroLiq });
+  if (sessionHistory.length > 20) sessionHistory.pop();
+
+  const list = $('history-list');
+  if (!list) return;
+
+  list.innerHTML = sessionHistory.map(h => `
+    <div class="history-item">
+      <span class="history-symbols">${h.r1} ${h.r2} ${h.r3}</span>
+      <span class="history-val ${h.lucroLiq >= 0 ? 'pos' : 'neg'}">
+        ${h.lucroLiq >= 0 ? '+' : ''}${fmtNum(h.lucroLiq)} gold
+      </span>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   GIRAR
+══════════════════════════════════════════════════════ */
+
+let _audioCtx = null;
+function getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _audioCtx;
+}
+
+function tocarSom(tipo) {
+  try {
+    const ctx = getAudioCtx();
+    if (tipo === 'moeda') {
+      const notas = [523, 659, 784, 1047];
+      notas.forEach((freq, i) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        const t = ctx.currentTime + i * 0.08;
+        gain.gain.setValueAtTime(0.18, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+        osc.start(t); osc.stop(t + 0.18);
       });
-    });
-  }
-
-  /* ─── Toast ─── */
-  let toastTimer;
-  function showToast(msg) {
-    toastEl.textContent = msg;
-    toastEl.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
-  }
-
-  /* ─── Tabs ─── */
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
-    });
-  });
-
-  /* ─── Categoria chips ─── */
-  document.querySelectorAll(".chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-      activeCategory = chip.dataset.cat;
-      render();
-    });
-  });
-
-  /* ─── Search ─── */
-  searchInp.addEventListener("input", () => {
-    searchQuery = searchInp.value;
-    clearBtn.classList.toggle("show", searchQuery.length > 0);
-    render();
-  });
-
-  clearBtn.addEventListener("click", () => {
-    searchInp.value = "";
-    searchQuery = "";
-    clearBtn.classList.remove("show");
-    searchInp.focus();
-    render();
-  });
-
-  /* ─── Suporte: validação + Firestore ─── */
-  function validate() {
-    let ok = true;
-
-    const numero = document.getElementById("inp-numero").value.trim();
-    const fieldN = document.getElementById("field-numero");
-    if (!/^\d{8,15}$/.test(numero)) {
-      fieldN.classList.add("invalid"); ok = false;
-    } else fieldN.classList.remove("invalid");
-
-    const tipo = document.getElementById("inp-tipo").value;
-    const fieldT = document.getElementById("field-tipo");
-    if (!tipo) {
-      fieldT.classList.add("invalid"); ok = false;
-    } else fieldT.classList.remove("invalid");
-
-    const msg = document.getElementById("inp-msg").value.trim();
-    const fieldM = document.getElementById("field-msg");
-    if (msg.length < 10) {
-      fieldM.classList.add("invalid"); ok = false;
-    } else fieldM.classList.remove("invalid");
-
-    return ok;
-  }
-
-  document.getElementById("btn-submit").addEventListener("click", async () => {
-    if (!validate()) return;
-
-    const btn      = document.getElementById("btn-submit");
-    const feedback = document.getElementById("support-feedback");
-    btn.disabled   = true;
-    btn.textContent = "Enviando…";
-
-    const payload = {
-      numero:    document.getElementById("inp-numero").value.trim(),
-      tipo:      document.getElementById("inp-tipo").value,
-      mensagem:  document.getElementById("inp-msg").value.trim(),
-      criadoEm: serverTimestamp()
-    };
-
-    try {
-      await addDoc(collection(db, "suporte_sugestoes"), payload);
-      feedback.className = "support-feedback ok show";
-      feedback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        <span>Mensagem enviada! Os admins vão ver em breve. 🎉</span>`;
-      document.getElementById("inp-numero").value = "";
-      document.getElementById("inp-tipo").value   = "";
-      document.getElementById("inp-msg").value    = "";
-    } catch (err) {
-      console.error(err);
-      feedback.className = "support-feedback error show";
-      feedback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span>Erro ao enviar: ${err.message}</span>`;
-    } finally {
-      btn.disabled    = false;
-      btn.innerHTML   = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Enviar para os Admins`;
+    } else if (tipo === 'jackpot') {
+      const notas = [523, 659, 784, 1047, 1319, 1047, 1319];
+      notas.forEach((freq, i) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'triangle';
+        const t = ctx.currentTime + i * 0.1;
+        gain.gain.setValueAtTime(0.22, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        osc.start(t); osc.stop(t + 0.25);
+      });
+    } else {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 150;
+      osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(); osc.stop(ctx.currentTime + 0.3);
     }
-  });
+  } catch {}
+}
 
-  /* ─── Init ─── */
-  render();
+async function girar() {
+  if (spinning || !grupoAtual) return;
+
+  const jwt    = getJwt();
+  const aposta = parseInt($('aposta-input').value, 10);
+
+  if (!aposta || aposta <= 0) {
+    showToast('Digite o valor da aposta!');
+    return;
+  }
+  if (aposta > saldoAtual) {
+    showToast('Saldo insuficiente!', 'lose');
+    return;
+  }
+  if (aposta > 100_000) {
+    showToast('Aposta máxima: 100.000 gold');
+    return;
+  }
+
+  spinning = true;
+  const btnSpin = $('btn-spin');
+  btnSpin.disabled  = true;
+  btnSpin.textContent = '⏳ Girando…';
+
+  /* Esconde resultado anterior */
+  $('slot-result').classList.remove('show');
+  $('reels-wrap').classList.remove('show-line');
+  $('slot-status').textContent = 'Girando…';
+  $('slot-status').className   = 'slot-status';
+
+  /* Inicia animação visual imediatamente (não espera API) */
+  const animPromise = animateAllReels('🎲', '🎲', '🎲');
+
+  /* Chama a API em paralelo */
+  let apiData = null;
+  try {
+    const res  = await fetch(`${API}/cassino/slots`, {
+      method:  'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization:  `Bearer ${jwt}`,
+      },
+      body: JSON.stringify({ idGrupo: grupoAtual, aposta }),
+    });
+    apiData = await res.json();
+
+    if (!res.ok) {
+      await animPromise;
+      showToast(apiData?.error || 'Erro ao girar!', 'lose');
+      spinning = false;
+      btnSpin.disabled  = false;
+      btnSpin.textContent = '🎰 Girar';
+      return;
+    }
+  } catch {
+    await animPromise;
+    showToast('Erro de conexão. Tente novamente.', 'lose');
+    spinning = false;
+    btnSpin.disabled  = false;
+    btnSpin.textContent = '🎰 Girar';
+    return;
+  }
+
+  /* Espera animação base terminar, depois anima com resultado real */
+  await animPromise;
+  const [r1, r2, r3] = apiData.resultado;
+  await animateAllReels(r1, r2, r3);
+
+  /* Mostra resultado */
+  mostrarResultado(apiData);
+
+  spinning = false;
+  btnSpin.disabled  = false;
+  btnSpin.textContent = '🎰 Girar';
+
+  /* Toast */
+  const isWin = apiData.lucroLiq > 0;
+  showToast(
+    isWin
+      ? `+${fmtNum(apiData.lucroLiq)} gold! 🎉`
+      : `-${fmtNum(apiData.aposta)} gold 😢`,
+    isWin ? 'win' : 'lose'
+  );
+}
+
+/* ══════════════════════════════════════════════════════
+   CONFETE
+══════════════════════════════════════════════════════ */
+function dispararConfete() {
+  const canvas = $('confete-canvas');
+  if (!canvas) return;
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = Array.from({ length: 120 }, () => ({
+    x:    Math.random() * canvas.width,
+    y:    Math.random() * -canvas.height,
+    vx:   (Math.random() - .5) * 4,
+    vy:   Math.random() * 4 + 2,
+    color: ['#ffd060','#b855ff','#00ffb0','#2de2ff','#ff3b6e'][Math.floor(Math.random() * 5)],
+    size: Math.random() * 8 + 4,
+    rot:  Math.random() * 360,
+    vr:   (Math.random() - .5) * 8,
+  }));
+
+  let frame = 0;
+  const MAX_FRAMES = 180;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of particles) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rot * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - frame / MAX_FRAMES);
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * .5);
+      ctx.restore();
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.rot += p.vr;
+    }
+    frame++;
+    if (frame < MAX_FRAMES) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+/* ══════════════════════════════════════════════════════
+   EVENTOS
+══════════════════════════════════════════════════════ */
+$('grupo-select')?.addEventListener('change', onGrupoChange);
+
+$('btn-spin')?.addEventListener('click', girar);
+
+/* Quick bets */
+document.querySelectorAll('.quick-bet').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const val   = btn.dataset.val;
+    const input = $('aposta-input');
+    if (!input) return;
+    if (val === 'max')                          input.value = saldoAtual;
+    else if (val === 'repeat' && ultimaAposta)  input.value = Math.min(ultimaAposta, saldoAtual);
+    else                                        input.value = Math.min(parseInt(val), saldoAtual);
+  });
+});
+
+/* Enter no input dispara o giro */
+$('aposta-input')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') girar();
+});
+
+/* ══════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════ */
+(async function init() {
+  buildPaytable();
+
+  const navCassino = document.getElementById('nav-cassino');
+  if (navCassino) navCassino.style.display = 'flex';
+
+  // Troca token temporário da URL por JWT (caso venha direto do link do bot)
+  const params     = new URLSearchParams(window.location.search);
+  const tokenParam = params.get('token');
+  if (tokenParam) {
+    try {
+      const res  = await fetch(`${API}/auth/token`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ token: tokenParam }),
+      });
+      const data = await res.json();
+      if (res.ok && data.jwt) {
+        localStorage.setItem('piro_jwt', data.jwt);
+        history.replaceState(null, '', 'cassino.html');
+      }
+    } catch { /* token inválido — checkAuth vai rejeitar abaixo */ }
+  }
+
+  if (!checkAuth()) return;
+  await carregarGrupos();
+})();
 </script>
 
 </body>
