@@ -645,9 +645,9 @@ $('aposta-input')?.addEventListener('keydown', e => {
 (async function init() {
   buildPaytable();
   const navCassino = document.getElementById('nav-cassino');
-  if (localStorage.getItem('piro_jwt') && navCassino) {
-    navCassino.style.display = 'flex';
-  }
+if (navCassino) {
+  navCassino.style.display = 'flex';
+}
   if (!checkAuth()) return;
   await carregarGrupos();
 })();
