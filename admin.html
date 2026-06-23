@@ -153,6 +153,16 @@
     .usr-tag.xp   { color: var(--mint);   border-color: rgba(0,255,176,.25); background: var(--mint-dim); }
     .usr-tag.lv   { color: var(--roxo);   border-color: rgba(184,85,255,.3); background: var(--roxo-dim); }
     .usr-acoes-titulo { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem; }
+
+    /* ===== LEVEL / XP / INVENTÁRIO ===== */
+    .usr-acoes-sep { height: 1px; background: var(--border); margin: 0.5rem 0; }
+    .inv-lista { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.35rem; }
+    .inv-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.75rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.82rem; }
+    .inv-item-nome { flex: 1; color: var(--text); font-weight: 500; }
+    .inv-item-qtd  { color: var(--muted2); font-size: 0.78rem; min-width: 2.5em; text-align: right; }
+    .btn-inv-rem   { background: none; border: 1px solid var(--border2); color: var(--muted); border-radius: 5px; font-size: 0.72rem; padding: 0.14rem 0.5rem; cursor: pointer; white-space: nowrap; }
+    .btn-inv-rem:hover { border-color: var(--vermelho); color: var(--vermelho); }
+    .inv-vazio { color: var(--muted); font-size: 0.85rem; padding: 0.25rem 0; }
     .usr-acoes-grid { display: flex; flex-direction: column; gap: 0.75rem; }
     .usr-acao-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; padding: 0.75rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
     .usr-acao-row .field { min-width: 120px; flex: 1; gap: 0.25rem; }
@@ -494,46 +504,102 @@
             </div>
 
             <!-- Ações -->
-            <div>
-              <div class="usr-acoes-titulo">Ajustar Gold</div>
-              <div class="usr-acoes-grid">
-                <div class="usr-acao-row">
-                  <div class="field">
-                    <label>Grupo</label>
-                    <select id="usr-acao-grupo"></select>
-                  </div>
-                  <div class="field" style="max-width:120px;">
-                    <label>Quantidade</label>
-                    <input type="number" id="usr-gold-valor" min="1" placeholder="500" />
-                  </div>
-                  <button class="btn-gold-dar" id="btn-dar-gold">+ Dar</button>
-                  <button class="btn-gold-rem" id="btn-remover-gold">− Remover</button>
-                  <button class="btn-gold-reset" id="btn-resetar-gold-usuario">🗑 Zerar tudo</button>
-                </div>
+<div>
+  <!-- ── Gold ── -->
+  <div class="usr-acoes-titulo">Ajustar Gold</div>
+  <div class="usr-acoes-grid">
+    <div class="usr-acao-row">
+      <div class="field">
+        <label>Grupo</label>
+        <select id="usr-acao-grupo"></select>
+      </div>
+      <div class="field" style="max-width:120px;">
+        <label>Quantidade</label>
+        <input type="number" id="usr-gold-valor" min="1" placeholder="500" />
+      </div>
+      <button class="btn-gold-dar" id="btn-dar-gold">+ Dar</button>
+      <button class="btn-gold-rem" id="btn-remover-gold">− Remover</button>
+      <button class="btn-gold-reset" id="btn-resetar-gold-usuario">🗑 Zerar tudo</button>
+    </div>
 
-                <!-- Transferência entre usuários -->
-                <div class="usr-acao-row">
-                  <div class="usr-acao-title">🔄 Transferir gold para outro usuário</div>
-                  <div class="usr-transferencia" style="width:100%;">
-                    <div class="transfer-row">
-                      <div class="field">
-                        <label>Grupo de origem</label>
-                        <select id="transfer-grupo-origem"></select>
-                      </div>
-                      <div class="field">
-                        <label>Destino (número/JID)</label>
-                        <input type="text" id="transfer-destino" placeholder="5511999..." />
-                      </div>
-                      <div class="field" style="max-width:110px;">
-                        <label>Quantidade</label>
-                        <input type="number" id="transfer-valor" min="1" placeholder="100" />
-                      </div>
-                      <button class="btn-gold-dar" id="btn-transferir-gold">Transferir</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <!-- Transferência -->
+    <div class="usr-acao-row">
+      <div class="usr-acao-title">🔄 Transferir gold para outro usuário</div>
+      <div class="usr-transferencia" style="width:100%;">
+        <div class="transfer-row">
+          <div class="field">
+            <label>Grupo de origem</label>
+            <select id="transfer-grupo-origem"></select>
+          </div>
+          <div class="field">
+            <label>Destino (número/JID)</label>
+            <input type="text" id="transfer-destino" placeholder="5511999..." />
+          </div>
+          <div class="field" style="max-width:110px;">
+            <label>Quantidade</label>
+            <input type="number" id="transfer-valor" min="1" placeholder="100" />
+          </div>
+          <button class="btn-gold-dar" id="btn-transferir-gold">Transferir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Level / XP ── -->
+  <div class="usr-acoes-sep" style="margin-top:1rem;"></div>
+  <div class="usr-acoes-titulo" style="margin-top:0.85rem;">Alterar Level / XP</div>
+  <div class="usr-acoes-grid">
+    <div class="usr-acao-row">
+      <div class="field">
+        <label>Grupo</label>
+        <select id="usr-level-grupo"></select>
+      </div>
+      <div class="field" style="max-width:100px;">
+        <label>Novo Level</label>
+        <input type="number" id="usr-level-novo" min="1" max="9999" placeholder="Ex: 5" />
+      </div>
+      <div class="field" style="max-width:120px;">
+        <label>Novo XP</label>
+        <input type="number" id="usr-xp-novo" min="0" placeholder="Ex: 1200" />
+      </div>
+      <button class="btn-gold-dar" id="btn-set-level">✔ Aplicar</button>
+    </div>
+  </div>
+
+  <!-- ── Inventário ── -->
+  <div class="usr-acoes-sep" style="margin-top:1rem;"></div>
+  <div class="usr-acoes-titulo" style="margin-top:0.85rem;">Inventário</div>
+  <div class="usr-acoes-grid">
+    <div class="usr-acao-row" style="flex-direction:column;align-items:stretch;gap:0.75rem;">
+
+      <!-- Grupo para ver/editar inventário -->
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:flex-end;">
+        <div class="field" style="flex:1;min-width:160px;">
+          <label>Grupo</label>
+          <select id="usr-inv-grupo"></select>
+        </div>
+        <button class="btn-ghost" id="btn-carregar-inv" style="min-height:36px;padding:.4rem .9rem;font-size:.82rem;">Ver inventário</button>
+      </div>
+
+      <!-- Lista de itens -->
+      <div id="usr-inv-lista" class="inv-lista hidden"></div>
+
+      <!-- Adicionar item -->
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:flex-end;border-top:1px solid var(--border);padding-top:0.65rem;">
+        <div class="field" style="flex:2;min-width:140px;">
+          <label>Nome do item</label>
+          <input type="text" id="usr-inv-item-nome" placeholder="Ex: Espada Lendária" />
+        </div>
+        <div class="field" style="max-width:90px;">
+          <label>Qtd</label>
+          <input type="number" id="usr-inv-item-qtd" min="1" value="1" placeholder="1" />
+        </div>
+        <button class="btn-gold-dar" id="btn-inv-adicionar">+ Adicionar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
           </div>
         </div>
       </section>
@@ -1642,6 +1708,26 @@
         selectOr.innerHTML = optGrupos;
       }
 
+      // Popula selects de level e inventário
+      const selectLevel = $('usr-level-grupo');
+      const selectInv   = $('usr-inv-grupo');
+      const optGruposStr = grupos.length
+        ? grupos.map(g =>
+            `<option value="${escapeHtml(g.idGrupo)}">${escapeHtml(g.nomeGrupo || g.idGrupo)}</option>`
+          ).join('')
+        : '<option value="">Nenhum grupo</option>';
+      selectLevel.innerHTML = optGruposStr;
+      selectInv.innerHTML   = optGruposStr;
+
+      // Limpa estado anterior
+      $('usr-level-novo').value    = '';
+      $('usr-xp-novo').value       = '';
+      $('usr-inv-lista').innerHTML = '';
+      $('usr-inv-lista').classList.add('hidden');
+      $('usr-inv-item-nome').value = '';
+      $('usr-inv-item-qtd').value  = '1';
+      invAtual = [];
+
       show('usuarios-resultado');
     }
 
@@ -1766,6 +1852,164 @@
         }
       );
     });
+
+    /* ===== LEVEL / XP ===== */
+    async function setLevelXp() {
+      if (!usuarioAtual) return;
+      const jid   = $('usr-level-grupo').value;
+      const level = parseInt($('usr-level-novo').value, 10);
+      const xp    = parseInt($('usr-xp-novo').value,    10);
+
+      if (!jid)                 { toast('Selecione um grupo.', 'erro'); return; }
+      if (!level || level < 1)  { toast('Digite um level válido (mín. 1).', 'erro'); return; }
+      if (isNaN(xp) || xp < 0) { toast('Digite um XP válido (mín. 0).', 'erro'); return; }
+
+      const nomeU = usuarioAtual.nome || usuarioAtual.idWhatsApp;
+      const nomeG = $('usr-level-grupo').selectedOptions[0]?.text || jid;
+
+      abrirModal(
+        'Alterar Level / XP',
+        `Definir Level ${level} e ${formatNum(xp)} XP para ${nomeU} em "${nomeG}"?`,
+        async () => {
+          try {
+            const res = await fetch(
+              `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/level`,
+              {
+                method: 'PATCH',
+                headers: adminHeaders(),
+                body: JSON.stringify({ idGrupo: jid, level, xp })
+              }
+            );
+            if (!res.ok) throw new Error();
+            toast('✅ Level e XP atualizados.');
+            $('usr-level-novo').value = '';
+            $('usr-xp-novo').value    = '';
+            buscarUsuario();
+          } catch {
+            toast('Erro ao atualizar level/XP.', 'erro');
+          }
+        }
+      );
+    }
+
+    $('btn-set-level').addEventListener('click', setLevelXp);
+
+    /* ===== INVENTÁRIO ===== */
+    let invAtual = [];
+
+    async function carregarInventario() {
+      if (!usuarioAtual) return;
+      const jid     = $('usr-inv-grupo').value;
+      if (!jid) { toast('Selecione um grupo.', 'erro'); return; }
+
+      const listaEl = $('usr-inv-lista');
+      listaEl.innerHTML = '<div class="inv-vazio"><div class="spinner" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:.4rem;border-width:2px;"></div> Carregando...</div>';
+      listaEl.classList.remove('hidden');
+
+      try {
+        const res = await fetch(
+          `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/inventario?idGrupo=${encodeURIComponent(jid)}`,
+          { headers: adminHeaders() }
+        );
+        if (!res.ok) throw new Error();
+        const { inventario } = await res.json();
+        invAtual = inventario || [];
+        renderInventario(invAtual, jid);
+      } catch {
+        listaEl.innerHTML = '<div class="estado-erro" style="font-size:.8rem;padding:.5rem .75rem;">Erro ao carregar inventário.</div>';
+      }
+    }
+
+    function renderInventario(inv, jid) {
+      const listaEl = $('usr-inv-lista');
+      if (!inv.length) {
+        listaEl.innerHTML = '<div class="inv-vazio">Inventário vazio.</div>';
+        return;
+      }
+      listaEl.innerHTML = inv.map(item => {
+        const nomeItem = item.nome || item.item || item.id || '?';
+        const qtd      = item.quantidade ?? item.qty ?? 1;
+        return `
+        <div class="inv-item">
+          <span class="inv-item-nome">${escapeHtml(nomeItem)}</span>
+          <span class="inv-item-qtd">x${qtd}</span>
+          <button class="btn-inv-rem" data-action="inv-remover"
+            data-item="${escapeHtml(nomeItem)}"
+            data-jid="${escapeHtml(jid)}">✕ Remover</button>
+        </div>`;
+      }).join('');
+
+      listaEl.querySelectorAll('button[data-action="inv-remover"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const nomeItem = btn.dataset.item;
+          const jidGrupo = btn.dataset.jid;
+          const nomeU    = usuarioAtual.nome || usuarioAtual.idWhatsApp;
+          abrirModal(
+            'Remover item',
+            `Remover "${nomeItem}" do inventário de ${nomeU}?`,
+            () => removerItemInventario(jidGrupo, nomeItem)
+          );
+        });
+      });
+    }
+
+    async function removerItemInventario(jid, nomeItem) {
+      try {
+        const res = await fetch(
+          `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/inventario`,
+          {
+            method: 'DELETE',
+            headers: adminHeaders(),
+            body: JSON.stringify({ idGrupo: jid, item: nomeItem })
+          }
+        );
+        if (!res.ok) throw new Error();
+        toast(`✅ Item "${nomeItem}" removido.`);
+        await carregarInventario();
+      } catch {
+        toast('Erro ao remover item.', 'erro');
+      }
+    }
+
+    async function adicionarItemInventario() {
+      if (!usuarioAtual) return;
+      const jid      = $('usr-inv-grupo').value;
+      const nomeItem = $('usr-inv-item-nome').value.trim();
+      const qtd      = parseInt($('usr-inv-item-qtd').value, 10) || 1;
+
+      if (!jid)      { toast('Selecione um grupo.', 'erro'); return; }
+      if (!nomeItem) { toast('Digite o nome do item.', 'erro'); return; }
+
+      const nomeU = usuarioAtual.nome || usuarioAtual.idWhatsApp;
+      const nomeG = $('usr-inv-grupo').selectedOptions[0]?.text || jid;
+
+      abrirModal(
+        'Adicionar item',
+        `Adicionar ${qtd}x "${nomeItem}" ao inventário de ${nomeU} em "${nomeG}"?`,
+        async () => {
+          try {
+            const res = await fetch(
+              `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/inventario`,
+              {
+                method: 'POST',
+                headers: adminHeaders(),
+                body: JSON.stringify({ idGrupo: jid, item: nomeItem, quantidade: qtd })
+              }
+            );
+            if (!res.ok) throw new Error();
+            toast('✅ Item adicionado ao inventário.');
+            $('usr-inv-item-nome').value = '';
+            $('usr-inv-item-qtd').value  = '1';
+            await carregarInventario();
+          } catch {
+            toast('Erro ao adicionar item.', 'erro');
+          }
+        }
+      );
+    }
+
+    $('btn-carregar-inv').addEventListener('click',  carregarInventario);
+    $('btn-inv-adicionar').addEventListener('click', adicionarItemInventario);
 
     /* ===== ECONOMIA ===== */
     let economiaCarregada = false;
