@@ -122,20 +122,43 @@
   0%   { background-position: 0% 0%; }
   100% { background-position: 200% 0%; }
 }
+.corrida-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
 .corrida-title {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 13px;
   font-weight: 700;
-  text-align: center;
-  letter-spacing: .06em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  margin-bottom: 22px;
-  background: linear-gradient(90deg, var(--gold), var(--purple), var(--mint), var(--gold));
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradient-slide 4s linear infinite;
+  color: var(--text-secondary);
+}
+.status-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.status-pill.pill-running {
+  background: var(--blue-soft);
+  border-color: var(--blue-glow);
+  color: var(--blue);
+}
+.status-pill.pill-win {
+  background: var(--mint-soft);
+  border-color: var(--mint-glow);
+  color: var(--mint);
+}
+.status-pill.pill-lose {
+  background: var(--red-soft);
+  border-color: var(--red);
+  color: var(--red);
 }
 
 /* ── PISTA ── */
@@ -187,6 +210,15 @@
   border-radius: 4px;
   overflow: hidden;
 }
+.trilha-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0%;
+  border-radius: 4px 0 0 4px;
+  opacity: .18;
+  transition: width 0.1s linear;
+  z-index: 1;
+}
 .bicho-icon {
   position: absolute;
   top: 50%;
@@ -227,8 +259,17 @@
   margin-bottom: 18px;
   text-align: center;
   animation: fade-up .3s ease;
+  transition: background .3s, border-color .3s;
 }
 .corrida-result.show { display: block; }
+.corrida-result.result-win {
+  background: color-mix(in srgb, var(--mint) 8%, var(--bg-elevated));
+  border-color: var(--mint-glow);
+}
+.corrida-result.result-lose {
+  background: color-mix(in srgb, var(--red) 8%, var(--bg-elevated));
+  border-color: var(--red);
+}
 .corrida-result-title {
   font-family: var(--font-display);
   font-size: 1rem;
@@ -302,14 +343,18 @@
   border-color: var(--gold);
   background: color-mix(in srgb, var(--gold) 8%, var(--bg-elevated));
 }
-.bicho-card.selected::after {
-  content: '✓';
+.bicho-card.selected::after { display: none; }
+.bicho-card-check {
+  display: none;
   position: absolute;
   top: 4px; right: 6px;
   font-size: 10px;
   color: var(--gold);
   font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
 }
+.bicho-card.selected .bicho-card-check { display: block; }
 .bicho-emoji { font-size: 28px; line-height: 1; }
 .bicho-info {
   display: flex;
@@ -382,7 +427,17 @@
   transition: border-color .15s;
 }
 .aposta-input-wrap input:focus { border-color: var(--purple); }
+.aposta-input-wrap input.err { border-color: var(--red); }
 .aposta-input-wrap input::placeholder { color: var(--text-dim); font-weight: 400; }
+.aposta-hint {
+  font-size: 11px;
+  color: var(--red);
+  margin-top: 4px;
+  min-height: 14px;
+  font-family: var(--font-mono);
+  display: none;
+}
+.aposta-hint.show { display: block; }
 
 .btn-correr {
   padding: 12px 24px;
@@ -420,6 +475,12 @@
   transition: all .15s;
 }
 .quick-bet:hover { border-color: var(--gold); color: var(--gold); }
+.quick-bet.active {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 10%, var(--bg-elevated));
+  color: var(--gold);
+  font-weight: 700;
+}
 .quick-bet.repeat-bet { border-color: var(--purple); color: var(--purple); }
 .quick-bet.repeat-bet:hover { background: var(--purple-soft); }
 
@@ -481,7 +542,23 @@
 .odds-row:last-of-type { border-bottom: none; }
 .odds-emoji { font-size: 18px; flex-shrink: 0; }
 .odds-nome  { flex: 1; color: var(--text-primary); font-weight: 600; }
-.odds-vel   { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); letter-spacing: -1px; }
+.odds-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.odds-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--gold);
+  transition: width .4s ease;
+}
+.odds-bar.bar-lendario { background: var(--mint); }
+.odds-bar.bar-raro     { background: var(--purple); }
+.odds-bar.bar-incomum  { background: var(--blue); }
+.odds-bar.bar-comum    { background: var(--text-dim); }
 .odds-mult  { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--gold); min-width: 36px; text-align: right; }
 .odds-tip {
   margin-top: 12px;
@@ -538,4 +615,8 @@
   .corrida-result-grid { grid-template-columns: 1fr; }
   .quick-bets { justify-content: center; }
   .bicho-nome-pista { min-width: 44px; font-size: 10px; }
+  .odds-bar-wrap { height: 4px; }
+  .aposta-hint { font-size: 10px; }
+  .corrida-result.result-win,
+  .corrida-result.result-lose { padding: 12px; }
 }
