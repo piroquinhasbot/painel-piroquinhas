@@ -129,7 +129,10 @@
 
     <!-- Área principal da corrida -->
     <div class="corrida-card" id="corrida-card" style="display:none">
-      <div class="corrida-title">🏁 Corrida de Bichos</div>
+      <div class="corrida-card-header">
+        <div class="corrida-title">🏁 Corrida de Bichos</div>
+        <span class="status-pill" id="status-pill">aguardando</span>
+      </div>
 
       <!-- Pista de corrida -->
       <div class="pista-wrap" id="pista-wrap">
@@ -183,6 +186,7 @@
             min="1"
             max="100000"
           />
+        <p class="aposta-hint" id="aposta-hint"></p>
         </div>
         <button class="btn-correr" id="btn-correr" disabled>
           🏁 Apostar
@@ -244,12 +248,12 @@
 const API = 'https://whatsappbot2-s3dx.onrender.com/api';
 
 const BICHOS = [
-  { idx: 0, nome: '🐎 Cavalo',    emoji: '🐎', odds: 2.0, velocidade: 9 },
-  { idx: 1, nome: '🐅 Tigre',     emoji: '🐅', odds: 2.5, velocidade: 8 },
-  { idx: 2, nome: '🦊 Raposa',    emoji: '🦊', odds: 3.0, velocidade: 7 },
-  { idx: 3, nome: '🐕 Cachorro',  emoji: '🐕', odds: 3.5, velocidade: 6 },
-  { idx: 4, nome: '🐗 Javali',    emoji: '🐗', odds: 4.0, velocidade: 5 },
-  { idx: 5, nome: '🐢 Tartaruga', emoji: '🐢', odds: 8.0, velocidade: 2 },
+  { idx: 0, nome: '🐎 Cavalo',    emoji: '🐎', odds: 2.0, velocidade: 9, cor: '#2de2ff' },
+  { idx: 1, nome: '🐅 Tigre',     emoji: '🐅', odds: 2.5, velocidade: 8, cor: '#e8956d' },
+  { idx: 2, nome: '🦊 Raposa',    emoji: '🦊', odds: 3.0, velocidade: 7, cor: '#ffd060' },
+  { idx: 3, nome: '🐕 Cachorro',  emoji: '🐕', odds: 3.5, velocidade: 6, cor: '#b855ff' },
+  { idx: 4, nome: '🐗 Javali',    emoji: '🐗', odds: 4.0, velocidade: 5, cor: '#00ffb0' },
+  { idx: 5, nome: '🐢 Tartaruga', emoji: '🐢', odds: 8.0, velocidade: 2, cor: '#7fff6e' },
 ];
 
 const PISTA_LEN = 18;
@@ -301,7 +305,8 @@ function buildPista() {
     <div class="pista-linha" id="linha-${i}">
       <span class="bicho-nome-pista">${b.nome.split(' ')[1]}</span>
       <div class="trilha" id="trilha-${i}">
-        <span class="bicho-icon" id="icon-${i}" style="left: 0%">${b.emoji}</span>
+        <div class="trilha-fill" id="fill-${i}" style="background:${b.cor}"></div>
+        <span class="bicho-icon" id="icon-${i}" style="left:0%">${b.emoji}</span>
       </div>
     </div>
   `).join('');
@@ -309,7 +314,9 @@ function buildPista() {
 
 function setPosicao(idx, pct) {
   const icon = $(`icon-${idx}`);
-  if (icon) icon.style.left = Math.min(pct, 92) + '%';
+  const fill = $(`fill-${idx}`);
+  if (icon) icon.style.left  = Math.min(pct, 92) + '%';
+  if (fill) fill.style.width = Math.min(pct, 92) + '%';
 }
 
 function resetPista() {
@@ -374,9 +381,10 @@ function buildBichosGrid() {
 
   grid.innerHTML = BICHOS.map(b => {
     const raridade = b.odds >= 8 ? 'lendario' : b.odds >= 4 ? 'raro' : b.odds >= 3 ? 'incomum' : 'comum';
-    const rarLabel = b.odds >= 8 ? 'azarão' : b.odds >= 4 ? 'raro' : b.odds >= 3 ? 'incomum' : 'favorito';
+    const rarLabel = b.odds >= 8 ? 'lendário' : b.odds >= 4 ? 'azarão' : b.odds >= 3 ? 'incomum' : 'favorito';
     return `
-  <button class="bicho-card" data-idx="${b.idx}">
+      <button class="bicho-card" data-idx="${b.idx}">
+        <span class="bicho-card-check">✓</span>
         <div class="bicho-emoji">${b.emoji}</div>
         <div class="bicho-info">
           <span class="bicho-card-nome">${b.nome.replace(/^\S+\s/, '')}</span>
@@ -399,6 +407,12 @@ function selecionarBicho(idx) {
   const btnCorrer = $('btn-correr');
   if (btnCorrer && grupoAtual) btnCorrer.disabled = false;
 
+  const pill = $('status-pill');
+  if (pill) {
+    pill.className   = 'status-pill';
+    pill.textContent = `${BICHOS[idx].emoji} selecionado`;
+  }
+
   $('corrida-status').textContent = `${BICHOS[idx].emoji} ${BICHOS[idx].nome} selecionado! Defina a aposta e aposte.`;
   $('corrida-status').className   = 'corrida-status';
 }
@@ -410,12 +424,14 @@ function buildOddsTable() {
   const wrap = $('odds-rows');
   if (!wrap) return;
   wrap.innerHTML = BICHOS.map(b => {
-    const vel = '█'.repeat(Math.ceil(b.velocidade / 1.5)) + '░'.repeat(6 - Math.ceil(b.velocidade / 1.5));
+    const pct = Math.round((b.velocidade / 9) * 100);
     return `
       <div class="odds-row">
         <span class="odds-emoji">${b.emoji}</span>
         <span class="odds-nome">${b.nome.replace(/^\S+\s/, '')}</span>
-        <span class="odds-vel">${vel}</span>
+        <div class="odds-bar-wrap">
+          <div class="odds-bar" style="width:${pct}%;background:${b.cor}"></div>
+        </div>
         <span class="odds-mult">${b.odds}x</span>
       </div>
     `;
@@ -431,11 +447,17 @@ function mostrarResultado(data) {
   const escolha  = BICHOS[escolhaIdx];
   const sinal    = lucroLiq >= 0 ? '+' : '';
 
+  const pill = $('status-pill');
+  if (pill) {
+    pill.className   = 'status-pill ' + (ganhou ? 'pill-win' : 'pill-lose');
+    pill.textContent = ganhou ? 'vitória! 🎉' : 'derrota 😢';
+  }
+
   const titleEl = $('result-title');
   titleEl.className = 'corrida-result-title ' + (ganhou ? 'win' : 'lose');
   titleEl.textContent = ganhou
-    ? `🎉 VITÓRIA! ${vencedor.emoji} ${vencedor.nome.replace(/^\S+\s/, '')} venceu! (${escolha.odds}x)`
-    : `❌ DERROTA! ${vencedor.emoji} ${vencedor.nome.replace(/^\S+\s/, '')} venceu.`;
+    ? `🎉 Vitória! ${vencedor.emoji} ${vencedor.nome.replace(/^\S+\s/, '')} venceu! (${escolha.odds}x)`
+    : `❌ Derrota! ${vencedor.emoji} ${vencedor.nome.replace(/^\S+\s/, '')} venceu.`;
 
   $('result-aposta').textContent = fmtNum(aposta) + ' gold';
   $('result-odds').textContent   = escolha.odds + 'x';
@@ -445,7 +467,9 @@ function mostrarResultado(data) {
   const premioWrap = $('result-premio-wrap');
   premioWrap.className = 'corrida-result-item ' + (premio > 0 ? 'mint-val' : 'red-val');
 
-  $('corrida-result').classList.add('show');
+  const resultEl = $('corrida-result');
+  resultEl.classList.remove('result-win', 'result-lose');
+  resultEl.classList.add('show', ganhou ? 'result-win' : 'result-lose');
 
   const statusEl = $('corrida-status');
   statusEl.textContent = ganhou
@@ -576,29 +600,24 @@ async function apostar() {
     ? bichoEscolhido
     : null;
 
-  if (escolha === null) {
-    showToast('Escolha um bicho antes de apostar!');
-    return;
-  }
-  if (aposta < 10) {
-    showToast('Aposta mínima: 10 gold!');
-    return;
-  }
-  if (aposta > saldoAtual) {
-    showToast('Saldo insuficiente!', 'lose');
-    return;
-  }
-  if (aposta > 100_000) {
-    showToast('Aposta máxima: 100.000 gold');
-    return;
-  }
+  const hint = $('aposta-hint');
+  const inp  = $('aposta-input');
+
+  if (escolha === null) { showToast('Escolha um bicho antes de apostar!'); return; }
+  if (aposta < 10)      { hint.textContent = 'Mínimo: 10 gold'; inp.classList.add('err'); return; }
+  if (aposta > saldoAtual) { hint.textContent = 'Saldo insuficiente'; inp.classList.add('err'); return; }
+  if (aposta > 100_000) { hint.textContent = 'Máximo: 100.000 gold'; inp.classList.add('err'); return; }
+  hint.textContent = ''; inp.classList.remove('err');
 
   correndo = true;
   const btnCorrer = $('btn-correr');
-  btnCorrer.disabled  = true;
+  btnCorrer.disabled    = true;
   btnCorrer.textContent = '⏳ Correndo…';
 
-  $('corrida-result').classList.remove('show');
+  const pill = $('status-pill');
+  if (pill) { pill.className = 'status-pill pill-running'; pill.textContent = 'largaram! 🚀'; }
+
+  $('corrida-result').classList.remove('show', 'result-win', 'result-lose');
   $('corrida-status').textContent = 'Largaram! 🚀';
   $('corrida-status').className   = 'corrida-status';
 
@@ -710,7 +729,10 @@ function onGrupoChange() {
     $('btn-correr').disabled   = true;
     $('corrida-status').textContent = 'Escolha um bicho e aposte para começar!';
     $('corrida-status').className   = 'corrida-status';
-    $('corrida-result').classList.remove('show');
+    $('corrida-result').classList.remove('show', 'result-win', 'result-lose');
+
+    const pill = $('status-pill');
+    if (pill) { pill.className = 'status-pill'; pill.textContent = 'aguardando'; }
 
     document.querySelectorAll('.bicho-card').forEach(c => c.classList.remove('selected'));
     resetPista();
@@ -723,8 +745,16 @@ function onGrupoChange() {
 $('grupo-select')?.addEventListener('change', onGrupoChange);
 $('btn-correr')?.addEventListener('click', apostar);
 $('aposta-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') apostar(); });
+$('aposta-input')?.addEventListener('input', () => {
+  $('aposta-hint').textContent = '';
+  $('aposta-input').classList.remove('err');
+  const v = parseInt($('aposta-input').value, 10);
+  document.querySelectorAll('.quick-bet').forEach(b => {
+    const bv = parseInt(b.dataset.val, 10);
+    b.classList.toggle('active', bv === v);
+  });
+});
 
-// Delegação segura para bichos — sem onclick global exposto
 document.addEventListener('click', e => {
   const card = e.target.closest('.bicho-card');
   if (card) {
@@ -748,6 +778,9 @@ document.querySelectorAll('.quick-bet').forEach(btn => {
       const v = parseInt(val, 10);
       if (Number.isFinite(v) && v > 0) input.value = Math.min(v, saldoAtual);
     }
+    $('aposta-hint').textContent = '';
+    $('aposta-input').classList.remove('err');
+    document.querySelectorAll('.quick-bet').forEach(b => b.classList.toggle('active', b === btn));
   });
 });
 
