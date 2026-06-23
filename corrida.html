@@ -376,7 +376,7 @@ function buildBichosGrid() {
     const raridade = b.odds >= 8 ? 'lendario' : b.odds >= 4 ? 'raro' : b.odds >= 3 ? 'incomum' : 'comum';
     const rarLabel = b.odds >= 8 ? 'azarão' : b.odds >= 4 ? 'raro' : b.odds >= 3 ? 'incomum' : 'favorito';
     return `
-      <button class="bicho-card" data-idx="${b.idx}" onclick="selecionarBicho(${b.idx})">
+  <button class="bicho-card" data-idx="${b.idx}">
         <div class="bicho-emoji">${b.emoji}</div>
         <div class="bicho-info">
           <span class="bicho-card-nome">${b.nome.replace(/^\S+\s/, '')}</span>
@@ -561,13 +561,26 @@ async function apostar() {
   if (correndo || !grupoAtual) return;
 
   const jwt    = getJwt();
-  const aposta = parseInt($('aposta-input').value, 10);
+  if (!jwt) {
+    showToast('Sessão expirada. Faça login novamente.', 'lose');
+    setTimeout(() => { window.location.href = 'perfil.html'; }, 1500);
+    return;
+  }
 
-  if (bichoEscolhido === null) {
+  // Sanitiza aposta: força inteiro positivo, ignora qualquer manipulação
+  const apostaRaw = parseInt($('aposta-input').value, 10);
+  const aposta    = Number.isFinite(apostaRaw) ? Math.abs(Math.floor(apostaRaw)) : 0;
+
+  // Sanitiza bicho: só aceita índices válidos do array BICHOS
+  const escolha = Number.isInteger(bichoEscolhido) && bichoEscolhido >= 0 && bichoEscolhido < BICHOS.length
+    ? bichoEscolhido
+    : null;
+
+  if (escolha === null) {
     showToast('Escolha um bicho antes de apostar!');
     return;
   }
-  if (!aposta || aposta < 10) {
+  if (aposta < 10) {
     showToast('Aposta mínima: 10 gold!');
     return;
   }
@@ -711,14 +724,30 @@ $('grupo-select')?.addEventListener('change', onGrupoChange);
 $('btn-correr')?.addEventListener('click', apostar);
 $('aposta-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') apostar(); });
 
+// Delegação segura para bichos — sem onclick global exposto
+document.addEventListener('click', e => {
+  const card = e.target.closest('.bicho-card');
+  if (card) {
+    const idx = parseInt(card.dataset.idx, 10);
+    if (Number.isInteger(idx) && idx >= 0 && idx < BICHOS.length) {
+      selecionarBicho(idx);
+    }
+  }
+});
+
 document.querySelectorAll('.quick-bet').forEach(btn => {
   btn.addEventListener('click', () => {
     const val   = btn.dataset.val;
     const input = $('aposta-input');
     if (!input) return;
-    if (val === 'max')                          input.value = saldoAtual;
-    else if (val === 'repeat' && ultimaAposta)  input.value = Math.min(ultimaAposta, saldoAtual);
-    else                                        input.value = Math.min(parseInt(val), saldoAtual);
+    if (val === 'max') {
+      input.value = Math.max(0, Math.floor(saldoAtual));
+    } else if (val === 'repeat' && ultimaAposta) {
+      input.value = Math.min(Math.abs(Math.floor(ultimaAposta)), saldoAtual);
+    } else {
+      const v = parseInt(val, 10);
+      if (Number.isFinite(v) && v > 0) input.value = Math.min(v, saldoAtual);
+    }
   });
 });
 
