@@ -549,20 +549,48 @@
   <div class="usr-acoes-sep" style="margin-top:1rem;"></div>
   <div class="usr-acoes-titulo" style="margin-top:0.85rem;">Alterar Level / XP</div>
   <div class="usr-acoes-grid">
-    <div class="usr-acao-row">
-      <div class="field">
-        <label>Grupo</label>
-        <select id="usr-level-grupo"></select>
+    <div class="usr-acao-row" style="flex-direction:column;align-items:stretch;gap:0.75rem;">
+
+      <!-- Seletor de grupo + info atual -->
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:flex-end;">
+        <div class="field" style="flex:1;min-width:160px;">
+          <label>Grupo</label>
+          <select id="usr-level-grupo"></select>
+        </div>
+        <button class="btn-ghost" id="btn-ver-level-atual" style="min-height:36px;padding:.4rem .9rem;font-size:.82rem;">Ver atual</button>
       </div>
-      <div class="field" style="max-width:100px;">
-        <label>Novo Level</label>
-        <input type="number" id="usr-level-novo" min="1" max="9999" placeholder="Ex: 5" />
+
+      <!-- Info atual (oculto até clicar em "Ver atual") -->
+      <div id="usr-level-atual-info" class="hidden" style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+        <div class="usr-stat" style="min-width:90px;">
+          <span class="usr-stat-val roxo" id="usr-level-atual-val">—</span>
+          <span class="usr-stat-label">Level atual</span>
+        </div>
+        <div class="usr-stat" style="min-width:90px;">
+          <span class="usr-stat-val xp" id="usr-xp-atual-val">—</span>
+          <span class="usr-stat-label">XP atual</span>
+        </div>
       </div>
-      <div class="field" style="max-width:120px;">
-        <label>Novo XP</label>
-        <input type="number" id="usr-xp-novo" min="0" placeholder="Ex: 1200" />
+
+      <!-- Campos para alterar -->
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:flex-end;border-top:1px solid var(--border);padding-top:0.65rem;">
+        <div class="field" style="max-width:110px;">
+          <label>Novo Level</label>
+          <input type="number" id="usr-level-novo" min="1" max="9999" placeholder="Ex: 5" />
+        </div>
+        <div class="field" style="max-width:130px;">
+          <label>Novo XP</label>
+          <input type="number" id="usr-xp-novo" min="0" placeholder="Ex: 1200" />
+        </div>
+        <button class="btn-ghost" id="btn-calc-xp-level" style="min-height:36px;padding:.4rem .9rem;font-size:.82rem;" title="Calcula o XP mínimo para o level digitado">⚡ Calc XP</button>
+        <button class="btn-gold-dar" id="btn-set-level">✔ Aplicar</button>
       </div>
-      <button class="btn-gold-dar" id="btn-set-level">✔ Aplicar</button>
+
+      <p style="font-size:0.72rem;color:var(--muted);margin:0;">
+        💡 Use <strong>⚡ Calc XP</strong> para preencher automaticamente o XP mínimo do level digitado.
+        O backend salva level e XP juntos, sem inconsistência.
+      </p>
+
     </div>
   </div>
 
@@ -1854,6 +1882,48 @@
     });
 
     /* ===== LEVEL / XP ===== */
+
+    // Mesma fórmula do backend: level = floor((xp/100)^(1/1.5)) + 1
+    function calcularLevelFrontend(xp) {
+      return Math.max(1, Math.floor(Math.pow((xp || 0) / 100, 1 / 1.5)) + 1);
+    }
+
+    // XP mínimo para entrar em determinado level
+    function xpMinimoParaLevel(level) {
+      if (level <= 1) return 0;
+      return Math.ceil(100 * Math.pow(level - 1, 1.5));
+    }
+
+    // Botão "Ver atual" — busca os dados do grupo selecionado no usuárioAtual
+    $('btn-ver-level-atual').addEventListener('click', () => {
+      if (!usuarioAtual) return;
+      const jid   = $('usr-level-grupo').value;
+      const grupo = (usuarioAtual.grupos || []).find(g => g.idGrupo === jid);
+
+      const levelAtual = grupo?.level ?? '—';
+      const xpAtual    = grupo?.xp    ?? '—';
+
+      $('usr-level-atual-val').textContent = levelAtual;
+      $('usr-xp-atual-val').textContent    = typeof xpAtual === 'number' ? formatNum(xpAtual) : xpAtual;
+
+      $('usr-level-atual-info').classList.remove('hidden');
+      $('usr-level-atual-info').style.display = 'flex';
+    });
+
+    // Quando troca o grupo, esconde o info atual para não confundir
+    $('usr-level-grupo').addEventListener('change', () => {
+      $('usr-level-atual-info').classList.add('hidden');
+    });
+
+    // Botão "⚡ Calc XP" — preenche o XP mínimo para o level digitado
+    $('btn-calc-xp-level').addEventListener('click', () => {
+      const level = parseInt($('usr-level-novo').value, 10);
+      if (!level || level < 1) { toast('Digite um level antes de calcular o XP.', 'erro'); return; }
+      const xpMin = xpMinimoParaLevel(level);
+      $('usr-xp-novo').value = xpMin;
+      toast(`XP mínimo para level ${level}: ${formatNum(xpMin)}`);
+    });
+
     async function setLevelXp() {
       if (!usuarioAtual) return;
       const jid   = $('usr-level-grupo').value;
@@ -1864,32 +1934,59 @@
       if (!level || level < 1)  { toast('Digite um level válido (mín. 1).', 'erro'); return; }
       if (isNaN(xp) || xp < 0) { toast('Digite um XP válido (mín. 0).', 'erro'); return; }
 
-      const nomeU = usuarioAtual.nome || usuarioAtual.idWhatsApp;
-      const nomeG = $('usr-level-grupo').selectedOptions[0]?.text || jid;
+      // Avisa se o XP não bate com o level (inconsistência)
+      const levelCalculado = calcularLevelFrontend(xp);
+      if (levelCalculado !== level) {
+        const xpSugerido = xpMinimoParaLevel(level);
+        const continuar  = await new Promise(resolve => {
+          abrirModal(
+            '⚠️ Level e XP inconsistentes',
+            `O XP ${formatNum(xp)} corresponde ao Level ${levelCalculado}, não ao Level ${level}. ` +
+            `Confirmar assim mesmo? (XP mínimo correto para Level ${level}: ${formatNum(xpSugerido)})`,
+            () => resolve(true)
+          );
+          $('modal-cancelar').addEventListener('click', () => resolve(false), { once: true });
+        });
+        if (!continuar) return;
+      } else {
+        const nomeU = usuarioAtual.nome || usuarioAtual.idWhatsApp;
+        const nomeG = $('usr-level-grupo').selectedOptions[0]?.text || jid;
+        await new Promise(resolve => {
+          abrirModal(
+            'Alterar Level / XP',
+            `Definir Level ${level} e ${formatNum(xp)} XP para ${nomeU} em "${nomeG}"?`,
+            () => resolve(true)
+          );
+          $('modal-cancelar').addEventListener('click', () => resolve(false), { once: true });
+        }).then(async (confirmado) => {
+          if (!confirmado) return;
+          await _aplicarLevelXp(jid, level, xp);
+        });
+        return;
+      }
 
-      abrirModal(
-        'Alterar Level / XP',
-        `Definir Level ${level} e ${formatNum(xp)} XP para ${nomeU} em "${nomeG}"?`,
-        async () => {
-          try {
-            const res = await fetch(
-              `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/level`,
-              {
-                method: 'PATCH',
-                headers: adminHeaders(),
-                body: JSON.stringify({ idGrupo: jid, level, xp })
-              }
-            );
-            if (!res.ok) throw new Error();
-            toast('✅ Level e XP atualizados.');
-            $('usr-level-novo').value = '';
-            $('usr-xp-novo').value    = '';
-            buscarUsuario();
-          } catch {
-            toast('Erro ao atualizar level/XP.', 'erro');
+      await _aplicarLevelXp(jid, level, xp);
+    }
+
+    async function _aplicarLevelXp(jid, level, xp) {
+      try {
+        const res = await fetch(
+          `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/level`,
+          {
+            method: 'PATCH',
+            headers: adminHeaders(),
+            body: JSON.stringify({ idGrupo: jid, level, xp })
           }
-        }
-      );
+        );
+        if (!res.ok) throw new Error();
+        toast('✅ Level e XP atualizados.');
+        $('usr-level-novo').value = '';
+        $('usr-xp-novo').value    = '';
+        $('usr-level-atual-info').classList.add('hidden');
+        buscarUsuario();
+      } catch {
+        toast('Erro ao atualizar level/XP.', 'erro');
+      }
     }
 
     $('btn-set-level').addEventListener('click', setLevelXp);
