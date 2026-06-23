@@ -1118,9 +1118,9 @@
     const goldPainelAberto = new Set();
 
     function idSafe(jid) {
-  if (!jid || typeof jid !== 'string') return 'jid_invalido';
-  return jid.replace(/[^a-z0-9]/gi,'_').slice(0, 100);
-}
+      if (!jid || typeof jid !== 'string') return 'jid_invalido';
+      return jid.replace(/[^a-z0-9]/gi, '_').slice(0, 100);
+    }
 
     async function toggleGoldPainel(jid) {
       const safe   = idSafe(jid);
@@ -1883,111 +1883,167 @@
 
     /* ===== LEVEL / XP ===== */
 
-    // Mesma fórmula do backend: level = floor((xp/100)^(1/1.5)) + 1
-    function calcularLevelFrontend(xp) {
-      return Math.max(1, Math.floor(Math.pow((xp || 0) / 100, 1 / 1.5)) + 1);
-    }
+// Mesma fórmula do backend: level = floor((xp/100)^(1/1.5)) + 1
+// Garante inteiro positivo mesmo com entrada inválida
+function calcularLevelFrontend(xp) {
+  const xpSanitizado = Math.max(0, Math.floor(Number(xp) || 0));
+  return Math.max(1, Math.floor(Math.pow(xpSanitizado / 100, 1 / 1.5)) + 1);
+}
 
-    // XP mínimo para entrar em determinado level
-    function xpMinimoParaLevel(level) {
-      if (level <= 1) return 0;
-      return Math.ceil(100 * Math.pow(level - 1, 1.5));
-    }
+// XP mínimo para entrar em determinado level
+// Garante inteiro positivo mesmo com entrada inválida
+function xpMinimoParaLevel(level) {
+  const lvl = Math.max(1, Math.floor(Number(level) || 1));
+  if (lvl <= 1) return 0;
+  return Math.ceil(100 * Math.pow(lvl - 1, 1.5));
+}
 
-    // Botão "Ver atual" — busca os dados do grupo selecionado no usuárioAtual
-    $('btn-ver-level-atual').addEventListener('click', () => {
-      if (!usuarioAtual) return;
-      const jid   = $('usr-level-grupo').value;
-      const grupo = (usuarioAtual.grupos || []).find(g => g.idGrupo === jid);
+// XP necessário para sair do level atual e entrar no próximo
+// Útil para exibir progresso: "faltam X XP para o próximo level"
+function xpParaProximoLevel(xpAtual) {
+  const levelAtual  = calcularLevelFrontend(xpAtual);
+  const xpProximo   = xpMinimoParaLevel(levelAtual + 1);
+  const xpAtualMin  = xpMinimoParaLevel(levelAtual);
+  const falta       = Math.max(0, xpProximo - Math.max(0, Math.floor(Number(xpAtual) || 0)));
+  const progresso   = xpProximo > xpAtualMin
+    ? Math.min(100, Math.round(((Math.max(0, Math.floor(Number(xpAtual) || 0)) - xpAtualMin) / (xpProximo - xpAtualMin)) * 100))
+    : 100;
+  return { levelAtual, proximoLevel: levelAtual + 1, xpProximo, falta, progresso };
+}
 
-      const levelAtual = grupo?.level ?? '—';
-      const xpAtual    = grupo?.xp    ?? '—';
+    // Botão "Ver atual" — busca os dados do grupo selecionado no usuarioAtual
+$('btn-ver-level-atual').addEventListener('click', () => {
+  if (!usuarioAtual) { toast('Nenhum usuário selecionado.', 'erro'); return; }
 
-      $('usr-level-atual-val').textContent = levelAtual;
-      $('usr-xp-atual-val').textContent    = typeof xpAtual === 'number' ? formatNum(xpAtual) : xpAtual;
+  const jid = $('usr-level-grupo').value;
+  if (!jid) { toast('Selecione um grupo.', 'erro'); return; }
 
-      $('usr-level-atual-info').classList.remove('hidden');
-      $('usr-level-atual-info').style.display = 'flex';
-    });
+  const grupo      = (usuarioAtual.grupos || []).find(g => g.idGrupo === jid);
+  const levelAtual = grupo?.level ?? 1;
+  const xpAtual    = grupo?.xp    ?? 0;
 
-    // Quando troca o grupo, esconde o info atual para não confundir
-    $('usr-level-grupo').addEventListener('change', () => {
-      $('usr-level-atual-info').classList.add('hidden');
-    });
+  $('usr-level-atual-val').textContent = levelAtual;
+  $('usr-xp-atual-val').textContent    = formatNum(xpAtual);
 
-    // Botão "⚡ Calc XP" — preenche o XP mínimo para o level digitado
-    $('btn-calc-xp-level').addEventListener('click', () => {
-      const level = parseInt($('usr-level-novo').value, 10);
-      if (!level || level < 1) { toast('Digite um level antes de calcular o XP.', 'erro'); return; }
-      const xpMin = xpMinimoParaLevel(level);
-      $('usr-xp-novo').value = xpMin;
-      toast(`XP mínimo para level ${level}: ${formatNum(xpMin)}`);
-    });
+  // Pré-preenche os campos para o admin só ajustar o que precisar
+  $('usr-level-novo').value = levelAtual;
+  $('usr-xp-novo').value    = xpAtual;
+
+  $('usr-level-atual-info').classList.remove('hidden');
+  $('usr-level-atual-info').style.display = 'flex';
+});
+
+// Quando troca o grupo: esconde info, limpa campos e limpa XP calculado
+$('usr-level-grupo').addEventListener('change', () => {
+  $('usr-level-atual-info').classList.add('hidden');
+  $('usr-level-novo').value = '';
+  $('usr-xp-novo').value    = '';
+});
+
+// Digitar level → preenche XP mínimo correspondente automaticamente
+let _syncandoLevelXp = false;
+
+$('usr-level-novo').addEventListener('input', () => {
+  if (_syncandoLevelXp) return;
+  _syncandoLevelXp = true;
+  const level = parseInt($('usr-level-novo').value, 10);
+  $('usr-xp-novo').value = level >= 1 ? xpMinimoParaLevel(level) : '';
+  _syncandoLevelXp = false;
+});
+
+$('usr-xp-novo').addEventListener('input', () => {
+  if (_syncandoLevelXp) return;
+  _syncandoLevelXp = true;
+  const xp = parseInt($('usr-xp-novo').value, 10);
+  $('usr-level-novo').value = (!isNaN(xp) && xp >= 0) ? calcularLevelFrontend(xp) : '';
+  _syncandoLevelXp = false;
+});
+
+
+// Botão "⚡ Calc XP" — força o XP mínimo para o level digitado (útil após edição manual)
+$('btn-calc-xp-level').addEventListener('click', () => {
+  const level = parseInt($('usr-level-novo').value, 10);
+  if (!level || level < 1) { toast('Digite um level antes de calcular o XP.', 'erro'); return; }
+  const xpMin = xpMinimoParaLevel(level);
+  $('usr-xp-novo').value = xpMin;
+  toast(`⚡ XP mínimo para Level ${level}: ${formatNum(xpMin)}`);
+});
 
     async function setLevelXp() {
-      if (!usuarioAtual) return;
-      const jid   = $('usr-level-grupo').value;
-      const level = parseInt($('usr-level-novo').value, 10);
-      const xp    = parseInt($('usr-xp-novo').value,    10);
+  if (!usuarioAtual) { toast('Nenhum usuário selecionado.', 'erro'); return; }
 
-      if (!jid)                 { toast('Selecione um grupo.', 'erro'); return; }
-      if (!level || level < 1)  { toast('Digite um level válido (mín. 1).', 'erro'); return; }
-      if (isNaN(xp) || xp < 0) { toast('Digite um XP válido (mín. 0).', 'erro'); return; }
+  const jid   = $('usr-level-grupo').value;
+  const level = parseInt($('usr-level-novo').value, 10);
+  const xp    = parseInt($('usr-xp-novo').value,    10);
 
-      // Avisa se o XP não bate com o level (inconsistência)
-      const levelCalculado = calcularLevelFrontend(xp);
-      if (levelCalculado !== level) {
-        const xpSugerido = xpMinimoParaLevel(level);
-        const continuar  = await new Promise(resolve => {
-          abrirModal(
-            '⚠️ Level e XP inconsistentes',
-            `O XP ${formatNum(xp)} corresponde ao Level ${levelCalculado}, não ao Level ${level}. ` +
-            `Confirmar assim mesmo? (XP mínimo correto para Level ${level}: ${formatNum(xpSugerido)})`,
-            () => resolve(true)
-          );
-          $('modal-cancelar').addEventListener('click', () => resolve(false), { once: true });
-        });
-        if (!continuar) return;
-      } else {
-        const nomeU = usuarioAtual.nome || usuarioAtual.idWhatsApp;
-        const nomeG = $('usr-level-grupo').selectedOptions[0]?.text || jid;
-        await new Promise(resolve => {
-          abrirModal(
-            'Alterar Level / XP',
-            `Definir Level ${level} e ${formatNum(xp)} XP para ${nomeU} em "${nomeG}"?`,
-            () => resolve(true)
-          );
-          $('modal-cancelar').addEventListener('click', () => resolve(false), { once: true });
-        }).then(async (confirmado) => {
-          if (!confirmado) return;
-          await _aplicarLevelXp(jid, level, xp);
-        });
-        return;
-      }
+  if (!jid)                 { toast('Selecione um grupo.', 'erro'); return; }
+  if (!level || level < 1)  { toast('Digite um level válido (mín. 1).', 'erro'); return; }
+  if (isNaN(xp) || xp < 0) { toast('Digite um XP válido (mín. 0).', 'erro'); return; }
 
-      await _aplicarLevelXp(jid, level, xp);
-    }
+  const nomeU          = usuarioAtual.nome || usuarioAtual.idWhatsApp;
+  const nomeG          = $('usr-level-grupo').selectedOptions[0]?.text || jid;
+  const xpMinDoLevel   = xpMinimoParaLevel(level);
+  const levelDoXp      = calcularLevelFrontend(xp);
+
+  // Caso 1 — XP abaixo do mínimo para o level digitado:
+  // corrige silenciosamente para o mínimo e aplica direto com aviso no modal.
+  if (xp < xpMinDoLevel) {
+    abrirModal(
+      'Alterar Level / XP',
+      `O XP digitado (${formatNum(xp)}) é menor que o mínimo para Level ${level} ` +
+      `(${formatNum(xpMinDoLevel)}). O XP será corrigido automaticamente para ${formatNum(xpMinDoLevel)}.\n\n` +
+      `Aplicar Level ${level} + ${formatNum(xpMinDoLevel)} XP para ${nomeU} em "${nomeG}"?`,
+      () => _aplicarLevelXp(jid, level, xpMinDoLevel)
+    );
+    return;
+  }
+
+  // Caso 2 — XP acima do mínimo mas gera um level diferente do digitado:
+  // oferece duas opções via modal descritivo.
+  if (levelDoXp !== level) {
+    abrirModal(
+      '⚠️ Level e XP inconsistentes',
+      `O XP ${formatNum(xp)} corresponde ao Level ${levelDoXp}, não ao Level ${level}.\n\n` +
+      `• Clique em Confirmar para usar Level ${level} com XP corrigido para ${formatNum(xpMinDoLevel)} (mínimo do level).\n` +
+      `• Clique em Cancelar e ajuste os valores manualmente.`,
+      () => _aplicarLevelXp(jid, level, xpMinDoLevel)
+    );
+    return;
+  }
+
+  // Caso 3 — tudo consistente, aplica normalmente.
+  abrirModal(
+    'Alterar Level / XP',
+    `Definir Level ${level} e ${formatNum(xp)} XP para ${nomeU} em "${nomeG}"?`,
+    () => _aplicarLevelXp(jid, level, xp)
+  );
+}
 
     async function _aplicarLevelXp(jid, level, xp) {
-      try {
-        const res = await fetch(
-          `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/level`,
-          {
-            method: 'PATCH',
-            headers: adminHeaders(),
-            body: JSON.stringify({ idGrupo: jid, level, xp })
-          }
-        );
-        if (!res.ok) throw new Error();
-        toast('✅ Level e XP atualizados.');
-        $('usr-level-novo').value = '';
-        $('usr-xp-novo').value    = '';
-        $('usr-level-atual-info').classList.add('hidden');
-        buscarUsuario();
-      } catch {
-        toast('Erro ao atualizar level/XP.', 'erro');
+  const btnAplicar = $('btn-set-level');
+  btnAplicar.disabled = true;
+  try {
+    const res = await fetch(
+      `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/level`,
+      {
+        method: 'PATCH',
+        headers: adminHeaders(),
+        body: JSON.stringify({ idGrupo: jid, level, xp })
       }
-    }
+    );
+    if (!res.ok) throw new Error();
+    toast(`✅ Level ${level} e ${formatNum(xp)} XP aplicados com sucesso.`);
+    $('usr-level-novo').value = '';
+    $('usr-xp-novo').value    = '';
+    $('usr-level-atual-info').classList.add('hidden');
+    buscarUsuario();
+  } catch {
+    toast(`Erro ao aplicar Level ${level}. Verifique o backend.`, 'erro');
+  } finally {
+    btnAplicar.disabled = false;
+  }
+}
+
 
     $('btn-set-level').addEventListener('click', setLevelXp);
 
@@ -1995,27 +2051,28 @@
     let invAtual = [];
 
     async function carregarInventario() {
-      if (!usuarioAtual) return;
-      const jid     = $('usr-inv-grupo').value;
-      if (!jid) { toast('Selecione um grupo.', 'erro'); return; }
+  if (!usuarioAtual) { toast('Nenhum usuário selecionado.', 'erro'); return; }
+  const jid = $('usr-inv-grupo').value;
+  if (!jid) { toast('Selecione um grupo.', 'erro'); return; }
 
-      const listaEl = $('usr-inv-lista');
-      listaEl.innerHTML = '<div class="inv-vazio"><div class="spinner" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:.4rem;border-width:2px;"></div> Carregando...</div>';
-      listaEl.classList.remove('hidden');
+  const listaEl = $('usr-inv-lista');
+  listaEl.innerHTML = '<div class="inv-vazio"><div class="spinner" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:.4rem;border-width:2px;"></div> Carregando...</div>';
+  listaEl.classList.remove('hidden');
 
-      try {
-        const res = await fetch(
-          `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/inventario?idGrupo=${encodeURIComponent(jid)}`,
-          { headers: adminHeaders() }
-        );
-        if (!res.ok) throw new Error();
-        const { inventario } = await res.json();
-        invAtual = inventario || [];
-        renderInventario(invAtual, jid);
-      } catch {
-        listaEl.innerHTML = '<div class="estado-erro" style="font-size:.8rem;padding:.5rem .75rem;">Erro ao carregar inventário.</div>';
-      }
-    }
+  try {
+    const res = await fetch(
+      `${API}/admin/usuario/${encodeURIComponent(usuarioAtual.idWhatsApp)}/inventario?idGrupo=${encodeURIComponent(jid)}`,
+      { headers: adminHeaders() }
+    );
+    if (!res.ok) throw new Error();
+    const { inventario } = await res.json();
+    invAtual = Array.isArray(inventario) ? inventario : [];
+    renderInventario(invAtual, jid);
+  } catch {
+    invAtual = [];
+    listaEl.innerHTML = '<div class="estado-erro" style="font-size:.8rem;padding:.5rem .75rem;">Erro ao carregar inventário.</div>';
+  }
+}
 
     function renderInventario(inv, jid) {
       const listaEl = $('usr-inv-lista');
@@ -2072,10 +2129,11 @@
       if (!usuarioAtual) return;
       const jid      = $('usr-inv-grupo').value;
       const nomeItem = $('usr-inv-item-nome').value.trim();
-      const qtd      = parseInt($('usr-inv-item-qtd').value, 10) || 1;
+      const qtd      = parseInt($('usr-inv-item-qtd').value, 10);
 
-      if (!jid)      { toast('Selecione um grupo.', 'erro'); return; }
-      if (!nomeItem) { toast('Digite o nome do item.', 'erro'); return; }
+      if (!jid)            { toast('Selecione um grupo.', 'erro'); return; }
+      if (!nomeItem)       { toast('Digite o nome do item.', 'erro'); return; }
+      if (!qtd || qtd < 1) { toast('Digite uma quantidade válida (mín. 1).', 'erro'); return; }
 
       const nomeU = usuarioAtual.nome || usuarioAtual.idWhatsApp;
       const nomeG = $('usr-inv-grupo').selectedOptions[0]?.text || jid;
