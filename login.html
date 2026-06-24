@@ -1,1 +1,248 @@
+/* login.css — compartilhado entre login.html e cadastro.html */
 
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:         #0e0f14;
+  --surface:    #16181f;
+  --border:     #2a2d38;
+  --accent:     #7c6aff;
+  --accent-dim: #5a4dd6;
+  --text:       #e8eaf0;
+  --muted:      #7b8099;
+  --error:      #ff5c5c;
+  --success:    #4cde8a;
+  --info:       #5bbeff;
+  --radius:     12px;
+  --radius-sm:  8px;
+  --transition: 0.18s ease;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+/* ── Wrapper ──────────────────────────────────────────────── */
+.auth-wrapper {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Marca ────────────────────────────────────────────────── */
+.auth-brand {
+  text-align: center;
+}
+
+.brand-emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.auth-brand h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+
+.brand-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+/* ── Formulário ───────────────────────────────────────────── */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="tel"] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.97rem;
+  padding: 0.65rem 0.85rem;
+  width: 100%;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124, 106, 255, 0.18);
+}
+
+input::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap input {
+  padding-right: 2.8rem;
+}
+
+.toggle-pw,
+.toggle-pw2 {
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.2rem;
+  opacity: 0.6;
+  transition: opacity var(--transition);
+}
+
+.toggle-pw:hover,
+.toggle-pw2:hover {
+  opacity: 1;
+}
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ── Mensagens ────────────────────────────────────────────── */
+.msg {
+  font-size: 0.88rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.msg--error {
+  background: rgba(255, 92, 92, 0.12);
+  color: var(--error);
+  border: 1px solid rgba(255, 92, 92, 0.25);
+}
+
+.msg--success {
+  background: rgba(76, 222, 138, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(76, 222, 138, 0.25);
+}
+
+.msg--info {
+  background: rgba(91, 190, 255, 0.1);
+  color: var(--info);
+  border: 1px solid rgba(91, 190, 255, 0.2);
+}
+
+/* ── Botão principal ──────────────────────────────────────── */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.97rem;
+  font-weight: 600;
+  padding: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.25rem;
+  transition: background var(--transition), transform var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-dim);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Rodapé ───────────────────────────────────────────────── */
+.auth-footer {
+  text-align: center;
+  font-size: 0.87rem;
+  color: var(--muted);
+}
+
+.auth-footer a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ── Utilitários ──────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
+/* ── Responsivo ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem 1.25rem;
+  }
+}
