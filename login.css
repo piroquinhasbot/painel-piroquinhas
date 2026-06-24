@@ -1,4 +1,43 @@
-/* login.css — compartilhado entre login.html e cadastro.html */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+/* ── Variáveis — espelha o index.css ─────────────────────── */
+:root {
+  --bg-base:      #07080d;
+  --bg-surface:   #0d0f17;
+  --bg-card:      #12141f;
+  --bg-elevated:  #171a26;
+  --border:       #1f2230;
+  --border-soft:  #181b27;
+
+  --text-primary:   #eef0f8;
+  --text-secondary: #9298ad;
+  --text-dim:       #555a70;
+
+  --purple:      #b855ff;
+  --purple-soft: #b855ff18;
+  --purple-glow: #b855ff55;
+  --purple-dim:  #7a38cc;
+
+  --mint:      #00ffb0;
+  --mint-soft: #00ffb018;
+
+  --blue:      #2de2ff;
+  --blue-soft: #2de2ff18;
+
+  --red:       #ff3b6e;
+  --red-soft:  #ff3b6e18;
+
+  --gold:      #ffd060;
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --transition: 0.18s ease;
+}
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -6,38 +45,26 @@
   padding: 0;
 }
 
-:root {
-  --bg:         #0e0f14;
-  --surface:    #16181f;
-  --border:     #2a2d38;
-  --accent:     #7c6aff;
-  --accent-dim: #5a4dd6;
-  --text:       #e8eaf0;
-  --muted:      #7b8099;
-  --error:      #ff5c5c;
-  --success:    #4cde8a;
-  --info:       #5bbeff;
-  --radius:     12px;
-  --radius-sm:  8px;
-  --transition: 0.18s ease;
-}
-
-html, body {
-  height: 100%;
-}
+html, body { height: 100%; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
+  background: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse at 0% 0%,   #b855ff0a 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%,  #00ffb00a 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, #2de2ff07 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 1rem;
+  padding: 1.25rem;
 }
+
+::selection { background: var(--purple-soft); color: var(--text-primary); }
 
 /* ── Wrapper ──────────────────────────────────────────────── */
 .auth-wrapper {
@@ -45,38 +72,55 @@ body {
   max-width: 420px;
 }
 
+/* ── Card ─────────────────────────────────────────────────── */
 .auth-card {
-  background: var(--surface);
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: 2.5rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Linha de cor no topo — igual ao modal-card do index.css */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--blue), var(--mint));
 }
 
 /* ── Marca ────────────────────────────────────────────────── */
 .auth-brand {
   text-align: center;
+  padding-top: 0.5rem;
 }
 
 .brand-emoji {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
 }
 
 .auth-brand h1 {
+  font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 700;
+  color: var(--text-primary);
   letter-spacing: -0.3px;
-  color: var(--text);
 }
 
 .brand-sub {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-top: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--purple);
+  margin-top: 0.3rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* ── Formulário ───────────────────────────────────────────── */
@@ -89,39 +133,40 @@ form {
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 label {
-  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
 }
 
 input[type="text"],
 input[type="password"],
 input[type="tel"] {
-  background: var(--bg);
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  color: var(--text);
-  font-size: 0.97rem;
-  padding: 0.65rem 0.85rem;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.7rem 0.9rem;
   width: 100%;
   outline: none;
   transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(124, 106, 255, 0.18);
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px var(--purple-soft);
 }
 
 input::placeholder {
-  color: var(--muted);
-  opacity: 0.6;
+  color: var(--text-dim);
 }
 
 .password-wrap {
@@ -144,7 +189,7 @@ input::placeholder {
   font-size: 1rem;
   line-height: 1;
   padding: 0.2rem;
-  opacity: 0.6;
+  opacity: 0.4;
   transition: opacity var(--transition);
 }
 
@@ -154,58 +199,63 @@ input::placeholder {
 }
 
 .field-hint {
-  font-size: 0.75rem;
-  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
 }
 
 /* ── Mensagens ────────────────────────────────────────────── */
 .msg {
-  font-size: 0.88rem;
-  padding: 0.6rem 0.85rem;
+  font-size: 0.85rem;
+  padding: 0.65rem 0.9rem;
   border-radius: var(--radius-sm);
   text-align: center;
+  font-family: var(--font-body);
+  line-height: 1.4;
 }
 
 .msg--error {
-  background: rgba(255, 92, 92, 0.12);
-  color: var(--error);
-  border: 1px solid rgba(255, 92, 92, 0.25);
+  background: var(--red-soft);
+  color: var(--red);
+  border: 1px solid rgba(255, 59, 110, 0.25);
 }
 
 .msg--success {
-  background: rgba(76, 222, 138, 0.1);
-  color: var(--success);
-  border: 1px solid rgba(76, 222, 138, 0.25);
+  background: var(--mint-soft);
+  color: var(--mint);
+  border: 1px solid rgba(0, 255, 176, 0.25);
 }
 
 .msg--info {
-  background: rgba(91, 190, 255, 0.1);
-  color: var(--info);
-  border: 1px solid rgba(91, 190, 255, 0.2);
+  background: var(--blue-soft);
+  color: var(--blue);
+  border: 1px solid rgba(45, 226, 255, 0.2);
 }
 
 /* ── Botão principal ──────────────────────────────────────── */
 .btn-primary {
-  background: var(--accent);
-  color: #fff;
+  background: var(--purple);
+  color: #0d0020;
   border: none;
   border-radius: var(--radius-sm);
+  font-family: var(--font-display);
   font-size: 0.97rem;
-  font-weight: 600;
-  padding: 0.75rem;
+  font-weight: 700;
+  padding: 0.78rem;
   cursor: pointer;
   width: 100%;
-  margin-top: 0.25rem;
-  transition: background var(--transition), transform var(--transition);
+  margin-top: 0.15rem;
+  box-shadow: 0 0 20px -4px var(--purple-glow);
+  transition: filter var(--transition), transform var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 44px;
+  min-height: 46px;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-dim);
+  filter: brightness(1.1);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -213,26 +263,27 @@ input::placeholder {
 }
 
 .btn-primary:disabled {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 /* ── Rodapé ───────────────────────────────────────────────── */
 .auth-footer {
   text-align: center;
-  font-size: 0.87rem;
-  color: var(--muted);
+  font-size: 0.85rem;
+  color: var(--text-dim);
 }
 
 .auth-footer a {
-  color: var(--accent);
+  color: var(--purple);
   text-decoration: none;
   font-weight: 600;
   margin-left: 0.25rem;
+  transition: color var(--transition);
 }
 
 .auth-footer a:hover {
-  text-decoration: underline;
+  color: var(--mint);
 }
 
 /* ── Utilitários ──────────────────────────────────────────── */
@@ -244,5 +295,12 @@ input::placeholder {
 @media (max-width: 480px) {
   .auth-card {
     padding: 2rem 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
   }
 }
