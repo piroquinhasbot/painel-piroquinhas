@@ -49,21 +49,9 @@
             <span>Admin</span>
           </a>
         </li>
-        
       </ul>
     </div>
   </nav>
-
-  <!-- ── TELA DE INSTRUÇÃO ── -->
-  <div id="tela-instrucao" class="instrucao-wrap hidden">
-    <div class="instrucao-card">
-      <span class="instrucao-icon">🔐</span>
-      <h2>Acesso restrito</h2>
-      <p>Para ver seu perfil, envie o comando abaixo no grupo:</p>
-      <div class="comando-destaque">!meupainel</div>
-      <p class="instrucao-sub">Você receberá um link no privado com acesso ao seu painel.</p>
-    </div>
-  </div>
 
   <!-- ── LOADING (skeleton) ── -->
   <div id="tela-loading" class="hidden" style="max-width:880px;margin:0 auto;padding:2rem 1.25rem;">
@@ -94,8 +82,8 @@
     <div class="erro-card">
       <div class="erro-icon">⚠️</div>
       <h2 id="erro-msg">Algo deu errado</h2>
-      <p>Gere um novo link com <strong>!meupainel</strong> no grupo.</p>
-      <a href="index.html" class="btn-secondary">← Voltar ao ranking</a>
+      <p>Faça login novamente para continuar.</p>
+      <a href="login.html" class="btn-secondary">← Ir para o login</a>
     </div>
   </div>
 
@@ -202,14 +190,8 @@
   </footer>
 
   <script>
-    /* ════════════════════════════════════════
-       CONFIG
-    ════════════════════════════════════════ */
     const API = 'https://whatsappbot2-s3dx.onrender.com/api';
 
-    /* ════════════════════════════════════════
-       HELPERS
-    ════════════════════════════════════════ */
     const $    = id => document.getElementById(id);
     const show = id => $(id).classList.remove('hidden');
     const hide = id => $(id).classList.add('hidden');
@@ -246,7 +228,6 @@
       return n.toLocaleString('pt-BR');
     }
 
-    // "vara_basica" → "Vara Básica"  |  "fishrod_gold" → "Fishrod Gold"
     function fmtItemNome(chave) {
       return chave
         .replace(/_/g, ' ')
@@ -258,9 +239,6 @@
       return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     }
 
-    /* ════════════════════════════════════════
-       CHART — instâncias guardadas para destroy
-    ════════════════════════════════════════ */
     let chartXP        = null;
     let chartAtividade = null;
 
@@ -269,25 +247,20 @@
     const CHART_TICK = '#5a5f72';
 
     function renderChartXP(xpHistory) {
-      // Destrói instância anterior se existir (evita erro "canvas already in use")
       if (chartXP) { chartXP.destroy(); chartXP = null; }
-
       const hoje   = new Date();
       const labels = [];
       const dados  = [];
-
       for (let i = 29; i >= 0; i--) {
         const d    = new Date(hoje);
         d.setDate(d.getDate() - i);
         const chave = d.toISOString().slice(0, 10);
-        // Formata como "12 jun" em vez de "06-12"
         const [ano, mes, dia] = chave.split('-').map(Number);
         const nomesMes = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
         labels.push(`${dia} ${nomesMes[mes - 1]}`);
         const val = xpHistory[chave] ?? 0;
         dados.push(val >= 1 ? Math.round(val) : 0);
       }
-
       chartXP = new Chart($('chart-xp').getContext('2d'), {
         type: 'line',
         data: {
@@ -328,15 +301,8 @@
             },
           },
           scales: {
-            x: {
-              ticks: { color: CHART_TICK, font: CHART_FONT, maxTicksLimit: 8 },
-              grid:  { color: CHART_GRID },
-            },
-            y: {
-              ticks: { color: CHART_TICK, font: CHART_FONT },
-              grid:  { color: CHART_GRID },
-              beginAtZero: true,
-            },
+            x: { ticks: { color: CHART_TICK, font: CHART_FONT, maxTicksLimit: 8 }, grid: { color: CHART_GRID } },
+            y: { ticks: { color: CHART_TICK, font: CHART_FONT }, grid: { color: CHART_GRID }, beginAtZero: true },
           },
         },
       });
@@ -344,10 +310,8 @@
 
     function renderChartAtividade(atividadeSemanal) {
       if (chartAtividade) { chartAtividade.destroy(); chartAtividade = null; }
-
       const dias  = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
       const dados = Array.isArray(atividadeSemanal) ? atividadeSemanal : Array(7).fill(0);
-
       chartAtividade = new Chart($('chart-atividade').getContext('2d'), {
         type: 'bar',
         data: {
@@ -383,26 +347,15 @@
             },
           },
           scales: {
-            x: {
-              ticks: { color: CHART_TICK, font: CHART_FONT },
-              grid:  { display: false },
-            },
-            y: {
-              ticks: { color: CHART_TICK, font: CHART_FONT },
-              grid:  { color: CHART_GRID },
-              beginAtZero: true,
-            },
+            x: { ticks: { color: CHART_TICK, font: CHART_FONT }, grid: { display: false } },
+            y: { ticks: { color: CHART_TICK, font: CHART_FONT }, grid: { color: CHART_GRID }, beginAtZero: true },
           },
         },
       });
     }
 
-    /* ════════════════════════════════════════
-       RELACIONAMENTO
-    ════════════════════════════════════════ */
     function renderRelacionamento(u) {
       const container = $('rel-conteudo');
-
       if (!u.casadoCom) {
         container.innerHTML = `
           <div class="rel-vazio">
@@ -411,14 +364,10 @@
           </div>`;
         return;
       }
-
       const tipoEmoji = u.casadoTipo === 'casamento' ? '💍' : '💕';
       const tipoLabel = u.casadoTipo === 'casamento' ? 'Casado(a) com' : 'Namorando';
-      
-      // ✨ ATUALIZADO: Mostra o nome real da pessoa amada se o bot já conhecer ela!
-      const parceiro = u.nomeParceiro ? u.nomeParceiro : '+' + u.casadoCom.split('@')[0];
-      const desde    = fmtData(u.casadoDesde);
-
+      const parceiro  = u.nomeParceiro ? u.nomeParceiro : '+' + u.casadoCom.split('@')[0];
+      const desde     = fmtData(u.casadoDesde);
       container.innerHTML = `
         <div class="rel-card">
           <span class="rel-heart">${tipoEmoji}</span>
@@ -430,22 +379,17 @@
         </div>`;
     }
 
-    /* ════════════════════════════════════════
-       INVENTÁRIO
-    ════════════════════════════════════════ */
     function renderInventario(inventory) {
       const entries = inventory
         ? Object.entries(inventory).filter(([, qtd]) => Number(qtd) > 0)
         : [];
-
       if (entries.length === 0) {
         show('inventario-vazio');
         return;
       }
-
       hide('inventario-vazio');
       $('inventario-grid').innerHTML = entries
-        .sort((a, b) => b[1] - a[1]) // ordena por quantidade desc
+        .sort((a, b) => b[1] - a[1])
         .map(([chave, qtd]) => `
           <div class="inv-item">
             <span class="inv-nome">${fmtItemNome(chave)}</span>
@@ -454,20 +398,14 @@
         `).join('');
     }
 
-    /* ════════════════════════════════════════
-       PREENCHER PERFIL
-    ════════════════════════════════════════ */
     function renderGrupos(grupos) {
       const grid  = $('grupos-grid');
       const vazio = $('grupos-vazio');
-
       if (!grupos || grupos.length === 0) {
         show('grupos-vazio');
         return;
       }
-
       hide('grupos-vazio');
-
       grid.innerHTML = grupos.map(g => {
         const tier = tierLevel(g.level);
         return `
@@ -496,64 +434,7 @@
           </div>`;
       }).join('');
     }
-    function preencherPerfil(u) {
-      // Header
-      const ini = iniciais(u.nome);
-      const cor = corAvatar(u.nome);
-      const el  = $('avatar-iniciais');
-      el.textContent = ini;
-      el.style.background  = cor.bg;
-      el.style.color       = cor.text;
-      el.style.boxShadow   = `0 0 0 2px ${cor.border}, 0 0 22px ${cor.glow}`;
-      $('perfil-nome').textContent     = u.nome || 'Sem nome';
-      $('perfil-numero').textContent   = u.telefone ? '+' + u.telefone : '—';
 
-      if (u.bio) {
-        $('perfil-bio').textContent = u.bio;
-        show('perfil-bio');
-      }
-
-      // Stats topo — nível com badge de tier
-      const tier = tierLevel(u.level);
-      $('stat-level').innerHTML = `
-        ${u.level ?? '—'}
-        <span class="level-badge ${tier.classe}" style="margin-top:0.3rem;">
-          ${tier.emoji} ${tier.label}
-        </span>`;
-      $('stat-xp').textContent    = fmtNum(u.xp);
-      $('stat-gold').textContent  = fmtNum(u.gold);
-      $('stat-rank').textContent  = u.posicaoRanking ? `#${u.posicaoRanking}` : '—';
-
-      // Barra de XP — usa xpProgresso já calculado pela API
-      // que considera apenas o XP dentro do nível atual (não o XP total)
-      const pct = u.xpProgresso ?? 0;
-      $('xp-atual-txt').textContent = fmtNum(u.xp) + ' XP';
-      $('xp-prox-txt').textContent  = `Próx. nível: ${fmtNum(u.xpParaProximo)} XP`;
-
-      requestAnimationFrame(() => {
-        setTimeout(() => { $('barra-xp').style.width = pct + '%'; }, 150);
-      });
-
-      // Gráficos
-      renderChartXP(u.xpHistory || {});
-      renderChartAtividade(u.atividadeSemanal);
-
-      // Cards de atividade
-      $('act-mensagens').textContent = fmtNum(u.mensagens);
-      $('act-quiz').textContent      = fmtNum(u.quizPoints);
-      $('act-pet').textContent       = u.pet?.nome
-        ? `${u.pet.nome} nv${u.pet.level ?? 1}`
-        : 'Nenhum';
-
-      // Grupos
-      renderGrupos(u.grupos);
-
-      // Relacionamento
-      renderRelacionamento(u);
-
-      // Inventário
-      renderInventario(u.inventory);
-    }
     function tierLevel(level) {
       const n = level || 1;
       if (n <= 10) return { classe: 'tier-gray', emoji: '⚔️',  label: 'Novato'   };
@@ -562,79 +443,118 @@
       return              { classe: 'tier-mint', emoji: '💎',  label: 'Lendário' };
     }
 
+    function preencherPerfil(u) {
+      const ini = iniciais(u.nome);
+      const cor = corAvatar(u.nome);
+      const el  = $('avatar-iniciais');
+      el.textContent = ini;
+      el.style.background  = cor.bg;
+      el.style.color       = cor.text;
+      el.style.boxShadow   = `0 0 0 2px ${cor.border}, 0 0 22px ${cor.glow}`;
+      $('perfil-nome').textContent   = u.nome || 'Sem nome';
+      $('perfil-numero').textContent = u.telefone ? '+' + u.telefone : '—';
+      if (u.bio) {
+        $('perfil-bio').textContent = u.bio;
+        show('perfil-bio');
+      }
+      const tier = tierLevel(u.level);
+      $('stat-level').innerHTML = `
+        ${u.level ?? '—'}
+        <span class="level-badge ${tier.classe}" style="margin-top:0.3rem;">
+          ${tier.emoji} ${tier.label}
+        </span>`;
+      $('stat-xp').textContent   = fmtNum(u.xp);
+      $('stat-gold').textContent = fmtNum(u.gold);
+      $('stat-rank').textContent = u.posicaoRanking ? `#${u.posicaoRanking}` : '—';
+      const pct = u.xpProgresso ?? 0;
+      $('xp-atual-txt').textContent = fmtNum(u.xp) + ' XP';
+      $('xp-prox-txt').textContent  = `Próx. nível: ${fmtNum(u.xpParaProximo)} XP`;
+      requestAnimationFrame(() => {
+        setTimeout(() => { $('barra-xp').style.width = pct + '%'; }, 150);
+      });
+      renderChartXP(u.xpHistory || {});
+      renderChartAtividade(u.atividadeSemanal);
+      $('act-mensagens').textContent = fmtNum(u.mensagens);
+      $('act-quiz').textContent      = fmtNum(u.quizPoints);
+      $('act-pet').textContent       = u.pet?.nome
+        ? `${u.pet.nome} nv${u.pet.level ?? 1}`
+        : 'Nenhum';
+      renderGrupos(u.grupos);
+      renderRelacionamento(u);
+      renderInventario(u.inventory);
+    }
+
     /* ════════════════════════════════════════
        INIT — fluxo de autenticação
     ════════════════════════════════════════ */
     async function init() {
-  const params     = new URLSearchParams(window.location.search);
-  const tokenParam = params.get('token');
-  let   jwtSalvo   = sessionStorage.getItem('piro_jwt');
+      const params     = new URLSearchParams(window.location.search);
+      const tokenParam = params.get('token');
 
-  // Sem token na URL e sem JWT salvo → mostra instrução
-  if (!tokenParam && !jwtSalvo) {
-    show('tela-instrucao');
-    return;
-  }
+      // Prioridade: JWT do login por senha (localStorage) > token via link (sessionStorage)
+      let jwtSalvo = localStorage.getItem('jwt') || sessionStorage.getItem('piro_jwt');
 
-  show('tela-loading');
-
-  try {
-    // ── Passo 1: limpa o token da URL imediatamente (antes de qualquer fetch)
-    if (tokenParam) {
-      history.replaceState(null, '', 'perfil.html');
-    }
-
-    // ── Passo 2: trocar token temporário por JWT de sessão ──
-    if (tokenParam) {
-      const res  = await fetch(`${API}/auth/token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: tokenParam }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || 'Token inválido ou expirado.');
-
-      jwtSalvo = data.jwt;
-      if (!jwtSalvo) throw new Error('Resposta inesperada da API.');
-
-      sessionStorage.setItem('piro_jwt', jwtSalvo);
-
-      // Remove o token da URL sem recarregar a página
-      history.replaceState(null, '', 'perfil.html');
-    }
-
-    // ── Passo 2: buscar dados do usuário ──
-    const meRes  = await fetch(`${API}/user/me`, {
-      headers: { 'Authorization': `Bearer ${jwtSalvo}` },
-    });
-    const meData = await meRes.json();
-
-    if (!meRes.ok) {
-      if (meRes.status === 401) {
-        sessionStorage.removeItem('piro_jwt');
-        throw new Error('Sua sessão expirou. Digite !meupainel no grupo para um novo link.');
+      // Sem nenhuma autenticação → redireciona pro login
+      if (!tokenParam && !jwtSalvo) {
+        window.location.replace('login.html');
+        return;
       }
-      throw new Error(meData.error || 'Erro ao carregar perfil.');
+
+      show('tela-loading');
+
+      try {
+        // ── Limpa o token da URL antes de qualquer fetch
+        if (tokenParam) {
+          history.replaceState(null, '', 'perfil.html');
+        }
+
+        // ── Troca token temporário (link do bot) por JWT de sessão
+        if (tokenParam) {
+          const res  = await fetch(`${API}/auth/token`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: tokenParam }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Token inválido ou expirado.');
+          jwtSalvo = data.jwt;
+          if (!jwtSalvo) throw new Error('Resposta inesperada da API.');
+          sessionStorage.setItem('piro_jwt', jwtSalvo);
+        }
+
+        // ── Busca dados do usuário
+        const meRes  = await fetch(`${API}/user/me`, {
+          headers: { 'Authorization': `Bearer ${jwtSalvo}` },
+        });
+        const meData = await meRes.json();
+
+        if (!meRes.ok) {
+          if (meRes.status === 401) {
+            // Limpa ambos os storages e redireciona pro login
+            sessionStorage.removeItem('piro_jwt');
+            localStorage.removeItem('jwt');
+            window.location.replace('login.html');
+            return;
+          }
+          throw new Error(meData.error || 'Erro ao carregar perfil.');
+        }
+
+        // ── Renderiza
+        hide('tela-loading');
+        show('painel');
+        preencherPerfil(meData);
+
+        const navCassino = document.getElementById('nav-cassino');
+        if (navCassino) navCassino.style.display = 'flex';
+
+      } catch (err) {
+        hide('tela-loading');
+        $('erro-msg').textContent = err.message || 'Erro desconhecido.';
+        show('tela-erro');
+      }
     }
 
-    // ── Passo 3: renderizar ──
-    hide('tela-loading');
-    show('painel');
-    preencherPerfil(meData);
-
-    // Mostra link do Cassino na nav agora que está logado
-    const navCassino = document.getElementById('nav-cassino');
-    if (navCassino) navCassino.style.display = 'flex';
-
-  } catch (err) {
-    hide('tela-loading');
-    $('erro-msg').textContent = err.message || 'Erro desconhecido.';
-    show('tela-erro');
-  }
-}
-
-init();
+    init();
   </script>
 </body>
 </html>
