@@ -1,159 +1,306 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — Piroquinhas Bot</title>
-  <link rel="stylesheet" href="login.css" />
-</head>
-<body>
-  <div class="auth-wrapper">
-    <div class="auth-card">
-      <div class="auth-brand">
-        <span class="brand-emoji">🤖</span>
-        <h1>Piroquinhas Bot</h1>
-        <p class="brand-sub">Painel do Usuário</p>
-      </div>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
-      <form id="loginForm" novalidate>
-        <div class="field-group">
-          <label for="username">Usuário</label>
-          <input id="username" type="text" placeholder="seu_usuario"
-            autocomplete="username" maxlength="30" required />
-        </div>
+/* ── Variáveis — espelha o index.css ─────────────────────── */
+:root {
+  --bg-base:      #07080d;
+  --bg-surface:   #0d0f17;
+  --bg-card:      #12141f;
+  --bg-elevated:  #171a26;
+  --border:       #1f2230;
+  --border-soft:  #181b27;
 
-        <div class="field-group">
-          <label for="password">Senha</label>
-          <div class="password-wrap">
-            <input id="password" type="password" placeholder="••••••"
-              autocomplete="current-password" required />
-            <button type="button" class="toggle-pw" aria-label="Mostrar senha" tabindex="-1">👁️</button>
-          </div>
-        </div>
+  --text-primary:   #eef0f8;
+  --text-secondary: #9298ad;
+  --text-dim:       #555a70;
 
-        <div id="loginError" class="msg msg--error hidden"></div>
-        <div id="loginInfo" class="msg msg--info hidden"></div>
+  --purple:      #b855ff;
+  --purple-soft: #b855ff18;
+  --purple-glow: #b855ff55;
+  --purple-dim:  #7a38cc;
 
-        <button type="submit" class="btn-primary" id="btnLogin">
-          <span class="btn-label">Entrar</span>
-          <span class="btn-spinner hidden">⏳</span>
-        </button>
-      </form>
+  --mint:      #00ffb0;
+  --mint-soft: #00ffb018;
 
-      <p class="auth-footer">
-        Não tem conta? <a href="cadastro.html">Criar conta</a>
-      </p>
-    </div>
-  </div>
+  --blue:      #2de2ff;
+  --blue-soft: #2de2ff18;
 
-  <script>
-    const API = 'https://whatsappbot2-s3dx.onrender.com/api';
+  --red:       #ff3b6e;
+  --red-soft:  #ff3b6e18;
 
-    if (localStorage.getItem('jwt')) {
-      window.location.replace('perfil.html');
-    }
+  --gold:      #ffd060;
 
-    const form     = document.getElementById('loginForm');
-    const btnLogin = document.getElementById('btnLogin');
-    const errBox   = document.getElementById('loginError');
-    const infoBox  = document.getElementById('loginInfo');
-    const pwInput  = document.getElementById('password');
-    const togglePw = document.querySelector('.toggle-pw');
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, monospace;
 
-    togglePw.addEventListener('click', () => {
-      const show = pwInput.type === 'password';
-      pwInput.type = show ? 'text' : 'password';
-      togglePw.textContent = show ? '🙈' : '👁️';
-    });
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --transition: 0.18s ease;
+}
 
-    let cooldownAt = 0;
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    function setLoading(on) {
-      btnLogin.disabled = on;
-      btnLogin.querySelector('.btn-label').classList.toggle('hidden', on);
-      btnLogin.querySelector('.btn-spinner').classList.toggle('hidden', !on);
-    }
+html, body { height: 100%; }
 
-    function showError(msg) {
-      errBox.textContent = msg;
-      errBox.classList.remove('hidden');
-      infoBox.classList.add('hidden');
-    }
+body {
+  background: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse at 0% 0%,   #b855ff0a 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%,  #00ffb00a 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, #2de2ff07 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.25rem;
+}
 
-    function showInfo(msg) {
-      infoBox.textContent = msg;
-      infoBox.classList.remove('hidden');
-      errBox.classList.add('hidden');
-    }
+::selection { background: var(--purple-soft); color: var(--text-primary); }
 
-    function clearMsgs() {
-      errBox.classList.add('hidden');
-      infoBox.classList.add('hidden');
-    }
+/* ── Wrapper ──────────────────────────────────────────────── */
+.auth-wrapper {
+  width: 100%;
+  max-width: 420px;
+}
 
-    function msgPorStatus(status) {
-      if (status === 401) return 'Usuário ou senha incorretos.';
-      if (status === 429) return 'Muitas tentativas. Aguarde alguns minutos.';
-      if (status >= 500) return 'Servidor indisponível. Tente novamente mais tarde.';
-      return 'Erro ao fazer login.';
-    }
+/* ── Card ─────────────────────────────────────────────────── */
+.auth-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
 
-    // Fetch com retry automático e aviso de "servidor acordando"
-    async function fetchComRetry(url, opts, tentativas = 2) {
-      for (let i = 0; i < tentativas; i++) {
-        try {
-          if (i === 1) showInfo('⏳ Servidor acordando, aguarde...');
-          const res = await fetch(url, opts);
-          return res;
-        } catch (e) {
-          if (i === tentativas - 1) throw e;
-          await new Promise(r => setTimeout(r, 4000));
-        }
-      }
-    }
+/* Linha de cor no topo — igual ao modal-card do index.css */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--blue), var(--mint));
+}
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      clearMsgs();
+/* ── Marca ────────────────────────────────────────────────── */
+.auth-brand {
+  text-align: center;
+  padding-top: 0.5rem;
+}
 
-      if (Date.now() < cooldownAt) {
-        const seg = Math.ceil((cooldownAt - Date.now()) / 1000);
-        showError(`Aguarde ${seg}s antes de tentar novamente.`);
-        return;
-      }
+.brand-emoji {
+  font-size: 2.25rem;
+  display: block;
+  margin-bottom: 0.6rem;
+}
 
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
+.auth-brand h1 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
 
-      if (!username || !password) {
-        showError('Preencha usuário e senha.');
-        return;
-      }
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--purple);
+  margin-top: 0.3rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 
-      setLoading(true);
-      try {
-        const res = await fetchComRetry(`${API}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
-        });
+/* ── Formulário ───────────────────────────────────────────── */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
 
-        const data = await res.json();
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
 
-        if (!res.ok) {
-          cooldownAt = Date.now() + (res.status === 429 ? 10_000 : 3_000);
-          showError(msgPorStatus(res.status));
-          return;
-        }
+label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 
-        localStorage.setItem('jwt', data.jwt);
-        window.location.replace('perfil.html');
-      } catch {
-        showError('Não foi possível conectar ao servidor. Tente novamente em instantes.');
-      } finally {
-        setLoading(false);
-      }
-    });
-  </script>
-</body>
-</html>
+input[type="text"],
+input[type="password"],
+input[type="tel"] {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.7rem 0.9rem;
+  width: 100%;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px var(--purple-soft);
+}
+
+input::placeholder {
+  color: var(--text-dim);
+}
+
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap input {
+  padding-right: 2.8rem;
+}
+
+.toggle-pw,
+.toggle-pw2 {
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.2rem;
+  opacity: 0.4;
+  transition: opacity var(--transition);
+}
+
+.toggle-pw:hover,
+.toggle-pw2:hover {
+  opacity: 1;
+}
+
+.field-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+/* ── Mensagens ────────────────────────────────────────────── */
+.msg {
+  font-size: 0.85rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-family: var(--font-body);
+  line-height: 1.4;
+}
+
+.msg--error {
+  background: var(--red-soft);
+  color: var(--red);
+  border: 1px solid rgba(255, 59, 110, 0.25);
+}
+
+.msg--success {
+  background: var(--mint-soft);
+  color: var(--mint);
+  border: 1px solid rgba(0, 255, 176, 0.25);
+}
+
+.msg--info {
+  background: var(--blue-soft);
+  color: var(--blue);
+  border: 1px solid rgba(45, 226, 255, 0.2);
+}
+
+/* ── Botão principal ──────────────────────────────────────── */
+.btn-primary {
+  background: var(--purple);
+  color: #0d0020;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.97rem;
+  font-weight: 700;
+  padding: 0.78rem;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.15rem;
+  box-shadow: 0 0 20px -4px var(--purple-glow);
+  transition: filter var(--transition), transform var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 46px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Rodapé ───────────────────────────────────────────────── */
+.auth-footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.auth-footer a {
+  color: var(--purple);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 0.25rem;
+  transition: color var(--transition);
+}
+
+.auth-footer a:hover {
+  color: var(--mint);
+}
+
+/* ── Utilitários ──────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
+/* ── Responsivo ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
