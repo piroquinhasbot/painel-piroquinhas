@@ -1,248 +1,151 @@
-/* login.css — compartilhado entre login.html e cadastro.html */
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Piroquinhas Bot</title>
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <span class="brand-emoji">🤖</span>
+        <h1>Piroquinhas Bot</h1>
+        <p class="brand-sub">Painel do Usuário</p>
+      </div>
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+      <form id="loginForm" novalidate>
+        <div class="field-group">
+          <label for="username">Usuário</label>
+          <input
+            id="username"
+            type="text"
+            placeholder="seu_usuario"
+            autocomplete="username"
+            maxlength="30"
+            required
+          />
+        </div>
 
-:root {
-  --bg:         #0e0f14;
-  --surface:    #16181f;
-  --border:     #2a2d38;
-  --accent:     #7c6aff;
-  --accent-dim: #5a4dd6;
-  --text:       #e8eaf0;
-  --muted:      #7b8099;
-  --error:      #ff5c5c;
-  --success:    #4cde8a;
-  --info:       #5bbeff;
-  --radius:     12px;
-  --radius-sm:  8px;
-  --transition: 0.18s ease;
-}
+        <div class="field-group">
+          <label for="password">Senha</label>
+          <div class="password-wrap">
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••"
+              autocomplete="current-password"
+              required
+            />
+            <button type="button" class="toggle-pw" aria-label="Mostrar senha" tabindex="-1">👁️</button>
+          </div>
+        </div>
 
-html, body {
-  height: 100%;
-}
+        <div id="loginError" class="msg msg--error hidden"></div>
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 1rem;
-}
+        <button type="submit" class="btn-primary" id="btnLogin">
+          <span class="btn-label">Entrar</span>
+          <span class="btn-spinner hidden">⏳</span>
+        </button>
+      </form>
 
-/* ── Wrapper ──────────────────────────────────────────────── */
-.auth-wrapper {
-  width: 100%;
-  max-width: 420px;
-}
+      <p class="auth-footer">
+        Não tem conta?
+        <a href="cadastro.html">Criar conta</a>
+      </p>
+    </div>
+  </div>
 
-.auth-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 2.5rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
-}
+  <script>
+    const API = 'https://piroquinhasbot.onrender.com/api';
 
-/* ── Marca ────────────────────────────────────────────────── */
-.auth-brand {
-  text-align: center;
-}
+    // Já logado → redireciona
+    if (localStorage.getItem('jwt')) {
+      window.location.replace('perfil.html');
+    }
 
-.brand-emoji {
-  font-size: 2.5rem;
-  display: block;
-  margin-bottom: 0.5rem;
-}
+    const form     = document.getElementById('loginForm');
+    const btnLogin = document.getElementById('btnLogin');
+    const errBox   = document.getElementById('loginError');
+    const pwInput  = document.getElementById('password');
+    const togglePw = document.querySelector('.toggle-pw');
 
-.auth-brand h1 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  color: var(--text);
-}
+    togglePw.addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      togglePw.textContent = show ? '🙈' : '👁️';
+    });
 
-.brand-sub {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-top: 0.2rem;
-}
+    // Cooldown no cliente após erro — evita spam de requisições
+    let cooldownAt = 0;
 
-/* ── Formulário ───────────────────────────────────────────── */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-}
+    function setLoading(on) {
+      btnLogin.disabled = on;
+      btnLogin.querySelector('.btn-label').classList.toggle('hidden', on);
+      btnLogin.querySelector('.btn-spinner').classList.toggle('hidden', !on);
+    }
 
-.field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
+    function showError(msg) {
+      errBox.textContent = msg;
+      errBox.classList.remove('hidden');
+    }
 
-label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+    function clearError() {
+      errBox.classList.add('hidden');
+    }
 
-input[type="text"],
-input[type="password"],
-input[type="tel"] {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  font-size: 0.97rem;
-  padding: 0.65rem 0.85rem;
-  width: 100%;
-  outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
+    // Mensagens seguras por status — nunca exibe internals do servidor
+    function msgPorStatus(status, fallback) {
+      if (status === 401) return 'Usuário ou senha incorretos.';
+      if (status === 429) return 'Muitas tentativas. Aguarde alguns minutos.';
+      if (status >= 500) return 'Servidor indisponível. Tente novamente mais tarde.';
+      return fallback || 'Erro ao fazer login.';
+    }
 
-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(124, 106, 255, 0.18);
-}
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
 
-input::placeholder {
-  color: var(--muted);
-  opacity: 0.6;
-}
+      if (Date.now() < cooldownAt) {
+        const seg = Math.ceil((cooldownAt - Date.now()) / 1000);
+        showError(`Aguarde ${seg}s antes de tentar novamente.`);
+        return;
+      }
 
-.password-wrap {
-  position: relative;
-}
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
 
-.password-wrap input {
-  padding-right: 2.8rem;
-}
+      if (!username || !password) {
+        showError('Preencha usuário e senha.');
+        return;
+      }
 
-.toggle-pw,
-.toggle-pw2 {
-  position: absolute;
-  right: 0.65rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  line-height: 1;
-  padding: 0.2rem;
-  opacity: 0.6;
-  transition: opacity var(--transition);
-}
+      setLoading(true);
+      try {
+        const res = await fetch(`${API}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
 
-.toggle-pw:hover,
-.toggle-pw2:hover {
-  opacity: 1;
-}
+        const data = await res.json();
 
-.field-hint {
-  font-size: 0.75rem;
-  color: var(--muted);
-}
+        if (!res.ok) {
+          // Cooldown de 3s no cliente após qualquer erro (10s se rate limited)
+          cooldownAt = Date.now() + (res.status === 429 ? 10_000 : 3_000);
+          showError(msgPorStatus(res.status, data.error));
+          return;
+        }
 
-/* ── Mensagens ────────────────────────────────────────────── */
-.msg {
-  font-size: 0.88rem;
-  padding: 0.6rem 0.85rem;
-  border-radius: var(--radius-sm);
-  text-align: center;
-}
-
-.msg--error {
-  background: rgba(255, 92, 92, 0.12);
-  color: var(--error);
-  border: 1px solid rgba(255, 92, 92, 0.25);
-}
-
-.msg--success {
-  background: rgba(76, 222, 138, 0.1);
-  color: var(--success);
-  border: 1px solid rgba(76, 222, 138, 0.25);
-}
-
-.msg--info {
-  background: rgba(91, 190, 255, 0.1);
-  color: var(--info);
-  border: 1px solid rgba(91, 190, 255, 0.2);
-}
-
-/* ── Botão principal ──────────────────────────────────────── */
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.97rem;
-  font-weight: 600;
-  padding: 0.75rem;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 0.25rem;
-  transition: background var(--transition), transform var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-height: 44px;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--accent-dim);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.btn-primary:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-/* ── Rodapé ───────────────────────────────────────────────── */
-.auth-footer {
-  text-align: center;
-  font-size: 0.87rem;
-  color: var(--muted);
-}
-
-.auth-footer a {
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 600;
-  margin-left: 0.25rem;
-}
-
-.auth-footer a:hover {
-  text-decoration: underline;
-}
-
-/* ── Utilitários ──────────────────────────────────────────── */
-.hidden {
-  display: none !important;
-}
-
-/* ── Responsivo ───────────────────────────────────────────── */
-@media (max-width: 480px) {
-  .auth-card {
-    padding: 2rem 1.25rem;
-  }
-}
+        localStorage.setItem('jwt', data.jwt);
+        window.location.replace('perfil.html');
+      } catch {
+        showError('Não foi possível conectar ao servidor.');
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
