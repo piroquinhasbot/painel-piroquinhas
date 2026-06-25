@@ -231,8 +231,9 @@ function fmtNum(n) {
 }
 
 function getJwt() {
-  return sessionStorage.getItem('piro_jwt') || null;
+  return localStorage.getItem('jwt') || sessionStorage.getItem('piro_jwt') || null;
 }
+
 
 const SIMBOLOS = [
   { emoji: '💎', tres: 50, dois: 5   },
