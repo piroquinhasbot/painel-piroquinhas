@@ -380,23 +380,38 @@
     }
 
     function renderInventario(inventory) {
-      const entries = inventory
-        ? Object.entries(inventory).filter(([, qtd]) => Number(qtd) > 0)
-        : [];
-      if (entries.length === 0) {
-        show('inventario-vazio');
-        return;
-      }
-      hide('inventario-vazio');
-      $('inventario-grid').innerHTML = entries
-        .sort((a, b) => b[1] - a[1])
-        .map(([chave, qtd]) => `
-          <div class="inv-item">
-            <span class="inv-nome">${fmtItemNome(chave)}</span>
-            <span class="inv-qtd">×${fmtNum(qtd)}</span>
-          </div>
-        `).join('');
-    }
+  if (!inventory || typeof inventory !== 'object') {
+    show('inventario-vazio');
+    return;
+  }
+
+  const entries = Object.entries(inventory)
+    .map(([chave, val]) => {
+      // aceita number direto, ou objeto com campo quantidade/amount/qty
+      const qtd = typeof val === 'number'
+        ? val
+        : typeof val === 'object' && val !== null
+          ? Number(val.quantidade ?? val.amount ?? val.qty ?? val.count ?? 1)
+          : Number(val);
+      return [chave, qtd];
+    })
+    .filter(([, qtd]) => Number.isFinite(qtd) && qtd > 0);
+
+  if (entries.length === 0) {
+    show('inventario-vazio');
+    return;
+  }
+
+  hide('inventario-vazio');
+  $('inventario-grid').innerHTML = entries
+    .sort((a, b) => b[1] - a[1])
+    .map(([chave, qtd]) => `
+      <div class="inv-item">
+        <span class="inv-nome">${fmtItemNome(chave)}</span>
+        <span class="inv-qtd">×${fmtNum(qtd)}</span>
+      </div>
+    `).join('');
+}
 
     function renderGrupos(grupos) {
       const grid  = $('grupos-grid');
