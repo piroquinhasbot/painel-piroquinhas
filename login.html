@@ -147,7 +147,8 @@
         }
 
         localStorage.setItem('jwt', data.jwt);
-        window.location.replace('perfil.html');
+sessionStorage.setItem('piro_jwt', data.jwt);  // ← sincroniza os dois storages
+window.location.replace('perfil.html');
       } catch {
         showError('Não foi possível conectar ao servidor. Tente novamente em instantes.');
       } finally {
