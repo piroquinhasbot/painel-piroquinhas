@@ -3,6 +3,8 @@
    Usuários, gold, level/XP, inventário,
    warns/bans, relacionamentos, pets
    ========================================================= */
+(function() {
+'use strict';
 
 const _cu  = () => window.adminCore;
 const API          = () => _cu().API;
@@ -750,3 +752,5 @@ $('pets-busca')?.addEventListener('input', () => {
     card.style.display = card.textContent.toLowerCase().includes(termo) ? '' : 'none';
   });
 });
+
+})(); // fim IIFE admin-usuarios.js
