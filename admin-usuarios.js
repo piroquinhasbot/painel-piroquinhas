@@ -37,7 +37,8 @@ window.carregarWarnUsers = async function() {
     renderWarnUsersFiltrado();
     window.atualizarDashboard?.();
     $('sidebar-sync').textContent = `Atualizado às ${horaAgora()}`;
-  } catch {
+  } catch (err) {
+    console.error('[Admin] Erro ao carregar warns:', err);
     hide('warns-loading');
     show('warns-erro');
   }
