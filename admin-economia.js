@@ -41,10 +41,12 @@ window.carregarEconomia = async function() {
     hide('economia-loading');
     show('economia-conteudo');
     economiaCarregada = true;
-  } catch {
+  } catch (err) {
+    console.error('[Admin] Erro ao carregar economia:', err);
+    economiaCarregada = false; // ← permite tentar novamente
     const el = $('economia-loading');
     if (el) {
-      el.innerHTML = '<div class="estado-erro">Erro ao carregar economia. <button class="link-btn" onclick="economiaCarregada=false;window.carregarEconomia()">Tentar novamente</button></div>';
+      el.innerHTML = '<div class="estado-erro">Erro ao carregar economia. <button class="link-btn" onclick="window.carregarEconomia()">Tentar novamente</button></div>';
       el.classList.remove('estado-loading');
     }
     show('economia-loading');
