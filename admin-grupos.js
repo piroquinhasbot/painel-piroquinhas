@@ -62,7 +62,8 @@ window.carregarGrupos = async function() {
     window.popularSelectMensagens?.(window.gruposCache);
     window.atualizarDashboard?.();
     $('sidebar-sync').textContent = `Atualizado às ${horaAgora()}`;
-  } catch {
+  } catch (err) {
+    console.error('[Admin] Erro ao carregar grupos:', err);
     hide('grupos-loading');
     show('grupos-erro');
   }
