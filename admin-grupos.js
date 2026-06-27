@@ -5,19 +5,19 @@
    ========================================================= */
 
 /* Atalhos para o core */
-const _c = () => window.adminCore;
-const API         = () => _c().API;
-const $           = id  => _c().$(id);
-const show        = id  => _c().show(id);
-const hide        = id  => _c().hide(id);
-const escapeHtml  = s   => _c().escapeHtml(s);
-const adminHeaders= ()  => _c().adminHeaders();
-const toast       = (m,t)=> _c().toast(m,t);
-const abrirModal  = (ti,ms,cb)=> _c().abrirModal(ti,ms,cb);
-const formatNum   = n   => _c().formatNum(n);
-const horaAgora   = ()  => _c().horaAgora();
-const nomeExibicao= g   => _c().nomeExibicao(g);
-const nomeGrupoPorJid = jid => _c().nomeGrupoPorJid(jid);
+const _cg = () => window.adminCore;
+const API         = () => _cg().API;
+const $           = id  => _cg().$(id);
+const show        = id  => _cg().show(id);
+const hide        = id  => _cg().hide(id);
+const escapeHtml  = s   => _cg().escapeHtml(s);
+const adminHeaders= ()  => _cg().adminHeaders();
+const toast       = (m,t)=> _cg().toast(m,t);
+const abrirModal  = (ti,ms,cb)=> _cg().abrirModal(ti,ms,cb);
+const formatNum   = n   => _cg().formatNum(n);
+const horaAgora   = ()  => _cg().horaAgora();
+const nomeExibicao= g   => _cg().nomeExibicao(g);
+const nomeGrupoPorJid = jid => _cg().nomeGrupoPorJid(jid);
 
 /* ── Cache global de grupos ─────────────────────────────── */
 window.gruposCache    = [];
