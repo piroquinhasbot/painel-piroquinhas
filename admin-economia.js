@@ -3,16 +3,16 @@
    Economia global e Logs em tempo real
    ========================================================= */
 
-const _c  = () => window.adminCore;
-const API          = () => _c().API;
-const $            = id   => _c().$(id);
-const show         = id   => _c().show(id);
-const hide         = id   => _c().hide(id);
-const escapeHtml   = s    => _c().escapeHtml(s);
-const adminHeaders = ()   => _c().adminHeaders();
-const toast        = (m,t)=> _c().toast(m,t);
-const formatNum    = n    => _c().formatNum(n);
-const nomeGrupoPorJid = jid => _c().nomeGrupoPorJid(jid);
+const _ce  = () => window.adminCore;
+const API          = () => _ce().API;
+const $            = id   => _ce().$(id);
+const show         = id   => _ce().show(id);
+const hide         = id   => _ce().hide(id);
+const escapeHtml   = s    => _ce().escapeHtml(s);
+const adminHeaders = ()   => _ce().adminHeaders();
+const toast        = (m,t)=> _ce().toast(m,t);
+const formatNum    = n    => _ce().formatNum(n);
+const nomeGrupoPorJid = jid => _ce().nomeGrupoPorJid(jid);
 
 /* ═══════════════════════════════════════════════════════════
    ECONOMIA
