@@ -605,23 +605,55 @@ window.carregarRelacionamentos = async function() {
       const nomeA  = escapeHtml(r.nomeA || r.jidA?.split('@')[0] || '—');
       const nomeB  = escapeHtml(r.nomeB || r.jidB?.split('@')[0] || '—');
       const tipo   = r.tipo === 'casamento' ? '💍 Casados' : '❤️ Namorando';
-      const grupo  = escapeHtml(r.nomeGrupo || r.idGrupo || '—');
+      const grupo  = escapeHtml(r.nomeGrupo || (r.idGrupo ? nomeGrupoPorJid(r.idGrupo) : '—'));
       const xp     = formatNum(r.xp || 0);
+      const telA   = escapeHtml(r.jidA?.split('@')[0] || '—');
+      const telB   = escapeHtml(r.jidB?.split('@')[0] || '—');
+      const desde  = r.desde ? new Date(r.desde).toLocaleDateString('pt-BR') : '—';
+      const idRel  = `rel-${escapeHtml(r.jidA)}-${escapeHtml(r.jidB)}`.replace(/[^a-z0-9-]/gi, '_');
       return `
-      <div class="rel-card">
-        <div class="rel-info">
-          <span class="rel-tipo">${tipo}</span>
-          <span class="rel-nomes">${nomeA} <span style="color:var(--muted)">×</span> ${nomeB}</span>
-          <span class="rel-meta">Grupo: ${grupo} · XP: ${xp}</span>
+      <div class="rel-card" style="flex-direction:column;align-items:stretch;gap:.5rem;">
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+          <div class="rel-info" style="flex:1;cursor:pointer;" data-toggle="${idRel}">
+            <span class="rel-tipo">${tipo}</span>
+            <span class="rel-nomes">${nomeA} <span style="color:var(--muted)">×</span> ${nomeB}</span>
+            <span class="rel-meta">📍 ${grupo} · desde ${desde} · XP: ${xp}</span>
+          </div>
+          <button class="btn-gold-rem rel-encerrar"
+            data-jida="${escapeHtml(r.jidA)}"
+            data-jidb="${escapeHtml(r.jidB)}"
+            data-grupo="${escapeHtml(r.idGrupo)}">
+            💔 Encerrar
+          </button>
         </div>
-        <button class="btn-gold-rem rel-encerrar"
-          data-jida="${escapeHtml(r.jidA)}"
-          data-jidb="${escapeHtml(r.jidB)}"
-          data-grupo="${escapeHtml(r.idGrupo)}">
-          💔 Encerrar
-        </button>
+        <div id="${idRel}" class="hidden" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;display:flex;flex-wrap:wrap;gap:1rem;">
+          <div style="flex:1;min-width:140px;">
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem;">👤 ${nomeA}</div>
+            <div style="font-size:.8rem;color:var(--text);">📱 +${telA}</div>
+            <div style="font-size:.72rem;color:var(--muted);font-family:monospace;">${escapeHtml(r.jidA || '—')}</div>
+          </div>
+          <div style="flex:1;min-width:140px;">
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem;">👤 ${nomeB}</div>
+            <div style="font-size:.8rem;color:var(--text);">📱 +${telB}</div>
+            <div style="font-size:.72rem;color:var(--muted);font-family:monospace;">${escapeHtml(r.jidB || '—')}</div>
+          </div>
+          <div style="flex:1;min-width:140px;">
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem;">💑 Relacionamento</div>
+            <div style="font-size:.8rem;color:var(--text);">${tipo}</div>
+            <div style="font-size:.8rem;color:var(--mint);">⚡ ${xp} XP</div>
+            <div style="font-size:.8rem;color:var(--text);">📅 Desde ${desde}</div>
+            <div style="font-size:.8rem;color:var(--text);">📍 ${grupo}</div>
+          </div>
+        </div>
       </div>`;
     }).join('');
+
+    lista.querySelectorAll('[data-toggle]').forEach(el => {
+      el.addEventListener('click', () => {
+        const painel = document.getElementById(el.dataset.toggle);
+        if (painel) painel.classList.toggle('hidden');
+      });
+    });
 
     lista.querySelectorAll('.rel-encerrar').forEach(btn => {
       btn.addEventListener('click', () => {
