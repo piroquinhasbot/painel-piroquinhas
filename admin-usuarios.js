@@ -4,18 +4,18 @@
    warns/bans, relacionamentos, pets
    ========================================================= */
 
-const _c  = () => window.adminCore;
-const API          = () => _c().API;
-const $            = id   => _c().$(id);
-const show         = id   => _c().show(id);
-const hide         = id   => _c().hide(id);
-const escapeHtml   = s    => _c().escapeHtml(s);
-const adminHeaders = ()   => _c().adminHeaders();
-const toast        = (m,t)=> _c().toast(m,t);
-const abrirModal   = (ti,ms,cb)=> _c().abrirModal(ti,ms,cb);
-const formatNum    = n    => _c().formatNum(n);
-const horaAgora    = ()   => _c().horaAgora();
-const nomeGrupoPorJid = jid => _c().nomeGrupoPorJid(jid);
+const _cu  = () => window.adminCore;
+const API          = () => _cu().API;
+const $            = id   => _cu().$(id);
+const show         = id   => _cu().show(id);
+const hide         = id   => _cu().hide(id);
+const escapeHtml   = s    => _cu().escapeHtml(s);
+const adminHeaders = ()   => _cu().adminHeaders();
+const toast        = (m,t)=> _cu().toast(m,t);
+const abrirModal   = (ti,ms,cb)=> _cu().abrirModal(ti,ms,cb);
+const formatNum    = n    => _cu().formatNum(n);
+const horaAgora    = ()   => _cu().horaAgora();
+const nomeGrupoPorJid = jid => _cu().nomeGrupoPorJid(jid);
 
 /* ═══════════════════════════════════════════════════════════
    WARNS / BANS
