@@ -1,311 +1,172 @@
 /* =========================================================
-   admin-core.js — Piroquinhas Bot Admin
-   Utilitários, login, sidebar, navegação, modal, toast
+   admin-economia.js — Piroquinhas Bot Admin
+   Economia global e Logs em tempo real
    ========================================================= */
 
-const API = 'https://whatsappbot2-s3dx.onrender.com/api';
+const _ce  = () => window.adminCore;
+const API          = () => _ce().API;
+const $            = id   => _ce().$(id);
+const show         = id   => _ce().show(id);
+const hide         = id   => _ce().hide(id);
+const escapeHtml   = s    => _ce().escapeHtml(s);
+const adminHeaders = ()   => _ce().adminHeaders();
+const toast        = (m,t)=> _ce().toast(m,t);
+const formatNum    = n    => _ce().formatNum(n);
+const nomeGrupoPorJid = jid => _ce().nomeGrupoPorJid(jid);
 
-/* ── Utilitários básicos ─────────────────────────────────── */
-const $ = id => document.getElementById(id);
-const show = id => $(id)?.classList.remove('hidden');
-const hide = id => $(id)?.classList.add('hidden');
+/* ═══════════════════════════════════════════════════════════
+   ECONOMIA
+═══════════════════════════════════════════════════════════ */
+let economiaCarregada = false;
 
-function escapeHtml(str) {
-  return String(str ?? '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-}
-
-function adminKey()     { return sessionStorage.getItem('piro_admin_key'); }
-function adminHeaders() { return { 'x-admin-key': adminKey(), 'Content-Type': 'application/json' }; }
-
-function horaAgora() {
-  return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatNum(n) {
-  return Number(n || 0).toLocaleString('pt-BR');
-}
-
-/* ── Nomes customizados (localStorage como cache local) ───── */
-function nomesCustomLocais() {
-  try { return JSON.parse(localStorage.getItem('piro_nomes_grupo') || '{}'); }
-  catch { return {}; }
-}
-function salvarNomeCustomLocal(jid, nome) {
-  const atual = nomesCustomLocais();
-  atual[jid] = nome;
-  localStorage.setItem('piro_nomes_grupo', JSON.stringify(atual));
-}
-function nomeExibicao(grupo) {
-  const local = nomesCustomLocais()[grupo.idGrupo];
-  return grupo.nomeCustom || local || grupo.nome || 'Grupo sem nome';
-}
-function nomeGrupoPorJid(jid) {
-  const g = window.gruposCache?.find(x => x.idGrupo === jid);
-  return g ? nomeExibicao(g) : jid;
-}
-
-/* ── Toast ───────────────────────────────────────────────── */
-let toastTimer;
-function toast(msg, tipo = 'ok') {
-  const t = $('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.className = `toast toast--${tipo}`;
-  void t.offsetWidth;
-  t.classList.add('toast--show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('toast--show'), 2800);
-}
-
-/* ── Modal de confirmação ────────────────────────────────── */
-let modalCallback = null;
-
-function abrirModal(titulo, msg, cb) {
-  $('modal-titulo').textContent = titulo;
-  $('modal-msg').textContent    = msg;
-  modalCallback = cb;
-  show('modal-overlay');
-}
-
-$('modal-cancelar').addEventListener('click',  () => hide('modal-overlay'));
-$('modal-confirmar').addEventListener('click', () => {
-  hide('modal-overlay');
-  if (modalCallback) modalCallback();
-});
-$('modal-overlay').addEventListener('click', e => {
-  if (e.target.id === 'modal-overlay') hide('modal-overlay');
-});
-
-/* ── Modal renomear grupo ────────────────────────────────── */
-let renomearJidAtual = null;
-
-function abrirModalRenomear(jid, nomeAtual) {
-  renomearJidAtual = jid;
-  $('renomear-jid-ref').textContent = jid;
-  $('renomear-input').value = (nomeAtual === jid || nomeAtual === 'Grupo sem nome') ? '' : nomeAtual;
-  show('modal-renomear-overlay');
-  setTimeout(() => $('renomear-input').focus(), 50);
-}
-
-function fecharModalRenomear() {
-  hide('modal-renomear-overlay');
-  renomearJidAtual = null;
-}
-
-$('renomear-cancelar').addEventListener('click', fecharModalRenomear);
-$('modal-renomear-overlay').addEventListener('click', e => {
-  if (e.target.id === 'modal-renomear-overlay') fecharModalRenomear();
-});
-$('renomear-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') $('renomear-salvar').click();
-});
-
-$('renomear-salvar').addEventListener('click', async () => {
-  if (!renomearJidAtual) return;
-  const novoNome = $('renomear-input').value.trim();
-  if (!novoNome) { toast('Digite um nome válido.', 'erro'); return; }
-
-  const jid = renomearJidAtual;
-  $('renomear-salvar').disabled = true;
-
-  salvarNomeCustomLocal(jid, novoNome);
+window.carregarEconomia = async function() {
+  if (economiaCarregada) return;
+  hide('economia-conteudo');
+  show('economia-loading');
 
   try {
-    const res = await fetch(`${API}/admin/grupo/${encodeURIComponent(jid)}/nome`, {
-      method: 'PATCH',
-      headers: adminHeaders(),
-      body: JSON.stringify({ nome: novoNome })
-    });
+    const res = await fetch(`${API()}/admin/economia`, { headers: adminHeaders() });
     if (!res.ok) throw new Error();
-    toast('Nome salvo no banco de dados!');
-  } catch {
-    toast('Nome salvo localmente (erro ao persistir no backend).', 'erro');
+    const data = await res.json();
+
+    $('eco-total-gold').textContent     = formatNum(data.totalGold);
+    $('eco-total-xp').textContent       = formatNum(data.totalXp);
+    $('eco-media-gold').textContent     = formatNum(data.mediaGold);
+    $('eco-total-usuarios').textContent = formatNum(data.totalUsuariosComGold);
+
+    renderEcoRank($('eco-rank-gold'),  data.topGold,  'gold', m => `🪙 ${formatNum(m.gold)}`);
+    renderEcoRank($('eco-rank-xp'),   data.topXp,    'xp',   m => `⚡ ${formatNum(m.xp)} XP`);
+    renderEcoRank($('eco-rank-msgs'),  data.topMsgs,  'msg',  m => `💬 ${formatNum(m.mensagens)}`);
+
+    hide('economia-loading');
+    show('economia-conteudo');
+    economiaCarregada = true;
+  } catch (err) {
+    console.error('[Admin] Erro ao carregar economia:', err);
+    economiaCarregada = false; // ← permite tentar novamente
+    const el = $('economia-loading');
+    if (el) {
+      el.innerHTML = '<div class="estado-erro">Erro ao carregar economia. <button class="link-btn" onclick="window.carregarEconomia()">Tentar novamente</button></div>';
+      el.classList.remove('estado-loading');
+    }
+    show('economia-loading');
   }
+};
 
-  const grupo = window.gruposCache?.find(g => g.idGrupo === jid);
-  if (grupo) grupo.nomeCustom = novoNome;
+function renderEcoRank(container, lista, tipo, valorFn) {
+  if (!container) return;
+  if (!lista?.length) { container.innerHTML = '<div class="dash-vazio">Sem dados.</div>'; return; }
+  container.innerHTML = lista.map((m, i) => {
+    const posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : '';
+    return `
+    <div class="eco-rank-item">
+      <span class="eco-rank-pos ${posClass}">${i+1}</span>
+      <div style="flex:1;overflow:hidden;">
+        <div class="eco-rank-nome">${escapeHtml(m.nome || m.idWhatsApp?.split('@')[0] || '—')}</div>
+        ${m.nomeGrupo ? `<div class="eco-rank-grupo">${escapeHtml(m.nomeGrupo)}</div>` : ''}
+      </div>
+      <span class="eco-rank-val ${tipo}">${valorFn(m)}</span>
+    </div>`;
+  }).join('');
+}
 
-  window.atualizarListaGrupos?.();
-  window.popularSelectMensagens?.(window.gruposCache);
-  window.atualizarDashboard?.();
-  fecharModalRenomear();
-  $('renomear-salvar').disabled = false;
+$('btn-refresh-economia')?.addEventListener('click', () => {
+  economiaCarregada = false;
+  window.carregarEconomia();
 });
 
-/* ── ESC fecha modais ────────────────────────────────────── */
-document.addEventListener('keydown', e => {
-  if (e.key !== 'Escape') return;
-  if (!$('modal-overlay')?.classList.contains('hidden'))          hide('modal-overlay');
-  if (!$('modal-renomear-overlay')?.classList.contains('hidden')) fecharModalRenomear();
-});
+/* ═══════════════════════════════════════════════════════════
+   LOGS
+═══════════════════════════════════════════════════════════ */
+let logsCache      = [];
+let logsPagina     = 1;
+const LOGS_POR_PAG = 50;
+window.logsLiveTimer = null;
 
-/* ── Login ───────────────────────────────────────────────── */
-$('btn-toggle-senha').addEventListener('click', () => {
-  const campo = $('admin-key');
-  const visivel = campo.type === 'text';
-  campo.type = visivel ? 'password' : 'text';
-  $('btn-toggle-senha').textContent = visivel ? '👁' : '🙈';
-});
+window.carregarLogs = async function(pagina = 1) {
+  logsPagina = pagina;
+  hide('logs-lista');
+  hide('logs-vazio');
+  hide('logs-erro');
+  hide('logs-paginacao');
+  show('logs-loading');
 
-$('btn-login').addEventListener('click', async () => {
-  const chave = $('admin-key').value.trim();
-  if (!chave) return;
-  $('btn-login').disabled = true;
-  $('btn-login').textContent = 'Verificando...';
-  hide('login-erro');
+  const tipo  = $('logs-tipo-filtro')?.value || '';
+  const busca = $('logs-busca')?.value.trim() || '';
+  const qs    = new URLSearchParams({ pagina, limite: LOGS_POR_PAG });
+  if (tipo)  qs.set('tipo',  tipo);
+  if (busca) qs.set('busca', busca);
+
   try {
-    const res = await fetch(`${API}/admin/verify`, { headers: { 'x-admin-key': chave } });
+    const res = await fetch(`${API()}/admin/logs?${qs}`, { headers: adminHeaders() });
     if (!res.ok) throw new Error();
-    sessionStorage.setItem('piro_admin_key', chave);
-    hide('tela-login');
-    show('painel');
-    iniciarPainel();
+    const { logs, total } = await res.json();
+    logsCache = logs || [];
+    renderLogs(logsCache, total, pagina);
   } catch {
-    show('login-erro');
-  } finally {
-    $('btn-login').disabled = false;
-    $('btn-login').textContent = 'Entrar';
+    hide('logs-loading');
+    show('logs-erro');
   }
+};
+
+function renderLogs(logs, total = 0, pagina = 1) {
+  hide('logs-loading');
+  const badge = $('logs-contagem');
+  if (badge) badge.textContent = total ? `(${total})` : '';
+
+  if (!logs.length) { show('logs-vazio'); return; }
+
+  const lista = $('logs-lista');
+  lista.innerHTML = logs.map(l => {
+    const tipoClass = `tipo-${l.tipo || 'info'}`;
+    const hora = l.timestamp
+      ? new Date(l.timestamp).toLocaleString('pt-BR', {
+          day:'2-digit', month:'2-digit',
+          hour:'2-digit', minute:'2-digit', second:'2-digit'
+        })
+      : '—';
+    return `
+    <div class="log-item ${tipoClass}">
+      <span class="log-hora">${hora}</span>
+      <div class="log-corpo">
+        <span class="log-cmd">${escapeHtml(l.comando || l.mensagem || '—')}</span>
+        ${l.detalhe ? `<span class="log-detalhe">${escapeHtml(l.detalhe)}</span>` : ''}
+        <div class="log-meta">
+          ${l.tipo    ? `<span class="log-badge ${l.tipo}">${l.tipo.toUpperCase()}</span>` : ''}
+          ${l.usuario ? `<span class="log-badge">👤 ${escapeHtml(l.usuario)}</span>` : ''}
+          ${l.grupo   ? `<span class="log-badge">👥 ${escapeHtml(nomeGrupoPorJid(l.grupo) || l.grupo)}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  show('logs-lista');
+
+  const totalPags = Math.ceil(total / LOGS_POR_PAG);
+  if (totalPags > 1) {
+    $('logs-pagina-info').textContent = `Pág ${pagina} / ${totalPags}`;
+    $('logs-prev').disabled = pagina <= 1;
+    $('logs-next').disabled = pagina >= totalPags;
+    show('logs-paginacao');
+  }
+}
+
+$('btn-refresh-logs')?.addEventListener('click',  () => window.carregarLogs(1));
+$('btn-retry-logs')?.addEventListener('click',    () => window.carregarLogs(1));
+$('logs-tipo-filtro')?.addEventListener('change', () => window.carregarLogs(1));
+
+let logsBuscaTimer;
+$('logs-busca')?.addEventListener('input', () => {
+  clearTimeout(logsBuscaTimer);
+  logsBuscaTimer = setTimeout(() => window.carregarLogs(1), 400);
 });
 
-$('admin-key').addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-login').click(); });
+$('logs-prev')?.addEventListener('click', () => window.carregarLogs(logsPagina - 1));
+$('logs-next')?.addEventListener('click', () => window.carregarLogs(logsPagina + 1));
 
-/* ── Logout ──────────────────────────────────────────────── */
-$('btn-logout').addEventListener('click', () => {
-  sessionStorage.removeItem('piro_admin_key');
-  if (window.autosyncTimer) clearInterval(window.autosyncTimer);
+$('chk-logs-live')?.addEventListener('change', e => {
   if (window.logsLiveTimer) clearInterval(window.logsLiveTimer);
-  hide('painel');
-  show('tela-login');
-  $('admin-key').value = '';
-});
-
-/* ── Sidebar ─────────────────────────────────────────────── */
-$('btn-abrir-sidebar').addEventListener('click', () => {
-  $('sidebar').classList.add('aberta');
-  $('sidebar-overlay').classList.remove('hidden');
-});
-$('btn-fechar-sidebar').addEventListener('click', fecharSidebar);
-$('sidebar-overlay').addEventListener('click', fecharSidebar);
-
-function fecharSidebar() {
-  $('sidebar').classList.remove('aberta');
-  $('sidebar-overlay').classList.add('hidden');
-}
-
-/* ── Navegação ───────────────────────────────────────────── */
-const ABAS_VALIDAS = ['dashboard','grupos','mensagens','warns','usuarios','economia','logs','broadcast','relacionamentos','pets'];
-const titulosAbas  = {
-  dashboard:'Dashboard', grupos:'Grupos', mensagens:'Mensagens',
-  warns:'Warns / Bans', usuarios:'Usuários', economia:'Economia',
-  logs:'Logs', broadcast:'Broadcast', relacionamentos:'Relacionamentos', pets:'Pets'
-};
-
-function ativarAba(aba) {
-  if (!ABAS_VALIDAS.includes(aba)) aba = 'dashboard';
-  document.querySelectorAll('.aba-conteudo').forEach(el => el.classList.add('hidden'));
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.aba').forEach(el => el.classList.remove('active'));
-  show(`aba-${aba}`);
-  document.querySelector(`.nav-item[data-aba="${aba}"]`)?.classList.add('active');
-  document.querySelector(`.aba[data-aba="${aba}"]`)?.classList.add('active');
-  $('topbar-titulo').textContent = titulosAbas[aba] || '';
-  if (location.hash !== `#${aba}`) history.replaceState(null, '', `#${aba}`);
-  fecharSidebar();
-
-  if (aba === 'economia')       window.carregarEconomia?.();
-  if (aba === 'logs')           window.carregarLogs?.();
-  if (aba === 'broadcast')      window.iniciarBroadcast?.();
-  if (aba === 'relacionamentos') window.carregarRelacionamentos?.();
-  if (aba === 'pets')           window.carregarPets?.();
-}
-
-document.querySelectorAll('.nav-item').forEach(el => {
-  el.addEventListener('click', e => { e.preventDefault(); ativarAba(el.dataset.aba); });
-});
-document.querySelectorAll('.aba').forEach(el => {
-  el.addEventListener('click', () => ativarAba(el.dataset.aba));
-});
-
-/* ── Dashboard ───────────────────────────────────────────── */
-function atualizarDashboard() {
-  const gruposCache = window.gruposCache || [];
-  const warnsCache  = window.warnsCache  || [];
-
-  const totalGrupos   = gruposCache.length;
-  const totalMembros  = gruposCache.reduce((s, g) => s + (g.membros  || 0), 0);
-  const totalXp       = gruposCache.reduce((s, g) => s + (g.xpTotal  || 0), 0);
-  const gruposXpAtivo = gruposCache.filter(g => g.config?.xpAtivo !== false).length;
-  const totalWarnUsers = warnsCache.length;
-  const totalBanidos   = warnsCache.filter(u => u.banido).length;
-
-  $('dash-total-grupos').textContent    = totalGrupos;
-  $('dash-total-membros').textContent   = formatNum(totalMembros);
-  $('dash-total-xp').textContent        = formatNum(totalXp);
-  $('dash-total-warns').textContent     = totalWarnUsers;
-  $('dash-total-banidos').textContent   = totalBanidos;
-  $('dash-grupos-xp-ativo').textContent = `${gruposXpAtivo}/${totalGrupos}`;
-
-  function ordenarGrupos(lista, modo) {
-    const c = [...lista];
-    if (modo === 'xp') c.sort((a, b) => (b.xpTotal || 0) - (a.xpTotal || 0));
-    return c;
-  }
-
-  const top5 = ordenarGrupos(gruposCache, 'xp').slice(0, 5);
-  $('dash-top-grupos').innerHTML = top5.length
-    ? top5.map((g, i) => `
-      <div class="dash-top-grupo">
-        <span class="dash-top-pos">${i + 1}</span>
-        <span class="dash-top-nome">${escapeHtml(nomeExibicao(g))}</span>
-        <span class="dash-top-xp">${formatNum(g.xpTotal || 0)} XP</span>
-      </div>`).join('')
-    : '<p class="dash-vazio">Nenhum grupo encontrado ainda.</p>';
-
-  hide('dash-loading');
-  show('dash-conteudo');
-}
-
-$('btn-refresh-dashboard').addEventListener('click', () => {
-  window.carregarGrupos?.();
-  window.carregarWarnUsers?.();
-});
-
-/* ── Auto-atualização ────────────────────────────────────── */
-window.autosyncTimer = null;
-
-function aplicarAutosync(ativo) {
-  if (window.autosyncTimer) clearInterval(window.autosyncTimer);
-  window.autosyncTimer = ativo
-    ? setInterval(() => { window.carregarGrupos?.(); window.carregarWarnUsers?.(); }, 60000)
+  window.logsLiveTimer = e.target.checked
+    ? setInterval(() => window.carregarLogs(1), 10000)
     : null;
-  localStorage.setItem('piro_autosync', ativo ? '1' : '0');
-}
-
-$('chk-autosync').addEventListener('change', e => aplicarAutosync(e.target.checked));
-
-/* ── Inicialização ───────────────────────────────────────── */
-function iniciarPainel() {
-  const abaInicial = location.hash.replace('#', '');
-  ativarAba(ABAS_VALIDAS.includes(abaInicial) ? abaInicial : 'dashboard');
-  window.carregarGrupos?.();
-  window.carregarWarnUsers?.();
-  $('chk-autosync').checked = localStorage.getItem('piro_autosync') === '1';
-  if ($('chk-autosync').checked) aplicarAutosync(true);
-}
-
-if (adminKey()) {
-  hide('tela-login');
-  show('painel');
-  iniciarPainel();
-}
-
-/* ── Exports para outros módulos ─────────────────────────── */
-window.adminCore = {
-  API, $, show, hide, escapeHtml, adminKey, adminHeaders,
-  horaAgora, formatNum, toast, abrirModal, abrirModalRenomear,
-  nomeExibicao, nomeGrupoPorJid, salvarNomeCustomLocal, nomesCustomLocais,
-  atualizarDashboard
-};
+});
