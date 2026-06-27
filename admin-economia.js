@@ -2,6 +2,8 @@
    admin-economia.js — Piroquinhas Bot Admin
    Economia global e Logs em tempo real
    ========================================================= */
+(function() {
+'use strict';
 
 const _ce  = () => window.adminCore;
 const API          = () => _ce().API;
@@ -170,3 +172,5 @@ $('chk-logs-live')?.addEventListener('change', e => {
     ? setInterval(() => window.carregarLogs(1), 10000)
     : null;
 });
+
+})(); // fim IIFE admin-economia.js
