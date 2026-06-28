@@ -721,23 +721,29 @@ window.carregarPets = async function() {
       const dono   = escapeHtml(p.nomeDono || p.idDono?.split('@')[0] || '—');
       const nome   = escapeHtml(p.nome || p.tipo || 'Pet');
       const tipo   = escapeHtml(p.tipo || '?');
-      const hp     = p.hp ?? '?';
-      const maxHp  = p.maxHp ?? 100;
-      const fome   = p.fome ?? '?';
-      const grupo  = escapeHtml(p.nomeGrupo || p.idGrupo || '—');
-      const hpPct  = typeof hp === 'number' ? Math.round((hp / maxHp) * 100) : 0;
-      const hpCor  = hpPct > 60 ? 'var(--mint)' : hpPct > 30 ? 'var(--amarelo)' : 'var(--vermelho)';
+      const hp        = p.hp ?? 100;
+      const maxHp     = p.maxHp ?? 100;
+      const fome      = p.fome ?? 0;
+      const grupo     = escapeHtml(p.nomeGrupo || p.idGrupo || '—');
+      const hpPct     = Math.round((hp / maxHp) * 100);
+      const hpCor     = hpPct > 60 ? 'var(--mint)' : hpPct > 30 ? 'var(--amarelo)' : 'var(--vermelho)';
+      const happiness = p.happiness ?? 0;
+      const xp        = formatNum(p.xp ?? 0);
+      const nivel     = p.nivel ?? 1;
+      const rarity    = escapeHtml(p.rarity || '?');
 
       return `
       <div class="pet-card">
         <div class="pet-info">
-          <span class="pet-nome">${nome} <span style="color:var(--muted);font-size:.78rem;">(${tipo})</span></span>
+          <span class="pet-nome">${nome} <span style="color:var(--muted);font-size:.78rem;">(${tipo} · ${rarity})</span></span>
           <span class="pet-dono">Dono: ${dono} · Grupo: ${grupo}</span>
           <div class="pet-stats">
-            <span style="font-size:.78rem;color:var(--muted);">HP:</span>
+            <span style="font-size:.78rem;color:var(--muted);">Energia:</span>
             <div class="pet-hp-bar"><div style="width:${hpPct}%;background:${hpCor};height:100%;border-radius:999px;transition:width .3s;"></div></div>
-            <span style="font-size:.76rem;color:${hpCor};">${hp}/${maxHp}</span>
-            <span style="font-size:.78rem;color:var(--muted);margin-left:.5rem;">Fome: ${fome}</span>
+            <span style="font-size:.76rem;color:${hpCor};">${hp}%</span>
+            <span style="font-size:.78rem;color:var(--muted);margin-left:.5rem;">Fome: ${fome}%</span>
+            <span style="font-size:.78rem;color:var(--muted);margin-left:.5rem;">😊 ${happiness}%</span>
+            <span style="font-size:.78rem;color:var(--mint);margin-left:.5rem;">Lv${nivel} · ${xp} XP</span>
           </div>
         </div>
         <div class="pet-acoes">
