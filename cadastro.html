@@ -273,7 +273,11 @@
         }
 
         if (res.status === 409) {
-          showMsg('Este nome de usuário já está em uso. Escolha outro.');
+          if (data.error?.includes('email')) {
+            showMsg('Este email já está sendo usado por outra conta.');
+          } else {
+            showMsg('Este nome de usuário já está em uso. Escolha outro.');
+          }
           return;
         }
 
