@@ -418,10 +418,14 @@
     if ($('modal-pos'))  $('modal-pos').textContent  = `#${pos}`;
 
     const idRaw = user.idWhatsApp || '';
-    const telefoneExibir = idRaw.replace('@s.whatsapp.net', '').replace('@lid', '').replace(/\D/g, '');
     const telEl = $('modal-telefone');
     if (telEl) {
-      telEl.textContent = telefoneExibir ? `+${telefoneExibir}` : '';
+      if (idRaw.endsWith('@lid')) {
+        telEl.textContent = '';
+      } else {
+        const telefoneExibir = idRaw.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+        telEl.textContent = telefoneExibir ? `+${telefoneExibir}` : '';
+      }
     }
 
     if ($('modal-grupos-count')) $('modal-grupos-count').textContent = '…';
