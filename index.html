@@ -414,8 +414,7 @@
     if ($('modal-xp'))    $('modal-xp').textContent    = fmtXP(user.xp ?? 0);
     if ($('modal-msgs'))  $('modal-msgs').textContent  = fmtNum(user.mensagens ?? 0);
     if ($('modal-gold'))  $('modal-gold').textContent  = fmtNum(user.gold ?? 0);
-
-    if ($('modal-pos'))  $('modal-pos').textContent  = `#${pos}`;
+    if ($('modal-pos'))   $('modal-pos').textContent   = `#${pos}`;
 
     const idRaw = user.idWhatsApp || '';
     const telEl = $('modal-telefone');
@@ -440,34 +439,48 @@
     }
 
     modalOverlay?.classList.add('open');
-  document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
 
-  // Busca grupos do usuário
-  const gruposEl = $('modal-grupos');
-  const gruposListEl = $('modal-grupos-list');
-  if (gruposEl && gruposListEl && user.idWhatsApp) {
-    gruposEl.style.display = 'none';
-    gruposListEl.innerHTML = '';
-    const jwt = sessionStorage.getItem('piro_jwt');
-    if (!jwt) return;
-    fetch(`${API}/user/grupos/${encodeURIComponent(user.idWhatsApp)}`, {
-      headers: { 'Authorization': `Bearer ${jwt}` }
-    })
-      .then(r => r.json())
-      .then(data => {
-        if (!data.grupos?.length) return;
-        gruposEl.style.display = 'block';
-        if ($('modal-grupos-count')) $('modal-grupos-count').textContent = data.grupos.length;
-        gruposListEl.innerHTML = data.grupos.map(g => `
-          <div class="modal-grupo-item">
-            <span class="modal-grupo-nome">${escapeHtml(g.nome)}</span>
-            <span class="modal-grupo-gold">${fmtNum(g.gold)} 💰</span>
-          </div>
-        `).join('');
+    const gruposEl    = $('modal-grupos');
+    const gruposListEl = $('modal-grupos-list');
+    if (gruposEl && gruposListEl && user.idWhatsApp) {
+      gruposEl.style.display = 'none';
+      gruposListEl.innerHTML = '';
+      const jwt = sessionStorage.getItem('piro_jwt') || localStorage.getItem('jwt');
+      if (!jwt) return;
+      fetch(`${API}/user/grupos/${encodeURIComponent(user.idWhatsApp)}`, {
+        headers: { 'Authorization': `Bearer ${jwt}` }
       })
-      .catch(() => {});
+        .then(r => r.json())
+        .then(data => {
+          if (!data.grupos?.length) {
+            if ($('modal-grupos-count')) $('modal-grupos-count').textContent = '0';
+            return;
+          }
+          gruposEl.style.display = 'block';
+          if ($('modal-grupos-count')) $('modal-grupos-count').textContent = data.grupos.length;
+
+          if (telEl && !telEl.textContent) {
+            fetch(`${API}/user/telefone/${encodeURIComponent(user.idWhatsApp)}`)
+              .then(r => r.json())
+              .then(data => {
+                if (data.telefone) telEl.textContent = `+${data.telefone}`;
+              })
+              .catch(() => {});
+          }
+
+          gruposListEl.innerHTML = data.grupos.map(g => `
+            <div class="modal-grupo-item">
+              <span class="modal-grupo-nome">${escapeHtml(g.nome)}</span>
+              <span class="modal-grupo-gold">${fmtNum(g.gold)} 💰</span>
+            </div>
+          `).join('');
+        })
+        .catch(() => {
+          if ($('modal-grupos-count')) $('modal-grupos-count').textContent = '—';
+        });
+    }
   }
-}
 
   function closeModal() {
     modalOverlay?.classList.remove('open');
