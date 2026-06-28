@@ -369,6 +369,8 @@
 
         <div class="bulk-bar">
           <span class="bulk-bar-label">Ações em massa:</span>
+          <button class="bulk-btn" data-bulk="botAtivo:true">🟢 Ligar Bot em todos</button>
+          <button class="bulk-btn" data-bulk="botAtivo:false">🔴 Desligar Bot em todos</button>
           <button class="bulk-btn" data-bulk="xpAtivo:true">Ativar XP em todos</button>
           <button class="bulk-btn" data-bulk="xpAtivo:false">Desativar XP em todos</button>
           <button class="bulk-btn" data-bulk="antiLink:true">Ativar Anti-Link em todos</button>
@@ -1080,6 +1082,13 @@ const titulosAbas  = {
                 <button class="btn-ver-gold" data-jid="${jidEsc}">🪙 Ver Gold</button>
               </div>
               <div class="grupo-toggles">
+                <label class="toggle-wrap">
+                  <span class="toggle-label">Bot</span>
+                  <button class="toggle ${g.config?.botAtivo !== false ? 'on' : ''}"
+                    data-jid="${jidEsc}" data-campo="botAtivo"
+                    aria-pressed="${g.config?.botAtivo !== false}"
+                    aria-label="Toggle Bot"></button>
+                </label>
                 <label class="toggle-wrap">
                   <span class="toggle-label">XP</span>
                   <button class="toggle ${g.config?.xpAtivo !== false ? 'on' : ''}"
