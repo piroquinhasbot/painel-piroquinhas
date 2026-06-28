@@ -174,14 +174,14 @@
       <div id="rel-conteudo"></div>
     </section>
 
-    <!-- INVENTÁRIO -->
-    <section class="secao">
-      <h2 class="secao-titulo">🎒 Inventário</h2>
-      <div id="inventario-grid" class="inventario-grid"></div>
-      <div id="inventario-vazio" class="inventario-vazio hidden">
-        <p>🪣 Nada por aqui ainda.<br/>Participe do grupo para ganhar itens!</p>
-      </div>
-    </section>
+    <!-- PET -->
+<section class="secao">
+  <h2 class="secao-titulo">🐾 Meu Pet</h2>
+  <div id="pet-card"></div>
+  <div id="pet-vazio" class="inventario-vazio hidden">
+    <p>🥚 Você ainda não tem um pet.<br/>Use <strong>!capturar</strong> no grupo para conseguir um!</p>
+  </div>
+</section>
 
   </main>
 
@@ -379,38 +379,60 @@
         </div>`;
     }
 
-    function renderInventario(inventory) {
-  if (!inventory || typeof inventory !== 'object') {
-    show('inventario-vazio');
+    function renderPet(pet) {
+  const card  = $('pet-card');
+  const vazio = $('pet-vazio');
+
+  if (!pet || (!pet.nome && !pet.name)) {
+    show('pet-vazio');
     return;
   }
 
-  const entries = Object.entries(inventory)
-    .map(([chave, val]) => {
-      // aceita number direto, ou objeto com campo quantidade/amount/qty
-      const qtd = typeof val === 'number'
-        ? val
-        : typeof val === 'object' && val !== null
-          ? Number(val.quantidade ?? val.amount ?? val.qty ?? val.count ?? 1)
-          : Number(val);
-      return [chave, qtd];
-    })
-    .filter(([, qtd]) => Number.isFinite(qtd) && qtd > 0);
+  hide('pet-vazio');
 
-  if (entries.length === 0) {
-    show('inventario-vazio');
-    return;
-  }
+  const nomePet = pet.nome ?? pet.name;
 
-  hide('inventario-vazio');
-  $('inventario-grid').innerHTML = entries
-    .sort((a, b) => b[1] - a[1])
-    .map(([chave, qtd]) => `
-      <div class="inv-item">
-        <span class="inv-nome">${fmtItemNome(chave)}</span>
-        <span class="inv-qtd">×${fmtNum(qtd)}</span>
+  const barraHtml = (label, val, max, cor) => {
+    const pct = Math.min(100, Math.max(0, Math.round((val / max) * 100)));
+    return `
+      <div class="pet-stat-row">
+        <span class="pet-stat-label">${label}</span>
+        <div class="pet-barra-outer">
+          <div class="pet-barra-inner" style="width:${pct}%;background:${cor};"></div>
+        </div>
+        <span class="pet-stat-num">${val}/${max}</span>
+      </div>`;
+  };
+
+  const rarityColor = {
+    comum:    '#a0a3b4',
+    incomum:  '#00ffb0',
+    raro:     '#60a5ff',
+    epico:    '#b855ff',
+    lendario: '#ffd060',
+  };
+  const cor = rarityColor[(pet.rarity || '').toLowerCase()] || '#a0a3b4';
+
+  card.innerHTML = `
+    <div class="pet-card-wrap">
+      <div class="pet-avatar" style="border-color:${cor};box-shadow:0 0 18px ${cor}33;">
+        ${pet.type || '🐾'}
       </div>
-    `).join('');
+      <div class="pet-info">
+        <div class="pet-nome">${nomePet}</div>
+        <div class="pet-meta">
+          <span class="pet-badge" style="color:${cor};border-color:${cor}33;background:${cor}11;">
+            ${(pet.rarity || 'Comum')}
+          </span>
+          <span class="pet-nivel">Nível ${pet.level ?? 1}</span>
+        </div>
+        <div class="pet-barras">
+          ${barraHtml('❤️ Vida',     pet.energy    ?? 100, 100, '#ff6482')}
+          ${barraHtml('🍖 Fome',     pet.fullness  ?? 100, 100, '#ffd060')}
+          ${barraHtml('😊 Humor',    pet.happiness ?? 100, 100, '#00ffb0')}
+        </div>
+      </div>
+    </div>`;
 }
 
     function renderGrupos(grupos) {
@@ -491,12 +513,12 @@
       renderChartAtividade(u.atividadeSemanal);
       $('act-mensagens').textContent = fmtNum(u.mensagens);
       $('act-quiz').textContent      = fmtNum(u.quizPoints);
-      $('act-pet').textContent       = u.pet?.nome
-        ? `${u.pet.nome} nv${u.pet.level ?? 1}`
+      $('act-pet').textContent       = (u.pet?.nome ?? u.pet?.name)
+        ? `${u.pet.nome ?? u.pet.name} nv${u.pet.level ?? 1}`
         : 'Nenhum';
       renderGrupos(u.grupos);
-      renderRelacionamento(u);
-      renderInventario(u.inventory);
+renderRelacionamento(u);
+renderPet(u.pet);
     }
 
     /* ════════════════════════════════════════
@@ -535,6 +557,7 @@
           jwtSalvo = data.jwt;
           if (!jwtSalvo) throw new Error('Resposta inesperada da API.');
           sessionStorage.setItem('piro_jwt', jwtSalvo);
+localStorage.setItem('jwt', jwtSalvo);
         }
 
         // ── Busca dados do usuário
