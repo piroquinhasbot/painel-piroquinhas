@@ -2401,11 +2401,10 @@ $('btn-calc-xp-level').addEventListener('click', () => {
       const erroEl = document.getElementById('contas-lock-erro');
       if (!senha) return;
       try {
-        const res = await fetch(`${API}/admin/verify`, { headers: { 'x-admin-key': senha } });
+        const res = await fetch(`${API}/admin/verify-contas`, { headers: { 'x-admin-key': senha } });
         if (!res.ok) { erroEl.classList.remove('hidden'); return; }
         erroEl.classList.add('hidden');
         contasDesbloqueadas = true;
-        sessionStorage.setItem('piro_admin_key', senha);
         document.getElementById('contas-lock').style.display  = 'none';
         document.getElementById('contas-painel').classList.remove('hidden');
         carregarContas();
