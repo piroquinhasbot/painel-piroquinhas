@@ -420,7 +420,7 @@
     const telEl = $('modal-telefone');
     if (telEl) {
       if (idRaw.endsWith('@lid')) {
-        telEl.textContent = '';
+        telEl.textContent = 'Carregando...';
       } else {
         const telefoneExibir = idRaw.replace('@s.whatsapp.net', '').replace(/\D/g, '');
         telEl.textContent = telefoneExibir ? `+${telefoneExibir}` : '';
@@ -447,7 +447,20 @@
       gruposEl.style.display = 'none';
       gruposListEl.innerHTML = '';
       const jwt = sessionStorage.getItem('piro_jwt') || localStorage.getItem('jwt');
-      if (!jwt) return;
+
+      // Resolve telefone de @lid independente do JWT
+      if (telEl && idRaw.endsWith('@lid')) {
+        telEl.textContent = 'Carregando...';
+        fetch(`${API}/user/telefone/${encodeURIComponent(idRaw)}`)
+          .then(r => r.json())
+          .then(d => { if (d.telefone) telEl.textContent = `+${d.telefone}`; })
+          .catch(() => { telEl.textContent = ''; });
+      }
+
+      if (!jwt) {
+        if ($('modal-grupos-count')) $('modal-grupos-count').textContent = '—';
+        return;
+      }
       fetch(`${API}/user/grupos/${encodeURIComponent(user.idWhatsApp)}`, {
         headers: { 'Authorization': `Bearer ${jwt}` }
       })
@@ -459,15 +472,6 @@
           }
           gruposEl.style.display = 'block';
           if ($('modal-grupos-count')) $('modal-grupos-count').textContent = data.grupos.length;
-
-          if (telEl && !telEl.textContent) {
-            fetch(`${API}/user/telefone/${encodeURIComponent(user.idWhatsApp)}`)
-              .then(r => r.json())
-              .then(data => {
-                if (data.telefone) telEl.textContent = `+${data.telefone}`;
-              })
-              .catch(() => {});
-          }
 
           gruposListEl.innerHTML = data.grupos.map(g => `
             <div class="modal-grupo-item">
