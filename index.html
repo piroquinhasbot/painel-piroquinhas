@@ -197,30 +197,38 @@
     <div class="modal-header">
       <div class="modal-avatar" id="modal-avatar"></div>
       <div class="modal-user-info">
-        <div class="modal-name" id="modal-name">—</div>
-        <div class="modal-rank-badge" id="modal-rank-badge">— 🏆</div>
-      </div>
+  <div class="modal-name" id="modal-name">—</div>
+  <div class="modal-rank-badge" id="modal-rank-badge">— 🏆</div>
+  <div class="modal-telefone" id="modal-telefone"></div>
+</div>
     </div>
 
     <div class="modal-stats">
-      <div class="modal-stat">
-        <span class="modal-stat-label">Nível</span>
-        <span class="modal-stat-val" id="modal-level">—</span>
-      </div>
-      <div class="modal-stat">
-        <span class="modal-stat-label">XP Total</span>
-        <span class="modal-stat-val purple" id="modal-xp">—</span>
-      </div>
-      <div class="modal-stat">
-        <span class="modal-stat-label">Mensagens</span>
-        <span class="modal-stat-val" id="modal-msgs">—</span>
-      </div>
-      <div class="modal-stat">
-        <span class="modal-stat-label">Gold</span>
-        <span class="modal-stat-val gold" id="modal-gold">—</span>
-      </div>
-    </div>
-
+  <div class="modal-stat">
+    <span class="modal-stat-label">Nível</span>
+    <span class="modal-stat-val" id="modal-level">—</span>
+  </div>
+  <div class="modal-stat">
+    <span class="modal-stat-label">XP Total</span>
+    <span class="modal-stat-val purple" id="modal-xp">—</span>
+  </div>
+  <div class="modal-stat">
+    <span class="modal-stat-label">Mensagens</span>
+    <span class="modal-stat-val" id="modal-msgs">—</span>
+  </div>
+  <div class="modal-stat">
+    <span class="modal-stat-label">Gold</span>
+    <span class="modal-stat-val gold" id="modal-gold">—</span>
+  </div>
+  <div class="modal-stat">
+    <span class="modal-stat-label">Ranking</span>
+    <span class="modal-stat-val mint" id="modal-pos">—</span>
+  </div>
+  <div class="modal-stat">
+    <span class="modal-stat-label">Grupos</span>
+    <span class="modal-stat-val" id="modal-grupos-count">—</span>
+  </div>
+</div>
     <div class="modal-xp-label">
       <span id="modal-xp-pct">XP para o próximo nível</span>
       <span id="modal-xp-next"></span>
@@ -407,6 +415,17 @@
     if ($('modal-msgs'))  $('modal-msgs').textContent  = fmtNum(user.mensagens ?? 0);
     if ($('modal-gold'))  $('modal-gold').textContent  = fmtNum(user.gold ?? 0);
 
+    if ($('modal-pos'))  $('modal-pos').textContent  = `#${pos}`;
+
+    const idRaw = user.idWhatsApp || '';
+    const telefoneExibir = idRaw.replace('@s.whatsapp.net', '').replace('@lid', '').replace(/\D/g, '');
+    const telEl = $('modal-telefone');
+    if (telEl) {
+      telEl.textContent = telefoneExibir ? `+${telefoneExibir}` : '';
+    }
+
+    if ($('modal-grupos-count')) $('modal-grupos-count').textContent = '…';
+
     if ($('modal-xp-pct'))  $('modal-xp-pct').textContent  = `${prog.pct}% para nível ${prog.level + 1}`;
     if ($('modal-xp-next')) $('modal-xp-next').textContent = `${fmtXP(prog.xpParaProximo)} XP`;
 
@@ -434,6 +453,7 @@
       .then(data => {
         if (!data.grupos?.length) return;
         gruposEl.style.display = 'block';
+        if ($('modal-grupos-count')) $('modal-grupos-count').textContent = data.grupos.length;
         gruposListEl.innerHTML = data.grupos.map(g => `
           <div class="modal-grupo-item">
             <span class="modal-grupo-nome">${escapeHtml(g.nome)}</span>
