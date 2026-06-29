@@ -27,7 +27,7 @@
           <label for="email">Email</label>
           <input id="email" type="email" placeholder="seu@email.com"
             autocomplete="email" required />
-          <span class="field-hint">Você receberá o código de verificação neste email.</span>
+          <span class="field-hint">Usado para recuperação de conta.</span>
         </div>
 
         <div class="field-group">
@@ -57,30 +57,10 @@
 
         <div id="cadastroMsg" class="msg hidden"></div>
 
-        <!-- ETAPA 1: botão enviar código -->
-        <div id="etapa1">
-          <button type="button" class="btn-primary" id="btnEnviarOtp">
-            <span class="btn-label">Enviar código de verificação</span>
-            <span class="btn-spinner hidden">⏳</span>
-          </button>
-        </div>
-
-        <!-- ETAPA 2: campo OTP + botão criar conta (oculto até enviar) -->
-        <div id="etapa2" class="hidden">
-          <div class="field-group">
-            <label for="otp">Código recebido no email</label>
-            <input id="otp" type="text" placeholder="000000"
-              maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
-            <span class="field-hint">Digite o código de 6 dígitos enviado para o seu email.</span>
-          </div>
-          <button type="submit" class="btn-primary" id="btnCadastrar">
-            <span class="btn-label">Criar conta</span>
-            <span class="btn-spinner hidden">⏳</span>
-          </button>
-          <button type="button" class="btn-secondary" id="btnReenviar" style="margin-top:0.5rem;width:100%">
-            🔁 Reenviar código
-          </button>
-        </div>
+        <button type="submit" class="btn-primary" id="btnCadastrar">
+          <span class="btn-label">Criar conta</span>
+          <span class="btn-spinner hidden">⏳</span>
+        </button>
       </form>
 
       <p class="auth-footer">
@@ -150,65 +130,6 @@
       }
     }
 
-    const btnEnviarOtp = document.getElementById('btnEnviarOtp');
-    const btnReenviar  = document.getElementById('btnReenviar');
-
-    async function enviarOtp() {
-      const rawTel        = document.getElementById('idWhatsApp').value;
-      const idWhatsAppNum = rawTel.replace(/\D/g, '');
-      const email         = document.getElementById('email').value.trim();
-
-      if (!idWhatsAppNum || idWhatsAppNum.length < 10 || idWhatsAppNum.length > 15) {
-        showMsg('Número inválido. Use DDI + DDD + número (só dígitos).');
-        return;
-      }
-      if (!email || !email.includes('@')) {
-        showMsg('Digite um email válido.');
-        return;
-      }
-
-      const btn = btnEnviarOtp;
-      btn.disabled = true;
-      btn.querySelector('.btn-label').classList.add('hidden');
-      btn.querySelector('.btn-spinner').classList.remove('hidden');
-
-      try {
-        const res = await fetchComRetry(`${API}/auth/otp/enviar`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            idWhatsApp: `${idWhatsAppNum}@s.whatsapp.net`,
-            email,
-          }),
-        });
-        const data = await res.json();
-
-        if (!res.ok) {
-          showMsg(data.error || 'Erro ao enviar código.');
-          btn.disabled = false;
-          btn.querySelector('.btn-label').classList.remove('hidden');
-          btn.querySelector('.btn-spinner').classList.add('hidden');
-          return;
-        }
-
-        showMsg('✅ Código enviado! Verifique seu email.', 'success');
-        document.getElementById('etapa1').classList.add('hidden');
-        document.getElementById('etapa2').classList.remove('hidden');
-
-      } catch {
-        showMsg('Não foi possível conectar ao servidor.');
-        btn.disabled = false;
-        btn.querySelector('.btn-label').classList.remove('hidden');
-        btn.querySelector('.btn-spinner').classList.add('hidden');
-      } finally {
-        btn.querySelector('.btn-spinner').classList.add('hidden');
-        btn.querySelector('.btn-label').classList.remove('hidden');
-      }
-    }
-
-    btnEnviarOtp.addEventListener('click', enviarOtp);
-    btnReenviar.addEventListener('click', enviarOtp);
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -244,12 +165,6 @@
         return;
       }
 
-      const otp = document.getElementById('otp')?.value?.trim();
-      if (!otp || otp.length !== 6) {
-        showMsg('Digite o código de 6 dígitos recebido no email.');
-        return;
-      }
-
       setLoading(true);
       try {
         const res = await fetchComRetry(`${API}/auth/cadastrar`, {
@@ -260,7 +175,6 @@
             email,
             username,
             password,
-            otp,
           }),
         });
 
