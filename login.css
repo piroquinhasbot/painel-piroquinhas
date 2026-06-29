@@ -116,13 +116,10 @@ body {
 .auth-card::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: var(--radius-lg);
-  padding: 1px;
-  background: linear-gradient(135deg, #b855ff55, #2de2ff22, #00ffb022);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--purple) 30%, var(--blue) 65%, var(--mint) 100%);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   pointer-events: none;
 }
 
@@ -244,11 +241,14 @@ input::placeholder {
 /* Autofill — evita fundo branco */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--text-primary);
-  -webkit-box-shadow: 0 0 0 1000px var(--bg-input) inset;
-  transition: background-color 5000s ease;
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-box-shadow: 0 0 0 1000px #0f1120 inset !important;
+  box-shadow: 0 0 0 1000px #0f1120 inset !important;
+  transition: background-color 9999s ease 9999s;
   caret-color: var(--text-primary);
+  border-color: var(--border) !important;
 }
 
 /* ── Senha com toggle ── */
